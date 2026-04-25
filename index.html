@@ -455,9 +455,16 @@
     padding: 28px 32px;
     margin-bottom: 24px;
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     gap: 24px;
     align-items: center;
+  }
+
+  .wl-btn-wrap {
+    display: flex;
+    align-items: center;
+    border-left: 1px solid var(--border);
+    padding-left: 24px;
   }
 
   .ticker-info .symbol {
@@ -756,9 +763,15 @@
 
   @media (max-width: 900px) {
     .analysis-grid { grid-template-columns: 1fr; }
+    .ticker-header { grid-template-columns: 1fr 1fr; }
+    .wl-btn-wrap { grid-column: 1 / -1; border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 16px; }
+    .price-block { text-align: right; }
+    .tradingview-wrap { height: 400px; }
+  }
+
+  @media (max-width: 500px) {
     .ticker-header { grid-template-columns: 1fr; }
     .price-block { text-align: left; }
-    .tradingview-wrap { height: 400px; }
   }
 
   .card {
@@ -2231,7 +2244,9 @@ Max 3 catalysts${needsSearch ? ', max 5 news' : ''}. JSON only.`;
             ${priceChangeSign}${formatPrice(Math.abs(data.change))} (${priceChangeSign}${data.changePercent.toFixed(2)}%)
           </div>
           <div class="price-meta">${changeLabel} · ${isCrypto ? 'COINGECKO' : 'FINNHUB'}</div>
-          <button class="add-to-wl-btn" id="add-to-wl-btn" style="margin-top:12px" onclick="toggleWatchlist()">
+        </div>
+        <div class="wl-btn-wrap">
+          <button class="add-to-wl-btn" id="add-to-wl-btn" onclick="toggleWatchlist()">
             <i class="ri-bookmark-line" id="wl-btn-icon"></i>
             <span id="wl-btn-text">Watchlist</span>
           </button>
