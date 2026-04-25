@@ -1002,7 +1002,7 @@
     <div class="header-meta">
       <span><span class="live-dot"></span> LIVE</span>
       <span id="datetime"></span>
-      <button class="api-status connected" id="api-status-btn"><i class="ri-checkbox-circle-fill"></i> Finnhub ulangan</button>
+      
     </div>
   </header>
 
@@ -1041,7 +1041,7 @@
 </div>
 
 <!-- API KEY MODAL -->
-<div class="modal-overlay" id="api-modal">
+<div class="modal-overlay" id="api-modal" style="display:none!important">
   <div class="modal">
     <h2>StockSage haqida</h2>
     <p>Aksiya va kripto ma'lumotlari Claude AI web search orqali real vaqtda olinadi. Hech qanday API kalit kerak emas.</p>
@@ -1090,9 +1090,7 @@
   setInterval(updateTime, 30000);
 
   // ==================== MODAL ====================
-  document.getElementById('api-status-btn').addEventListener('click', () => {
-    document.getElementById('api-modal').classList.add('active');
-  });
+
 
   document.getElementById('api-save-btn').addEventListener('click', () => {
     document.getElementById('api-modal').classList.remove('active');
