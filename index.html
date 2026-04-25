@@ -4221,47 +4221,126 @@ Return JSON only. Maximum 3 catalysts.`;
   // ═══════════════════════════════════════════════════════════════════════════
   let congressLoaded = false;
 
+  let allCongressData = []; // cache for real-time filter
+
   async function loadCongressPage() {
-    if (!congressLoaded) { congressLoaded = true; loadCongress(); }
+    if (!congressLoaded) {
+      congressLoaded = true;
+      await fetchCongressData();
+    }
+    // Real-time filter listeners
+    ['congress-type','congress-party'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !el._bound) {
+        el._bound = true;
+        el.addEventListener('change', () => renderCongressTable(allCongressData));
+      }
+    });
     const btn = document.getElementById('congress-load-btn');
-    if (btn && !btn._bound) { btn._bound = true; btn.addEventListener('click', loadCongress); }
+    if (btn && !btn._bound) {
+      btn._bound = true;
+      btn.addEventListener('click', async () => {
+        congressLoaded = false;
+        allCongressData = [];
+        await fetchCongressData();
+      });
+    }
   }
 
-  async function loadCongress() {
+  async function fetchCongressData() {
     const el = document.getElementById('congress-results');
     if (!el) return;
-    el.innerHTML = '<div class="info-text">Yuklanmoqda...</div>';
-    const type = document.getElementById('congress-type')?.value || '';
-    const party = document.getElementById('congress-party')?.value || '';
+    el.innerHTML = '<div class="info-text">Quiver Quantitative dan yuklanmoqda...</div>';
     try {
-      const res = await fetch(`${PROXY_URL}/api/stock/congressional-trading?symbol=&from=${daysAgo(90)}&to=${daysAgo(0)}`);
-      if (!res.ok) throw new Error(res.status);
+      // Quiver Quantitative — Congressional trades (bepul, real data)
+      const res = await fetch(`${PROXY_URL}/quiver/live/congresstrading`);
+      if (!res.ok) throw new Error('Quiver API: ' + res.status);
       const data = await res.json();
-      let items = (data.data || []);
-      if (type === 'buy') items = items.filter(i => (i.transactionType||'').toLowerCase().includes('purchase'));
-      if (type === 'sell') items = items.filter(i => (i.transactionType||'').toLowerCase().includes('sale'));
-      if (party) items = items.filter(i => (i.representative||'').includes('('+party+')'));
-      items = items.slice(0, 30);
-      if (!items.length) { el.innerHTML = '<div class="info-text">Topilmadi.</div>'; return; }
-      el.innerHTML = `<table class="screener-table"><thead><tr>
-        <th>Senator</th><th>Aksiya</th><th>Tur</th><th>Miqdor</th><th>Sana</th>
-      </tr></thead><tbody>${items.map(i => {
-        const isBuy = (i.transactionType||'').toLowerCase().includes('purchase');
-        const name = (i.representative||'N/A');
-        const pm = name.match(/\(([DR])\)/);
-        const p = pm ? pm[1] : '';
-        return `<tr onclick="loadTickerFromScreener('${escapeHtml(i.symbol||'')}')">
-          <td><div class="cong-name">${escapeHtml(name.replace(/\s*\([DR]\)/,''))}</div>
-            ${p?`<span class="cong-party ${p}">${p==='D'?'Democrat':'Republican'}</span>`:''}</td>
-          <td class="cal-ticker">${escapeHtml(i.symbol||'N/A')}</td>
-          <td class="${isBuy?'st-up':'st-down'}" style="font-family:var(--mono);font-weight:700">${isBuy?'↑ Sotib oldi':'↓ Sotdi'}</td>
-          <td style="font-family:var(--mono);font-size:12px">${i.amount?'$'+Number(i.amount).toLocaleString():i.range||'N/A'}</td>
-          <td class="cal-date">${i.transactionDate||'N/A'}</td>
-        </tr>`;
-      }).join('')}</tbody></table>`;
+      allCongressData = Array.isArray(data) ? data : (data.data || []);
+      renderCongressTable(allCongressData);
     } catch(e) {
-      el.innerHTML = '<div class="info-text">Congressional trades yuklanmadi.</div>';
+      // Fallback: Finnhub
+      try {
+        const res2 = await fetch(`${PROXY_URL}/api/stock/congressional-trading?symbol=AAPL&from=${daysAgo(90)}&to=${daysAgo(0)}`);
+        if (res2.ok) {
+          const d = await res2.json();
+          allCongressData = d.data || [];
+          renderCongressTable(allCongressData);
+        } else {
+          el.innerHTML = '<div class="info-text">Congressional trades mavjud emas (API cheklovi).</div>';
+        }
+      } catch(e2) {
+        el.innerHTML = '<div class="info-text">Congressional trades yuklanmadi.</div>';
+      }
     }
+  }
+
+  function renderCongressTable(rawData) {
+    const el = document.getElementById('congress-results');
+    if (!el) return;
+
+    const type  = document.getElementById('congress-type')?.value  || '';
+    const party = document.getElementById('congress-party')?.value || '';
+
+    let items = [...rawData];
+
+    // Real-time filter
+    if (type === 'buy')  items = items.filter(i =>
+      (i.Transaction||i.transactionType||'').toLowerCase().includes('purchase') ||
+      (i.Transaction||i.transactionType||'').toLowerCase() === 'buy');
+    if (type === 'sell') items = items.filter(i =>
+      (i.Transaction||i.transactionType||'').toLowerCase().includes('sale') ||
+      (i.Transaction||i.transactionType||'').toLowerCase() === 'sell');
+    if (party === 'D') items = items.filter(i =>
+      (i.Party||i.representative||'').toUpperCase().includes('D'));
+    if (party === 'R') items = items.filter(i =>
+      (i.Party||i.representative||'').toUpperCase().includes('R'));
+
+    items = items.slice(0, 50);
+
+    if (!items.length) {
+      el.innerHTML = '<div class="info-text">Filtr bo&#39;yicha topilmadi.</div>'; return;
+    }
+
+    el.innerHTML = `<div style="margin-bottom:12px;font-family:var(--mono);font-size:11px;color:var(--text-muted)">
+      ${rawData.length} ta savdo topildi · ${items.length} ta ko'rsatilmoqda
+    </div>
+    <table class="screener-table">
+      <thead><tr>
+        <th>Senator/Kongress</th>
+        <th>Partiya</th>
+        <th>Aksiya</th>
+        <th>Tur</th>
+        <th>Miqdor</th>
+        <th>Sana</th>
+      </tr></thead>
+      <tbody>${items.map(i => {
+        // Support both Quiver and Finnhub response formats
+        const name    = i.Representative || i.representative || 'N/A';
+        const sym     = i.Ticker         || i.symbol         || 'N/A';
+        const txType  = i.Transaction    || i.transactionType|| '';
+        const amount  = i.Range          || i.amount         || 'N/A';
+        const date    = i.TransactionDate|| i.transactionDate|| 'N/A';
+        const party   = i.Party          || '';
+
+        const isBuy   = txType.toLowerCase().includes('purchase') ||
+                        txType.toLowerCase() === 'buy';
+        const partyUp = party.toUpperCase();
+        const pClass  = partyUp.includes('D') ? 'D' : partyUp.includes('R') ? 'R' : '';
+
+        return `<tr onclick="loadTickerFromScreener('${escapeHtml(sym)}')">
+          <td class="cong-name">${escapeHtml(name)}</td>
+          <td>${pClass ? `<span class="cong-party ${pClass}">${pClass==='D'?'Dem':'Rep'}</span>` : '—'}</td>
+          <td class="cal-ticker">${escapeHtml(sym)}</td>
+          <td class="${isBuy?'st-up':'st-down'}" style="font-family:var(--mono);font-weight:700">
+            ${isBuy ? '↑ Sotib oldi' : '↓ Sotdi'}
+          </td>
+          <td style="font-family:var(--mono);font-size:12px">${escapeHtml(String(amount))}</td>
+          <td class="cal-date">${escapeHtml(date)}</td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>`;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -4553,6 +4632,10 @@ Return JSON only. Maximum 3 catalysts.`;
 
         // Load page data on first visit
         if (page === 'heatmap' && !heatmapLoaded) loadHeatmap();
+        if (page === 'screener' && screenerData.length === 0) {
+          document.getElementById('f-sector').value = '';
+          runScreener();
+        }
         if (page === 'crypto-market' && !cryptoMarketLoaded) loadCryptoMarket();
         if (page === 'calendar' && !calLoaded.earnings) loadCalendarPage();
         if (page === 'congress' && !congressLoaded) loadCongressPage();
@@ -4585,6 +4668,28 @@ Return JSON only. Maximum 3 catalysts.`;
   let sortAsc = false;
 
   document.getElementById('screen-btn').addEventListener('click', runScreener);
+
+  // Real-time filter — select o'zgarganda qayta filter qilinsin
+  ['f-sector','f-mcap','f-pe','f-52w','f-rating'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', () => {
+      if (screenerData.length > 0) {
+        const filtered = applyFilters(screenerData);
+        document.getElementById('results-count').textContent = filtered.length + ' aksiya topildi';
+        renderScreenerTable(filtered);
+      }
+    });
+  });
+
+  // Ticker input real-time
+  const fTicker = document.getElementById('f-ticker');
+  if (fTicker) fTicker.addEventListener('input', () => {
+    if (screenerData.length > 0) {
+      const filtered = applyFilters(screenerData);
+      document.getElementById('results-count').textContent = filtered.length + ' aksiya topildi';
+      renderScreenerTable(filtered);
+    }
+  });
   document.getElementById('reset-btn').addEventListener('click', () => {
     ['f-sector','f-mcap','f-pe','f-52w','f-rating'].forEach(id => {
       document.getElementById(id).value = '';
@@ -4663,6 +4768,7 @@ Return JSON only. Maximum 3 catalysts.`;
     const pe      = document.getElementById('f-pe').value;
     const w52     = document.getElementById('f-52w').value;
     const rating  = document.getElementById('f-rating').value;
+    const tickerQ = (document.getElementById('f-ticker').value || '').trim().toUpperCase();
 
     return data.filter(s => {
       if (sector && !s.sector.includes(sector)) return false;
@@ -4686,6 +4792,7 @@ Return JSON only. Maximum 3 catalysts.`;
           .reduce((a,b) => s[a] > s[b] ? a : b);
         if (topRating !== rating) return false;
       }
+      if (tickerQ && !s.ticker.includes(tickerQ) && !s.name.toUpperCase().includes(tickerQ)) return false;
       return true;
     });
   }
