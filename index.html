@@ -1200,16 +1200,99 @@
   }
 
   // ==================== FAST DATA CALL (narx + raqamlar) ====================
-  // ── FAST DATA: Claude web_search (stock) | CoinGecko (crypto) ──────────────
+  // ── FAST DATA ─────────────────────────────────────────────────────────────
   async function fetchFastData(ticker, isCrypto) {
     if (isCrypto) return fetchFastCrypto(ticker);
-    // Try Finnhub proxy first (fast + real), fallback to Claude web_search
     try {
       return await fetchFinnhubStock(ticker);
     } catch (e) {
       console.warn('Finnhub proxy failed, falling back to Claude:', e.message);
       return fetchClaudeStock(ticker);
     }
+  }
+
+  // ── COINGECKO via proxy (crypto) ──────────────────────────────────────────
+  const CGIDS = {
+    BTC:'bitcoin', ETH:'ethereum', BNB:'binancecoin', SOL:'solana',
+    XRP:'ripple', DOGE:'dogecoin', ADA:'cardano', AVAX:'avalanche-2',
+    DOT:'polkadot', LINK:'chainlink', LTC:'litecoin', UNI:'uniswap',
+    MATIC:'matic-network', ATOM:'cosmos', NEAR:'near', APT:'aptos',
+    ARB:'arbitrum', OP:'optimism', SUI:'sui', INJ:'injective-protocol',
+    TRX:'tron', TON:'the-open-network', SHIB:'shiba-inu', PEPE:'pepe',
+    FIL:'filecoin', ICP:'internet-computer', HBAR:'hedera-hashgraph',
+    ETC:'ethereum-classic', XLM:'stellar', AAVE:'aave', MKR:'maker',
+    GRT:'the-graph', LDO:'lido-dao', RUNE:'thorchain', WIF:'dogwifcoin',
+    BONK:'bonk', SEI:'sei-network', TIA:'celestia',
+    JUP:'jupiter-exchange-solana', WLD:'worldcoin-wld',
+    FET:'fetch-ai', RENDER:'render-token', TAO:'bittensor'
+  };
+
+  async function fetchFastCrypto(ticker) {
+    const upper  = ticker.toUpperCase();
+    let coinId   = CGIDS[upper];
+
+    if (!coinId) {
+      const s = await fetch(`${PROXY_URL}/cg/search?query=${upper}`).catch(() => null);
+      if (s?.ok) {
+        const sd = await s.json();
+        const m  = (sd.coins || []).find(c => c.symbol.toUpperCase() === upper);
+        if (m) coinId = m.id;
+      }
+      if (!coinId) throw new Error(
+        `"${ticker}" topilmadi. BTC, ETH, SOL, BNB, XRP, DOGE, ADA, AVAX va boshqalarni sinab ko'ring.`
+      );
+    }
+
+    const [coinRes, ohlcRes] = await Promise.all([
+      fetch(`${PROXY_URL}/cg/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`),
+      fetch(`${PROXY_URL}/cg/coins/${coinId}/ohlc?vs_currency=usd&days=60`)
+    ]);
+
+    if (!coinRes.ok) {
+      if (coinRes.status === 429) throw new Error('CoinGecko rate limit — 1 daqiqa kuting.');
+      throw new Error(`Kripto ma'lumot yuklanmadi (${coinRes.status}).`);
+    }
+
+    const coin = await coinRes.json();
+    const ohlc = ohlcRes.ok ? await ohlcRes.json() : [];
+    const md   = coin.market_data;
+
+    const candles = ohlc.length > 10 ? {
+      close: ohlc.map(k => k[4]), high:  ohlc.map(k => k[2]),
+      low:   ohlc.map(k => k[3]), open:  ohlc.map(k => k[1]),
+      volume: ohlc.map(() => 0),  time:  ohlc.map(k => Math.floor(k[0] / 1000))
+    } : null;
+
+    const signals  = computeTechnicalSignals(candles);
+    const price    = md.current_price.usd;
+    const changePct = md.price_change_percentage_24h || 0;
+
+    const data = {
+      type: 'crypto', ticker: upper, name: coin.name,
+      exchange: 'BINANCE',
+      industry: (coin.categories && coin.categories[0]) || 'Cryptocurrency',
+      currency: 'USDT',
+      price, change: price - price / (1 + changePct / 100),
+      changePercent: changePct,
+      open: price / (1 + changePct / 100),
+      high: md.high_24h.usd, low: md.low_24h.usd,
+      prevClose: price / (1 + changePct / 100),
+      volume24h: md.total_volume.usd || 0,
+      quoteVolume24h: md.total_volume.usd || 0,
+      marketCapUsd: md.market_cap.usd,
+      rank: coin.market_cap_rank,
+      preSignals: signals || {
+        rsi: 50, sma20: null, sma50: null,
+        support: md.low_24h.usd, resistance: md.high_24h.usd,
+        volumeRatio: 1,
+        trend: changePct > 0 ? 'bullish' : changePct < 0 ? 'bearish' : 'neutral',
+        rsiStatus: 'neutral', volumeStatus: 'neutral', lastClose: price
+      },
+      candles, news: [], earnings: null
+    };
+
+    patchSkeletonPrice(data, true);
+    return data;
   }
 
   // ── CONFIG ────────────────────────────────────────────────────────────────
