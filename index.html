@@ -1937,6 +1937,179 @@
     .sector-change { font-size: 16px; }
   }
 
+
+  /* ═══════════════════════════════════════════════════════
+     GLOBAL MARKET STATS BAR
+  ═══════════════════════════════════════════════════════ */
+  .market-stats-bar {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    margin-left: -24px;
+    margin-right: -24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .market-stats-bar::-webkit-scrollbar { display: none; }
+
+  .mstat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .mstat:first-child { padding-left: 0; }
+  .mstat:last-child { border-right: none; }
+
+  .mstat-label {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+  }
+
+  .mstat-val {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .mstat-val.up { color: var(--bull); }
+  .mstat-val.down { color: var(--bear); }
+
+  /* Fear & Greed */
+  .fg-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--mono);
+  }
+
+  .fg-badge.extreme-fear { background: rgba(255,71,87,0.2); color: var(--bear); }
+  .fg-badge.fear { background: rgba(255,165,2,0.2); color: var(--warn); }
+  .fg-badge.neutral { background: rgba(255,255,255,0.1); color: var(--text-dim); }
+  .fg-badge.greed { background: rgba(0,217,126,0.2); color: var(--bull); }
+  .fg-badge.extreme-greed { background: rgba(0,217,126,0.3); color: #00ff99; }
+
+  /* ═══════════════════════════════════════════════════════
+     CRYPTO MARKET PAGE
+  ═══════════════════════════════════════════════════════ */
+  .crypto-market-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 700px) {
+    .crypto-market-grid { grid-template-columns: 1fr; }
+    .market-stats-bar { padding: 8px 14px; margin-left: -14px; margin-right: -14px; }
+    .mstat { padding: 0 10px; }
+  }
+
+  .trending-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .trending-item:hover { padding-left: 4px; }
+  .trending-item:last-child { border-bottom: none; }
+
+  .trending-rank {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  .trending-info { flex: 1; padding: 0 10px; }
+
+  .trending-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .trending-symbol {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .trending-change {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .gainer-item, .loser-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: padding 0.15s;
+  }
+
+  .gainer-item:hover, .loser-item:hover { padding-left: 4px; }
+  .gainer-item:last-child, .loser-item:last-child { border-bottom: none; }
+
+  .gl-ticker {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent);
+    min-width: 60px;
+  }
+
+  .gl-name {
+    font-size: 13px;
+    color: var(--text-dim);
+    flex: 1;
+    padding: 0 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .gl-price {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    text-align: right;
+    min-width: 80px;
+  }
+
+  .gl-change {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+    min-width: 60px;
+  }
+
 </style>
 </head>
 <body>
@@ -1954,6 +2127,16 @@
     </div>
   </header>
 
+  <!-- GLOBAL MARKET STATS BAR -->
+  <div class="market-stats-bar" id="market-stats-bar">
+    <div class="mstat"><span class="mstat-label">Bozor Cap</span><span class="mstat-val" id="ms-mcap">—</span></div>
+    <div class="mstat"><span class="mstat-label">24s Hajm</span><span class="mstat-val" id="ms-vol">—</span></div>
+    <div class="mstat"><span class="mstat-label">BTC Dom</span><span class="mstat-val" id="ms-btc">—</span></div>
+    <div class="mstat"><span class="mstat-label">ETH Dom</span><span class="mstat-val" id="ms-eth">—</span></div>
+    <div class="mstat"><span class="mstat-label">Aktivlar</span><span class="mstat-val" id="ms-coins">—</span></div>
+    <div class="mstat"><span class="mstat-label">Qo'rquv indeksi</span><span id="ms-fear">—</span></div>
+  </div>
+
   <!-- MAIN NAVIGATION -->
   <nav class="main-nav">
     <button class="nav-btn active" data-page="home">
@@ -1967,6 +2150,9 @@
     </button>
     <button class="nav-btn" data-page="insider">
       <i class="ri-spy-fill"></i><span>Insider</span>
+    </button>
+    <button class="nav-btn" data-page="crypto-market">
+      <i class="ri-coin-fill"></i><span>Kripto Bozor</span>
     </button>
   </nav>
 
@@ -2168,6 +2354,63 @@
         <span><span class="legend-dot" style="background:#ff4757"></span>Tushish</span>
         <span><span class="legend-dot" style="background:#3f3f46"></span>O'zgarishsiz</span>
       </div>
+    </div>
+  </div>
+
+  <!-- CRYPTO MARKET PAGE -->
+  <div class="page" id="page-crypto-market">
+    <div class="crypto-market-grid">
+
+      <!-- Trending -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ri-fire-fill"></i></div>
+          <div class="card-title">Trending — Ko'p qidirilyapti</div>
+        </div>
+        <div id="trending-list"><div class="info-text">Yuklanmoqda...</div></div>
+      </div>
+
+      <!-- Fear & Greed detail -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ri-mental-health-fill"></i></div>
+          <div class="card-title">Qo'rquv & Ochko'zlik Indeksi</div>
+        </div>
+        <div id="fear-detail">
+          <div class="info-text">Yuklanmoqda...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="crypto-market-grid">
+
+      <!-- Top Gainers -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ri-arrow-up-fill"></i></div>
+          <div class="card-title">Top Gainers — 24 soat</div>
+        </div>
+        <div id="gainers-list"><div class="info-text">Yuklanmoqda...</div></div>
+      </div>
+
+      <!-- Top Losers -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ri-arrow-down-fill"></i></div>
+          <div class="card-title">Top Losers — 24 soat</div>
+        </div>
+        <div id="losers-list"><div class="info-text">Yuklanmoqda...</div></div>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-add-circle-fill"></i></div>
+        <div class="card-title">Yangi Listinglar — Binance</div>
+      </div>
+      <div id="new-listings"><div class="info-text">Yuklanmoqda...</div></div>
     </div>
   </div>
 
@@ -3178,6 +3421,176 @@ Return JSON only. Maximum 3 catalysts.`;
       .replace(/'/g, '&#039;');
   }
 
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GLOBAL MARKET STATS BAR
+  // ═══════════════════════════════════════════════════════════════════════════
+  async function loadGlobalStats() {
+    await new Promise(r => setTimeout(r, 800));
+    try {
+      // Only coins/markets — reliable endpoint
+      const btcRes = await fetch(`${PROXY_URL}/cg/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,binancecoin&order=market_cap_desc&per_page=4&page=1&sparkline=false`).catch(() => null);
+      const fearRes = null;
+
+      if (btcRes && btcRes.ok) {
+        const coins = await btcRes.json();
+        const btc = coins.find(c => c.id === 'bitcoin');
+        const eth = coins.find(c => c.id === 'ethereum');
+
+        // Total market cap = sum of all + estimate
+        const totalMcap = coins.reduce((s,c) => s + (c.market_cap||0), 0);
+        const totalVol  = coins.reduce((s,c) => s + (c.total_volume||0), 0);
+        const btcMcap   = btc?.market_cap || 0;
+        const ethMcap   = eth?.market_cap || 0;
+
+        // BTC dominance rough estimate (BTC mcap / total top100 mcap *100)
+        const btcDom = totalMcap > 0 ? (btcMcap / totalMcap * 100) : 0;
+        const ethDom = totalMcap > 0 ? (ethMcap / totalMcap * 100) : 0;
+
+        const sol = coins.find(c => c.id === 'solana');
+        document.getElementById('ms-mcap').textContent = btc  ? `$${formatPrice(btc.current_price)}`  : '—';
+        document.getElementById('ms-vol').textContent  = eth  ? `$${formatPrice(eth.current_price)}`  : '—';
+        document.getElementById('ms-btc').textContent  = sol  ? `$${formatPrice(sol.current_price)}`  : '—';
+        document.getElementById('ms-eth').textContent  = btc  ?
+          (btc.price_change_percentage_24h>=0?'+':'') + (btc.price_change_percentage_24h||0).toFixed(2)+'%' : '—';
+        document.getElementById('ms-eth').className    = 'mstat-val ' + ((btc?.price_change_percentage_24h||0)>=0?'up':'down');
+
+        // Labels
+        const msLabels = document.querySelectorAll('.mstat-label');
+        const labelMap = ["BTC", "ETH", "SOL", "BTC 24s", "Fear"];
+        msLabels.forEach((el, i) => { if (labelMap[i]) el.textContent = labelMap[i]; });
+
+        const coinsEl = document.getElementById('ms-coins');
+        if (coinsEl) {
+          coinsEl.textContent = eth ?
+            (eth.price_change_percentage_24h>=0?'+':'') + (eth.price_change_percentage_24h||0).toFixed(2)+'%' : '—';
+          coinsEl.className = 'mstat-val ' + ((eth?.price_change_percentage_24h||0)>=0?'up':'down');
+        }
+      }
+
+      if (fearRes && fearRes.ok) {
+        const f = await fearRes.json();
+        const val = parseInt(f.data?.[0]?.value || 50);
+        const cls = val<=25?'extreme-fear':val<=45?'fear':val<=55?'neutral':val<=75?'greed':'extreme-greed';
+        const lbl = val<=25?'Qattiq qo&#39;rquv':val<=45?'Qo&#39;rquv':val<=55?'Neytral':val<=75?'Ochko&#39;zlik':'Haddan oshgan';
+        document.getElementById('ms-fear').innerHTML =
+          `<span class="fg-badge ${cls}">${val} &middot; ${lbl}</span>`;
+        renderFearDetail(val, cls, lbl, f.data?.[0]?.value_classification);
+      }
+    } catch(e) { /* stats bar optional — silent fail */ }
+  }
+
+  function renderFearDetail(val, cls, label, classification) {
+    const el = document.getElementById('fear-detail');
+    if (!el) return;
+    const color = val<=25?'var(--bear)':val<=45?'var(--warn)':val<=55?'var(--text-dim)':val<=75?'var(--bull)':'#00ff99';
+    const desc = val<=25?'Bozor qattiq qo&#39;rquvda. Tarixan aksiya olish uchun qulay vaqt.':
+                 val<=45?'Investorlar ehtiyotkor. Bozor tushishi mumkin.':
+                 val<=55?'Bozor muvozanatda. Aniq trend yo&#39;q.':
+                 val<=75?'Investorlar ochko&#39;z. Narxlar tez ko&#39;tarilmoqda.':
+                 'Haddan oshgan ochko&#39;zlik. Tuzatish bo&#39;lishi mumkin.';
+    el.innerHTML = `
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-family:var(--display);font-weight:800;font-size:80px;letter-spacing:-0.04em;line-height:1;color:${color}">${val}</div>
+        <div style="font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:0.2em;color:var(--text-muted);margin-top:8px">${classification||label}</div>
+        <div style="margin:20px auto;max-width:280px">
+          <div style="height:8px;background:var(--bg-card);border-radius:100px;overflow:hidden;position:relative">
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,var(--bear),var(--warn),var(--bull));border-radius:100px"></div>
+            <div style="position:absolute;top:-3px;left:calc(${val}% - 7px);width:14px;height:14px;background:#fff;border-radius:50%;border:2px solid var(--bg);box-shadow:0 0 8px rgba(0,0,0,.5)"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:var(--mono);font-size:9px;color:var(--text-muted);text-transform:uppercase">
+            <span>Qo&#39;rquv</span><span>Neytral</span><span>Ochko&#39;zlik</span>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.5;max-width:280px;margin:0 auto">${desc}</div>
+      </div>`;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CRYPTO MARKET PAGE
+  // ═══════════════════════════════════════════════════════════════════════════
+  let cryptoMarketLoaded = false;
+
+  async function loadCryptoMarket() {
+    cryptoMarketLoaded = true;
+    await Promise.all([loadTrending(), loadGainersLosers(), loadNewListings()]);
+  }
+
+  async function loadTrending() {
+    const el = document.getElementById('trending-list');
+    try {
+      const res = await fetch(`${PROXY_URL}/cg/search/trending`);
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      el.innerHTML = (data.coins||[]).slice(0,10).map((c,i) => {
+        const coin = c.item;
+        const chg = coin.data?.price_change_percentage_24h?.usd || 0;
+        return `<div class="trending-item" onclick="loadCryptoFromMarket('${escapeHtml(coin.symbol.toUpperCase())}')">
+          <span class="trending-rank">#${i+1}</span>
+          <div class="trending-info">
+            <div class="trending-name">${escapeHtml(coin.name)}</div>
+            <div class="trending-symbol">${escapeHtml(coin.symbol.toUpperCase())}</div>
+          </div>
+          <div class="trending-change ${chg>=0?'st-up':'st-down'}">${chg>=0?'+':''}${chg.toFixed(2)}%</div>
+        </div>`;
+      }).join('');
+    } catch(e) { el.innerHTML = '<div class="info-text">Yuklanmadi.</div>'; }
+  }
+
+  async function loadGainersLosers() {
+    const gEl = document.getElementById('gainers-list');
+    const lEl = document.getElementById('losers-list');
+    try {
+      const res = await fetch(`${PROXY_URL}/cg/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
+      if (!res.ok) throw new Error(res.status);
+      const coins = await res.json();
+      const sorted = [...coins].sort((a,b)=>(b.price_change_percentage_24h||0)-(a.price_change_percentage_24h||0));
+      const gainers = sorted.filter(c=>c.price_change_percentage_24h>0).slice(0,8);
+      const losers  = sorted.filter(c=>c.price_change_percentage_24h<0).reverse().slice(0,8);
+      const row = (c, isG) => `
+        <div class="${isG?'gainer-item':'loser-item'}" onclick="loadCryptoFromMarket('${escapeHtml(c.symbol.toUpperCase())}')">
+          <span class="gl-ticker">${escapeHtml(c.symbol.toUpperCase())}</span>
+          <span class="gl-name">${escapeHtml(c.name)}</span>
+          <span class="gl-price">$${formatPrice(c.current_price)}</span>
+          <span class="gl-change ${isG?'st-up':'st-down'}">${isG?'+':''}${(c.price_change_percentage_24h||0).toFixed(2)}%</span>
+        </div>`;
+      gEl.innerHTML = gainers.map(c=>row(c,true)).join('') || '<div class="info-text">Topilmadi</div>';
+      lEl.innerHTML = losers.map(c=>row(c,false)).join('') || '<div class="info-text">Topilmadi</div>';
+    } catch(e) { gEl.innerHTML = lEl.innerHTML = '<div class="info-text">Yuklanmadi.</div>'; }
+  }
+
+  async function loadNewListings() {
+    const el = document.getElementById('new-listings');
+    try {
+      const res = await fetch(`${PROXY_URL}/cg/coins/list/new`);
+      if (!res.ok) throw new Error(res.status);
+      const coins = await res.json();
+      el.innerHTML = `<table class="screener-table">
+        <thead><tr><th>Nomi</th><th>Symbol</th><th>Sana</th></tr></thead>
+        <tbody>${coins.slice(0,10).map(c=>`
+          <tr onclick="loadCryptoFromMarket('${escapeHtml((c.symbol||'').toUpperCase())}')">
+            <td class="st-ticker">${escapeHtml(c.name||'N/A')}</td>
+            <td class="st-num">${escapeHtml((c.symbol||'').toUpperCase()||'N/A')}</td>
+            <td class="insider-role">${c.activated_at?new Date(c.activated_at*1000).toLocaleDateString():'N/A'}</td>
+          </tr>`).join('')}
+        </tbody></table>`;
+    } catch(e) { el.innerHTML = '<div class="info-text">Yuklanmadi.</div>'; }
+  }
+
+  function loadCryptoFromMarket(symbol) {
+    if (!symbol || symbol==='N/A') return;
+    currentMarket = 'crypto';
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page==='home'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id==='page-home'));
+    document.getElementById('search-box').classList.add('crypto-mode');
+    document.getElementById('analyze-btn').classList.add('crypto-mode');
+    document.querySelectorAll('.market-btn').forEach(b=>b.classList.toggle('active', b.dataset.market==='crypto'));
+    renderQuickPicks();
+    document.getElementById('ticker-input').value = symbol;
+    analyze();
+  }
+
+
   // ═══════════════════════════════════════════════════════════════════════════
   // NAVIGATION
   // ═══════════════════════════════════════════════════════════════════════════
@@ -3894,6 +4307,7 @@ Return JSON only. Maximum 3 catalysts.`;
   renderWatchlist();
   renderAlerts();
   refreshWatchlistPrices();
+  loadGlobalStats();
 
   // Har 60 soniyada watchlist narxlarini yangilash
   setInterval(refreshWatchlistPrices, 60000);
