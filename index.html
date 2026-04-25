@@ -3426,50 +3426,36 @@ Return JSON only. Maximum 3 catalysts.`;
   // GLOBAL MARKET STATS BAR
   // ═══════════════════════════════════════════════════════════════════════════
   async function loadGlobalStats() {
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 600));
     try {
-      // Only coins/markets — reliable endpoint
-      const btcRes = await fetch(`${PROXY_URL}/cg/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,binancecoin&order=market_cap_desc&per_page=4&page=1&sparkline=false`).catch(() => null);
-      const fearRes = null;
+      const [globalRes, fearRes] = await Promise.all([
+        fetch(`${PROXY_URL}/global`).catch(() => null),
+        fetch(`${PROXY_URL}/fear`).catch(() => null)
+      ]);
 
-      if (btcRes && btcRes.ok) {
-        const coins = await btcRes.json();
-        const btc = coins.find(c => c.id === 'bitcoin');
-        const eth = coins.find(c => c.id === 'ethereum');
+      // Global stats
+      if (globalRes && globalRes.ok) {
+        const json = await globalRes.json();
+        const g = json.data || {};
+        const mcap  = g.total_market_cap?.usd || 0;
+        const vol   = g.total_volume?.usd || 0;
+        const btcd  = g.market_cap_percentage?.btc || 0;
+        const ethd  = g.market_cap_percentage?.eth || 0;
+        const coins = g.active_cryptocurrencies || 0;
+        const chg   = g.market_cap_change_percentage_24h_usd || 0;
 
-        // Total market cap = sum of all + estimate
-        const totalMcap = coins.reduce((s,c) => s + (c.market_cap||0), 0);
-        const totalVol  = coins.reduce((s,c) => s + (c.total_volume||0), 0);
-        const btcMcap   = btc?.market_cap || 0;
-        const ethMcap   = eth?.market_cap || 0;
-
-        // BTC dominance rough estimate (BTC mcap / total top100 mcap *100)
-        const btcDom = totalMcap > 0 ? (btcMcap / totalMcap * 100) : 0;
-        const ethDom = totalMcap > 0 ? (ethMcap / totalMcap * 100) : 0;
-
-        const sol = coins.find(c => c.id === 'solana');
-        document.getElementById('ms-mcap').textContent = btc  ? `$${formatPrice(btc.current_price)}`  : '—';
-        document.getElementById('ms-vol').textContent  = eth  ? `$${formatPrice(eth.current_price)}`  : '—';
-        document.getElementById('ms-btc').textContent  = sol  ? `$${formatPrice(sol.current_price)}`  : '—';
-        document.getElementById('ms-eth').textContent  = btc  ?
-          (btc.price_change_percentage_24h>=0?'+':'') + (btc.price_change_percentage_24h||0).toFixed(2)+'%' : '—';
-        document.getElementById('ms-eth').className    = 'mstat-val ' + ((btc?.price_change_percentage_24h||0)>=0?'up':'down');
-
-        // Labels
-        const msLabels = document.querySelectorAll('.mstat-label');
-        const labelMap = ["BTC", "ETH", "SOL", "BTC 24s", "Fear"];
-        msLabels.forEach((el, i) => { if (labelMap[i]) el.textContent = labelMap[i]; });
-
-        const coinsEl = document.getElementById('ms-coins');
-        if (coinsEl) {
-          coinsEl.textContent = eth ?
-            (eth.price_change_percentage_24h>=0?'+':'') + (eth.price_change_percentage_24h||0).toFixed(2)+'%' : '—';
-          coinsEl.className = 'mstat-val ' + ((eth?.price_change_percentage_24h||0)>=0?'up':'down');
-        }
+        document.getElementById('ms-mcap').textContent = formatBigNumber(mcap);
+        document.getElementById('ms-mcap').className   = 'mstat-val';
+        document.getElementById('ms-vol').textContent  = formatBigNumber(vol);
+        document.getElementById('ms-btc').textContent  = btcd.toFixed(1) + '%';
+        document.getElementById('ms-eth').textContent  = ethd.toFixed(1) + '%';
+        document.getElementById('ms-eth').className    = 'mstat-val';
+        document.getElementById('ms-coins').textContent = coins.toLocaleString();
       }
 
+      // Fear & Greed
       if (fearRes && fearRes.ok) {
-        const f = await fearRes.json();
+        const f   = await fearRes.json();
         const val = parseInt(f.data?.[0]?.value || 50);
         const cls = val<=25?'extreme-fear':val<=45?'fear':val<=55?'neutral':val<=75?'greed':'extreme-greed';
         const lbl = val<=25?'Qattiq qo&#39;rquv':val<=45?'Qo&#39;rquv':val<=55?'Neytral':val<=75?'Ochko&#39;zlik':'Haddan oshgan';
@@ -3477,8 +3463,10 @@ Return JSON only. Maximum 3 catalysts.`;
           `<span class="fg-badge ${cls}">${val} &middot; ${lbl}</span>`;
         renderFearDetail(val, cls, lbl, f.data?.[0]?.value_classification);
       }
-    } catch(e) { /* stats bar optional — silent fail */ }
+
+    } catch(e) { /* stats bar optional */ }
   }
+
 
   function renderFearDetail(val, cls, label, classification) {
     const el = document.getElementById('fear-detail');
