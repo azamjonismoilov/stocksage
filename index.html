@@ -1280,7 +1280,7 @@
 
 Use real current numbers. Return JSON only, nothing else.`;
 
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch(`${PROXY_URL}/claude`, {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({
         model:"claude-sonnet-4-20250514", max_tokens:600,
@@ -1356,7 +1356,7 @@ Max 3 catalysts${needsSearch ? ', max 5 news' : ''}. JSON only.`;
     };
     if (needsSearch) body.tools = [{type:"web_search_20250305", name:"web_search"}];
 
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch(`${PROXY_URL}/claude`, {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify(body)
     });
