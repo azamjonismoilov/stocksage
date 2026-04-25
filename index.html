@@ -2291,6 +2291,131 @@
   .surprise-badge.miss { background: rgba(255,71,87,0.15); color: var(--bear); border: 1px solid rgba(255,71,87,0.3); }
   .surprise-badge.meet { background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border); }
 
+
+  /* ═══ CALENDAR ═══ */
+  .cal-tabs {
+    display: flex; gap: 4px; margin-bottom: 20px;
+    background: var(--bg-card); border-radius: 10px; padding: 4px;
+  }
+  .cal-tab {
+    flex: 1; background: transparent; border: none; color: var(--text-muted);
+    padding: 8px 12px; border-radius: 7px; font-family: var(--mono);
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer; transition: all 0.18s;
+  }
+  .cal-tab.active { background: var(--bg-elevated); color: var(--accent); }
+  .cal-tab:hover { color: var(--text); }
+  .cal-panel { display: none; }
+  .cal-panel.active { display: block; }
+
+  .cal-row {
+    display: grid; gap: 10px; padding: 11px 0;
+    border-bottom: 1px solid var(--border); align-items: center;
+    font-size: 13px; cursor: pointer; transition: padding 0.15s;
+  }
+  .cal-row:hover { padding-left: 4px; }
+  .cal-row:last-child { border-bottom: none; }
+  .cal-ticker { font-family: var(--mono); font-weight: 700; color: var(--accent); }
+  .cal-name { color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal-date { font-family: var(--mono); font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+  .cal-badge {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 100px; white-space: nowrap;
+  }
+  .cal-badge.today { background: rgba(255,71,87,.15); color: var(--bear); border: 1px solid rgba(255,71,87,.3); }
+  .cal-badge.soon  { background: rgba(255,165,2,.15); color: var(--warn); border: 1px solid rgba(255,165,2,.3); }
+  .cal-badge.week  { background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border); }
+
+  /* pre-market */
+  .pm-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer;
+    transition: padding 0.15s;
+  }
+  .pm-row:hover { padding-left: 4px; }
+  .pm-row:last-child { border-bottom: none; }
+
+  /* ═══ CONGRESS ═══ */
+  .congress-row {
+    display: grid; grid-template-columns: 1fr auto auto auto auto;
+    gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);
+    align-items: center; font-size: 13px; cursor: pointer;
+  }
+  .congress-row:last-child { border-bottom: none; }
+  .congress-row:hover { background: var(--bg-card); margin: 0 -16px; padding: 12px 16px; }
+  .cong-name { font-weight: 600; color: var(--text); }
+  .cong-party {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 100px;
+  }
+  .cong-party.D { background: rgba(59,130,246,.15); color: #60a5fa; }
+  .cong-party.R { background: rgba(255,71,87,.15); color: var(--bear); }
+
+  /* ═══ LISTS ═══ */
+  .list-tabs {
+    display: flex; gap: 4px; margin-bottom: 20px;
+    background: var(--bg-card); border-radius: 10px; padding: 4px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .list-tab {
+    background: transparent; border: none; color: var(--text-muted);
+    padding: 8px 14px; border-radius: 7px; font-family: var(--mono);
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer; transition: all 0.18s;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .list-tab.active { background: var(--bg-elevated); color: var(--accent); }
+  .list-panel { display: none; }
+  .list-panel.active { display: block; }
+
+  .hl-row {
+    display: grid; grid-template-columns: auto 1fr auto auto auto;
+    gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border);
+    align-items: center; font-size: 13px; cursor: pointer;
+    transition: padding 0.15s;
+  }
+  .hl-row:hover { padding-left: 4px; }
+  .hl-row:last-child { border-bottom: none; }
+  .hl-rank { font-family: var(--mono); font-size: 11px; color: var(--text-muted); width: 24px; }
+
+  .aristocrat-row {
+    display: grid; grid-template-columns: 1fr auto auto auto;
+    gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);
+    align-items: center; font-size: 13px; cursor: pointer;
+    transition: padding 0.15s;
+  }
+  .aristocrat-row:hover { padding-left: 4px; }
+  .aristocrat-row:last-child { border-bottom: none; }
+
+  .years-badge {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 100px;
+    background: rgba(0,217,126,.1); color: var(--bull);
+    border: 1px solid rgba(0,217,126,.25);
+  }
+
+  .options-row {
+    display: grid; grid-template-columns: auto 1fr auto auto auto;
+    gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border);
+    align-items: center; font-size: 13px; cursor: pointer;
+    transition: padding 0.15s;
+  }
+  .options-row:hover { padding-left: 4px; }
+  .options-row:last-child { border-bottom: none; }
+  .opt-type {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 100px;
+  }
+  .opt-type.call { background: rgba(0,217,126,.15); color: var(--bull); }
+  .opt-type.put  { background: rgba(255,71,87,.15); color: var(--bear); }
+
+  @media (max-width: 480px) {
+    .congress-row { grid-template-columns: 1fr auto auto; }
+    .congress-row .cal-date, .congress-row .cong-amount { display: none; }
+    .hl-row { grid-template-columns: auto 1fr auto auto; }
+    .hl-row .hl-vol { display: none; }
+  }
+
 </style>
 </head>
 <body>
@@ -2334,6 +2459,15 @@
     </button>
     <button class="nav-btn" data-page="crypto-market">
       <i class="ri-coin-fill"></i><span>Kripto Bozor</span>
+    </button>
+    <button class="nav-btn" data-page="calendar">
+      <i class="ri-calendar-fill"></i><span>Kalendar</span>
+    </button>
+    <button class="nav-btn" data-page="congress">
+      <i class="ri-government-fill"></i><span>Congress</span>
+    </button>
+    <button class="nav-btn" data-page="lists">
+      <i class="ri-list-check-3"></i><span>Ro'yxatlar</span>
     </button>
   </nav>
 
@@ -2592,6 +2726,72 @@
         <div class="card-title">Yangi Listinglar — Binance</div>
       </div>
       <div id="new-listings"><div class="info-text">Yuklanmoqda...</div></div>
+    </div>
+  </div>
+
+  <!-- CALENDAR PAGE -->
+  <div class="page" id="page-calendar">
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-calendar-fill"></i></div>
+        <div class="card-title">Moliyaviy Kalendar</div>
+      </div>
+      <div class="cal-tabs">
+        <button class="cal-tab active" data-cal="earnings">Earnings</button>
+        <button class="cal-tab" data-cal="dividend">Dividend</button>
+        <button class="cal-tab" data-cal="ipo">IPO</button>
+        <button class="cal-tab" data-cal="premarket">Pre-Market</button>
+      </div>
+      <div class="cal-panel active" id="cal-earnings"><div class="info-text">Yuklanmoqda...</div></div>
+      <div class="cal-panel" id="cal-dividend"><div class="info-text">Yuklanmoqda...</div></div>
+      <div class="cal-panel" id="cal-ipo"><div class="info-text">Yuklanmoqda...</div></div>
+      <div class="cal-panel" id="cal-premarket"><div class="info-text">Yuklanmoqda...</div></div>
+    </div>
+  </div>
+
+  <!-- CONGRESS PAGE -->
+  <div class="page" id="page-congress">
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-government-fill"></i></div>
+        <div class="card-title">Kongress A'zolari Savdolari</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <select class="filter-select" id="congress-type" style="max-width:160px">
+          <option value="">Barcha savdolar</option>
+          <option value="buy">Sotib olish</option>
+          <option value="sell">Sotish</option>
+        </select>
+        <select class="filter-select" id="congress-party" style="max-width:160px">
+          <option value="">Barcha partiyalar</option>
+          <option value="D">Democrat</option>
+          <option value="R">Republican</option>
+        </select>
+        <button class="screen-btn" id="congress-load-btn">
+          <i class="ri-refresh-line"></i> Yangilash
+        </button>
+      </div>
+      <div id="congress-results"><div class="info-text">Yuklanmoqda...</div></div>
+    </div>
+  </div>
+
+  <!-- LISTS PAGE -->
+  <div class="page" id="page-lists">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-list-check-3"></i></div>
+        <div class="card-title">Maxsus Ro'yxatlar</div>
+      </div>
+      <div class="list-tabs">
+        <button class="list-tab active" data-list="highs">52W Yuqori</button>
+        <button class="list-tab" data-list="lows">52W Past</button>
+        <button class="list-tab" data-list="aristocrats">Dividend Aristocrats</button>
+        <button class="list-tab" data-list="options">Unusual Options</button>
+      </div>
+      <div class="list-panel active" id="list-highs"><div class="info-text">Yuklanmoqda...</div></div>
+      <div class="list-panel" id="list-lows"><div class="info-text">Yuklanmoqda...</div></div>
+      <div class="list-panel" id="list-aristocrats"><div class="info-text">Yuklanmoqda...</div></div>
+      <div class="list-panel" id="list-options"><div class="info-text">Yuklanmoqda...</div></div>
     </div>
   </div>
 
@@ -3902,6 +4102,275 @@ Return JSON only. Maximum 3 catalysts.`;
     }
   }
 
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CALENDAR PAGE
+  // ═══════════════════════════════════════════════════════════════════════════
+  let calLoaded = {};
+
+  function initCalendarTabs() {
+    document.querySelectorAll('.cal-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.cal-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.cal-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const panel = document.getElementById('cal-' + tab.dataset.cal);
+        if (panel) panel.classList.add('active');
+        if (!calLoaded[tab.dataset.cal]) loadCalPanel(tab.dataset.cal);
+      });
+    });
+  }
+
+  async function loadCalendarPage() {
+    initCalendarTabs();
+    initListTabs();
+    if (!calLoaded.earnings) loadCalPanel('earnings');
+  }
+
+  async function loadCalPanel(type) {
+    calLoaded[type] = true;
+    const el = document.getElementById('cal-' + type);
+    if (!el) return;
+    el.innerHTML = '<div class="info-text">Yuklanmoqda...</div>';
+    try {
+      if (type === 'earnings') await loadEarningsCal(el);
+      else if (type === 'dividend') await loadDividendCal(el);
+      else if (type === 'ipo') await loadIPOCal(el);
+      else if (type === 'premarket') await loadPreMarket(el);
+    } catch(e) {
+      el.innerHTML = '<div class="info-text">Yuklanmadi.</div>';
+    }
+  }
+
+  async function loadEarningsCal(el) {
+    const res = await fetch(`${PROXY_URL}/api/calendar/earnings?from=${daysAgo(-1)}&to=${daysAgo(-14)}`);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const items = (data.earningsCalendar || []).slice(0, 30);
+    if (!items.length) { el.innerHTML = '<div class="info-text">Yaqin earnings topilmadi.</div>'; return; }
+    el.innerHTML = items.map(e => {
+      const diff = Math.ceil((new Date(e.date) - new Date()) / 86400000);
+      const cls = diff <= 0 ? 'today' : diff <= 2 ? 'soon' : 'week';
+      const lbl = diff <= 0 ? 'Bugun' : diff === 1 ? 'Ertaga' : diff + ' kun';
+      return `<div class="cal-row" style="grid-template-columns:auto 1fr auto auto" onclick="loadTickerFromScreener('${escapeHtml(e.symbol)}')">
+        <span class="cal-ticker">${escapeHtml(e.symbol)}</span>
+        <span class="cal-name">${escapeHtml(e.name||'')}</span>
+        <span class="cal-date">${e.date}</span>
+        <span class="cal-badge ${cls}">${lbl}</span>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadDividendCal(el) {
+    const res = await fetch(`${PROXY_URL}/api/calendar/dividend?from=${daysAgo(-1)}&to=${daysAgo(-21)}`);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const items = (data.dividendCalendar || []).slice(0, 30);
+    if (!items.length) { el.innerHTML = '<div class="info-text">Dividend topilmadi.</div>'; return; }
+    el.innerHTML = items.map(d => {
+      const diff = Math.ceil((new Date(d.exDate||d.date) - new Date()) / 86400000);
+      const cls = diff <= 0 ? 'today' : diff <= 3 ? 'soon' : 'week';
+      return `<div class="cal-row" style="grid-template-columns:auto 1fr auto auto auto" onclick="loadTickerFromScreener('${escapeHtml(d.symbol)}')">
+        <span class="cal-ticker">${escapeHtml(d.symbol)}</span>
+        <span class="cal-name">${escapeHtml(d.name||'')}</span>
+        <span class="cal-date">Ex: ${d.exDate||'N/A'}</span>
+        <span style="font-family:var(--mono);color:var(--bull);font-weight:700">$${(d.amount||0).toFixed(2)}</span>
+        <span class="cal-badge ${cls}">${diff<=0?'Bugun':diff+' kun'}</span>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadIPOCal(el) {
+    const res = await fetch(`${PROXY_URL}/api/calendar/ipo?from=${daysAgo(-1)}&to=${daysAgo(-60)}`);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const items = (data.ipoCalendar || []).slice(0, 20);
+    if (!items.length) { el.innerHTML = '<div class="info-text">Yaqin IPO topilmadi.</div>'; return; }
+    el.innerHTML = items.map(i => {
+      const pr = i.priceRangeLow && i.priceRangeHigh ? `$${i.priceRangeLow}-${i.priceRangeHigh}` : 'N/A';
+      return `<div class="cal-row" style="grid-template-columns:auto 1fr auto auto auto">
+        <span class="cal-ticker">${escapeHtml(i.symbol||'N/A')}</span>
+        <span class="cal-name">${escapeHtml(i.name||'')}</span>
+        <span class="cal-date">${i.date||'N/A'}</span>
+        <span style="font-family:var(--mono);color:var(--bull)">${pr}</span>
+        <span class="cal-date">${escapeHtml(i.exchange||'')}</span>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadPreMarket(el) {
+    const syms = ['AAPL','MSFT','NVDA','TSLA','GOOGL','AMZN','META','AMD','NFLX','JPM'];
+    const quotes = await Promise.all(syms.map(s =>
+      fetch(`${PROXY_URL}/api/quote?symbol=${s}`)
+        .then(r => r.ok ? r.json().then(q => ({s,q})) : null).catch(() => null)
+    ));
+    const results = quotes.filter(x=>x&&x.q&&x.q.c)
+      .sort((a,b)=>Math.abs(b.q.dp)-Math.abs(a.q.dp));
+    el.innerHTML = results.map(x => {
+      const up = x.q.dp >= 0;
+      return `<div class="pm-row" onclick="loadTickerFromScreener('${x.s}')">
+        <span class="cal-ticker">${x.s}</span>
+        <span style="font-family:var(--mono)">$${formatPrice(x.q.c)}</span>
+        <span class="${up?'st-up':'st-down'}" style="font-family:var(--mono);font-weight:700">${up?'+':''}${x.q.dp.toFixed(2)}%</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONGRESS PAGE
+  // ═══════════════════════════════════════════════════════════════════════════
+  let congressLoaded = false;
+
+  async function loadCongressPage() {
+    if (!congressLoaded) { congressLoaded = true; loadCongress(); }
+    const btn = document.getElementById('congress-load-btn');
+    if (btn && !btn._bound) { btn._bound = true; btn.addEventListener('click', loadCongress); }
+  }
+
+  async function loadCongress() {
+    const el = document.getElementById('congress-results');
+    if (!el) return;
+    el.innerHTML = '<div class="info-text">Yuklanmoqda...</div>';
+    const type = document.getElementById('congress-type')?.value || '';
+    const party = document.getElementById('congress-party')?.value || '';
+    try {
+      const res = await fetch(`${PROXY_URL}/api/stock/congressional-trading?symbol=&from=${daysAgo(90)}&to=${daysAgo(0)}`);
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      let items = (data.data || []);
+      if (type === 'buy') items = items.filter(i => (i.transactionType||'').toLowerCase().includes('purchase'));
+      if (type === 'sell') items = items.filter(i => (i.transactionType||'').toLowerCase().includes('sale'));
+      if (party) items = items.filter(i => (i.representative||'').includes('('+party+')'));
+      items = items.slice(0, 30);
+      if (!items.length) { el.innerHTML = '<div class="info-text">Topilmadi.</div>'; return; }
+      el.innerHTML = `<table class="screener-table"><thead><tr>
+        <th>Senator</th><th>Aksiya</th><th>Tur</th><th>Miqdor</th><th>Sana</th>
+      </tr></thead><tbody>${items.map(i => {
+        const isBuy = (i.transactionType||'').toLowerCase().includes('purchase');
+        const name = (i.representative||'N/A');
+        const pm = name.match(/\(([DR])\)/);
+        const p = pm ? pm[1] : '';
+        return `<tr onclick="loadTickerFromScreener('${escapeHtml(i.symbol||'')}')">
+          <td><div class="cong-name">${escapeHtml(name.replace(/\s*\([DR]\)/,''))}</div>
+            ${p?`<span class="cong-party ${p}">${p==='D'?'Democrat':'Republican'}</span>`:''}</td>
+          <td class="cal-ticker">${escapeHtml(i.symbol||'N/A')}</td>
+          <td class="${isBuy?'st-up':'st-down'}" style="font-family:var(--mono);font-weight:700">${isBuy?'↑ Sotib oldi':'↓ Sotdi'}</td>
+          <td style="font-family:var(--mono);font-size:12px">${i.amount?'$'+Number(i.amount).toLocaleString():i.range||'N/A'}</td>
+          <td class="cal-date">${i.transactionDate||'N/A'}</td>
+        </tr>`;
+      }).join('')}</tbody></table>`;
+    } catch(e) {
+      el.innerHTML = '<div class="info-text">Congressional trades yuklanmadi.</div>';
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LISTS PAGE
+  // ═══════════════════════════════════════════════════════════════════════════
+  let listLoaded = {};
+
+  function initListTabs() {
+    document.querySelectorAll('.list-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.list-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.list-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const panel = document.getElementById('list-' + tab.dataset.list);
+        if (panel) panel.classList.add('active');
+        if (!listLoaded[tab.dataset.list]) loadListPanel(tab.dataset.list);
+      });
+    });
+  }
+
+  async function loadListPanel(type) {
+    listLoaded[type] = true;
+    const el = document.getElementById('list-' + type);
+    if (!el) return;
+    el.innerHTML = '<div class="info-text">Yuklanmoqda...</div>';
+    try {
+      if (type === 'highs' || type === 'lows') await load52Week(el, type === 'highs');
+      else if (type === 'aristocrats') await loadAristocrats(el);
+      else if (type === 'options') await loadUnusualOptions(el);
+    } catch(e) { el.innerHTML = '<div class="info-text">Yuklanmadi.</div>'; }
+  }
+
+  async function load52Week(el, isHigh) {
+    const syms = ['AAPL','MSFT','NVDA','GOOGL','AMZN','META','TSLA','AVGO','JPM',
+      'V','UNH','XOM','MA','JNJ','PG','HD','ABBV','MRK','CVX','COST',
+      'ORCL','AMD','CRM','BAC','KO','WMT','PEP','TMO','MCD','CSCO'];
+    const quotes = await Promise.all(syms.map(s =>
+      fetch(`${PROXY_URL}/api/quote?symbol=${s}`)
+        .then(r => r.ok ? r.json().then(q => ({s,q})) : null).catch(() => null)
+    ));
+    const results = quotes.filter(x=>x&&x.q&&x.q.c&&x.q.h)
+      .map(x => {
+        const pct = x.q.h > x.q.l ? (x.q.c - x.q.l) / (x.q.h - x.q.l) * 100 : 50;
+        return {s:x.s, price:x.q.c, change:x.q.dp, h52:x.q.h, l52:x.q.l, pct};
+      })
+      .sort((a,b) => isHigh ? b.pct-a.pct : a.pct-b.pct)
+      .slice(0, 15);
+    el.innerHTML = results.map((r,i) => `
+      <div class="hl-row" onclick="loadTickerFromScreener('${r.s}')">
+        <span class="hl-rank">#${i+1}</span>
+        <span class="cal-ticker">${r.s}</span>
+        <span style="font-family:var(--mono)">$${formatPrice(r.price)}</span>
+        <span class="${r.change>=0?'st-up':'st-down'}" style="font-family:var(--mono);font-weight:700">
+          ${r.change>=0?'+':''}${(r.change||0).toFixed(2)}%
+        </span>
+        <span class="hl-vol" style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">
+          ${isHigh?'High: $'+formatPrice(r.h52):'Low: $'+formatPrice(r.l52)}
+        </span>
+      </div>`).join('');
+  }
+
+  const ARISTOCRATS = [
+    {s:'JNJ',y:61},{s:'PG',y:67},{s:'KO',y:62},{s:'MMM',y:65},{s:'CL',y:60},
+    {s:'GPC',y:67},{s:'LOW',y:60},{s:'ABT',y:52},{s:'ADP',y:49},{s:'AFL',y:41},
+    {s:'APD',y:41},{s:'BDX',y:52},{s:'CAT',y:29},{s:'CB',y:31},{s:'CINF',y:63},
+    {s:'CLX',y:46},{s:'CVX',y:36},{s:'DOV',y:67},{s:'ECL',y:31},{s:'EMR',y:47}
+  ];
+
+  async function loadAristocrats(el) {
+    const quotes = await Promise.all(ARISTOCRATS.map(a =>
+      fetch(`${PROXY_URL}/api/quote?symbol=${a.s}`)
+        .then(r => r.ok ? r.json().then(q => ({...a,q})) : null).catch(() => null)
+    ));
+    el.innerHTML = quotes.filter(x=>x&&x.q&&x.q.c).map(r => `
+      <div class="aristocrat-row" onclick="loadTickerFromScreener('${r.s}')">
+        <span class="cal-ticker">${r.s}</span>
+        <span style="font-family:var(--mono)">$${formatPrice(r.q.c)}</span>
+        <span class="${r.q.dp>=0?'st-up':'st-down'}" style="font-family:var(--mono);font-weight:700">
+          ${r.q.dp>=0?'+':''}${(r.q.dp||0).toFixed(2)}%
+        </span>
+        <span class="years-badge">${r.y} yil</span>
+      </div>`).join('');
+  }
+
+  async function loadUnusualOptions(el) {
+    const syms = ['AAPL','MSFT','NVDA','TSLA','AMZN','SPY','QQQ','META'];
+    const results = [];
+    for (const sym of syms) {
+      try {
+        const r = await fetch(`${PROXY_URL}/api/stock/option-chain?symbol=${sym}`);
+        if (!r.ok) continue;
+        const d = await r.json();
+        const opts = [...(d.options?.[0]?.call||[]),...(d.options?.[0]?.put||[])]
+          .filter(o=>o.openInterest>5000).sort((a,b)=>b.openInterest-a.openInterest).slice(0,2);
+        opts.forEach(o=>results.push({sym,...o}));
+      } catch(e){}
+    }
+    if (!results.length) { el.innerHTML = '<div class="info-text">Options data mavjud emas.</div>'; return; }
+    el.innerHTML = results.slice(0,20).map(o => `
+      <div class="options-row" onclick="loadTickerFromScreener('${o.sym}')">
+        <span class="opt-type ${(o.type||'call').toLowerCase()}">${(o.type||'CALL').toUpperCase()}</span>
+        <span class="cal-ticker">${o.sym}</span>
+        <span style="font-family:var(--mono);font-size:12px">Strike: $${o.strike||'N/A'}</span>
+        <span style="font-family:var(--mono);font-size:12px">OI: ${(o.openInterest||0).toLocaleString()}</span>
+        <span class="cal-date">${o.expirationDate||'N/A'}</span>
+      </div>`).join('');
+  }
+
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
@@ -4084,6 +4553,10 @@ Return JSON only. Maximum 3 catalysts.`;
 
         // Load page data on first visit
         if (page === 'heatmap' && !heatmapLoaded) loadHeatmap();
+        if (page === 'crypto-market' && !cryptoMarketLoaded) loadCryptoMarket();
+        if (page === 'calendar' && !calLoaded.earnings) loadCalendarPage();
+        if (page === 'congress' && !congressLoaded) loadCongressPage();
+        if (page === 'lists' && !listLoaded.highs) { initListTabs(); loadListPanel('highs'); }
         if (page === 'insider' && !insiderLoaded) {
           insiderLoaded = true;
           document.getElementById('insider-results').innerHTML =
