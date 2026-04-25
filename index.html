@@ -1839,38 +1839,67 @@ Use real current numbers. Return JSON only, nothing else.`;
   // If Finnhub key exists → no web_search needed (data already real)
   // If no key → use web_search to also find news
   async function fetchAIExplanation(ticker, isCrypto) {
-    // Stocks have real news from Finnhub — no web_search needed, faster!
-    // Crypto still needs web_search for news context
     const needsSearch = isCrypto;
 
-    const prompt = `Financial educator writing in Uzbek for beginners.${needsSearch ? " Search the web for latest news about " + ticker + " (crypto)." : " Analyze " + ticker + " stock based on your knowledge."}
+    // System prompt
+    const system = `You are a financial analyst writing explanations in Uzbek language for beginner investors in Uzbekistan. 
+Always write headline, explanation, bull_case, bear_case in Uzbek language.
+Always return valid JSON only. No markdown, no backticks, no extra text.`;
 
-Return ONLY raw JSON, no markdown, no backticks:
-{"headline":"1 jumla bugun nima muhim o'zbekcha 15 so'z max","explanation":"2 paragraf **kalit so'zlar** bold o'zbekcha.\n\nParagraf 2.","bull_case":"1-2 jumla o'zbekcha.","bear_case":"1-2 jumla o'zbekcha.","catalysts":[{"text":"voqea","impact":"positive/negative/neutral","timing":"sana"}]${needsSearch ? ',"news":[{"headline":"title","source":"src","url":"https://...","datetime":0}]' : ''}}
+    // User prompt — clear JSON schema
+    const userPrompt = needsSearch
+      ? `Search the web for the latest news and price data about ${ticker} cryptocurrency on Binance.
 
-Max 3 catalysts${needsSearch ? ', max 5 news' : ''}. JSON only.`;
+Then return this exact JSON structure (all text fields must be in Uzbek language):
+{
+  "headline": "One sentence in Uzbek describing the most important thing happening with ${ticker} today (max 15 words)",
+  "explanation": "Two paragraphs in Uzbek explaining what happened and why. Use **bold** for key terms. Separate paragraphs with two newlines.",
+  "bull_case": "1-2 sentences in Uzbek: why the price could go up",
+  "bear_case": "1-2 sentences in Uzbek: why the price could go down",
+  "catalysts": [{"text": "upcoming event or catalyst", "impact": "positive", "timing": "date or timeframe"}],
+  "news": [{"headline": "news title", "source": "source name", "url": "https://...", "datetime": 0}]
+}
+
+Return JSON only. Maximum 3 catalysts, 5 news items.`
+
+      : `Analyze ${ticker} stock and explain it in Uzbek for beginner investors.
+
+Return this exact JSON structure (all text fields must be in Uzbek language):
+{
+  "headline": "One sentence in Uzbek describing the most important thing about ${ticker} right now (max 15 words)",
+  "explanation": "Two paragraphs in Uzbek explaining the company, recent performance, and what investors should know. Use **bold** for key terms. Separate paragraphs with two newlines.",
+  "bull_case": "1-2 sentences in Uzbek: why the price could go up",
+  "bear_case": "1-2 sentences in Uzbek: why the price could go down",
+  "catalysts": [{"text": "upcoming event or catalyst", "impact": "positive", "timing": "date or timeframe"}]
+}
+
+Return JSON only. Maximum 3 catalysts.`;
 
     const body = {
-      model:"claude-sonnet-4-20250514", max_tokens:900,
-      messages:[{role:"user", content:prompt}]
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1200,
+      system: system,
+      messages: [{ role: "user", content: userPrompt }]
     };
-    if (needsSearch) body.tools = [{type:"web_search_20250305", name:"web_search"}];
+    if (needsSearch) body.tools = [{ type: "web_search_20250305", name: "web_search" }];
 
     const res = await fetch(`${PROXY_URL}/claude`, {
-      method:"POST", headers:{"Content-Type":"application/json"},
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error("AI API xatolik: " + res.status);
     const result = await res.json();
-    const text = result.content.filter(b=>b.type==="text").map(b=>b.text).join("");
+    const text = result.content.filter(b => b.type === "text").map(b => b.text).join("");
     const parsed = safeParseJSON(text);
+
     return {
-      headline: parsed.headline||"",
-      explanation: parsed.explanation||"",
-      bull_case: parsed.bull_case||"",
-      bear_case: parsed.bear_case||"",
-      catalysts: parsed.catalysts||[],
-      news: parsed.news||[]
+      headline:    parsed.headline    || ticker + " haqida ma'lumot yuklanmoqda...",
+      explanation: parsed.explanation || "",
+      bull_case:   parsed.bull_case   || "",
+      bear_case:   parsed.bear_case   || "",
+      catalysts:   parsed.catalysts   || [],
+      news:        parsed.news        || []
     };
   }
 
@@ -2553,18 +2582,23 @@ Max 3 catalysts${needsSearch ? ', max 5 news' : ''}. JSON only.`;
           name = data.name;
         } else {
           const res = await fetch(`${PROXY_URL}/api/quote?symbol=${w.ticker}`);
-          if (!res.ok) continue;
+          if (!res.ok) { console.error('Quote fetch failed for', w.ticker, res.status); continue; }
           const q = await res.json();
+          console.log('Quote for', w.ticker, ':', q);
           price = q.c;
           changePercent = q.dp;
-          const pRes = await fetch(`${PROXY_URL}/api/stock/profile2?symbol=${w.ticker}`);
-          name = pRes.ok ? (await pRes.json()).name : w.ticker;
+          // Use cached name from watchlistPrices or ticker
+          name = (watchlistPrices[w.ticker] && watchlistPrices[w.ticker].name) || w.ticker;
         }
 
-        watchlistPrices[w.ticker] = { price, changePercent, name };
-        checkPriceAlerts(w.ticker, price);
+        if (price && !isNaN(price)) {
+          watchlistPrices[w.ticker] = { price, changePercent: changePercent || 0, name: name || w.ticker };
+          checkPriceAlerts(w.ticker, price);
+        } else {
+          console.error('Invalid price for', w.ticker, ':', price, 'q:', JSON.stringify(arguments));
+        }
 
-      } catch(e) { console.warn('Watchlist price fetch error:', w.ticker, e.message); }
+      } catch(e) { console.error('Watchlist price fetch error:', w.ticker, e); }
     }
 
     renderWatchlist();
