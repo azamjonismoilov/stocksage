@@ -1357,6 +1357,148 @@
     .alert-form { grid-template-columns: 1fr 1fr; }
     .alert-form .alert-add-btn { grid-column: 1 / -1; }
   }
+
+  /* ═══════════════════════════════════════════════════════
+     MOBILE RESPONSIVE — 480px va pastda
+  ═══════════════════════════════════════════════════════ */
+  @media (max-width: 480px) {
+
+    /* Container padding */
+    .container { padding: 16px 14px 60px; }
+
+    /* Header */
+    header {
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .logo { font-size: 22px; }
+    .logo-mark { width: 26px; height: 26px; font-size: 15px; }
+    .header-meta { font-size: 10px; gap: 12px; }
+
+    /* Hero */
+    .hero { margin-bottom: 24px; }
+    .hero h1 { font-size: 38px; margin-bottom: 12px; }
+    .hero p { font-size: 14px; }
+    .hero-tag { font-size: 10px; margin-bottom: 12px; }
+
+    /* Market toggle */
+    .market-toggle { width: 100%; justify-content: stretch; }
+    .market-btn { flex: 1; justify-content: center; padding: 10px 8px; font-size: 11px; }
+
+    /* Search box */
+    .search-box { flex-direction: column; gap: 6px; padding: 10px; border-radius: 14px; }
+    .search-box input { font-size: 15px; padding: 12px 14px; }
+    .analyze-btn { width: 100%; justify-content: center; padding: 14px; border-radius: 8px; font-size: 14px; }
+
+    /* Quick picks */
+    .quick-picks { gap: 6px; }
+    .quick-pick { padding: 6px 12px; font-size: 11px; }
+
+    /* Watchlist */
+    .watchlist-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .wl-card { padding: 12px; }
+    .wl-ticker { font-size: 13px; }
+    .wl-price { font-size: 17px; }
+    .watchlist-section { margin-bottom: 24px; }
+
+    /* Dashboard grid */
+    .dashboard-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
+
+    /* Ticker header */
+    .ticker-header {
+      padding: 18px 16px;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .ticker-info .symbol { font-size: 36px; }
+    .current-price { font-size: 36px; }
+    .price-change { font-size: 14px; }
+    .wl-btn-wrap {
+      border-left: none;
+      border-top: 1px solid var(--border);
+      padding-left: 0;
+      padding-top: 14px;
+    }
+
+    /* Explainer */
+    .daily-explainer { padding: 20px 16px; }
+    .explainer-headline { font-size: 20px; }
+    .explainer-body { font-size: 14px; }
+    .scenarios { grid-template-columns: 1fr; gap: 8px; }
+
+    /* Signals grid */
+    .signals-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .signal-value { font-size: 22px; }
+
+    /* Stats grid */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+    /* Chart */
+    .chart-card { padding: 16px; }
+    .tradingview-wrap { height: 320px; }
+    .interval-tabs { gap: 2px; }
+    .interval-tab { padding: 5px 8px; font-size: 10px; }
+
+    /* Analysis grid */
+    .analysis-grid { grid-template-columns: 1fr; gap: 12px; }
+
+    /* Cards */
+    .card { padding: 18px 16px; }
+    .section-heading { font-size: 18px; }
+
+    /* Price targets */
+    .targets-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .target-price { font-size: 16px; }
+    .target-label { font-size: 9px; }
+
+    /* News */
+    .news-headline { font-size: 13px; }
+
+    /* Catalyst */
+    .catalyst-item { gap: 10px; }
+    .catalyst-text { font-size: 13px; }
+    .catalyst-time { font-size: 10px; }
+
+    /* Alert form */
+    .alert-form {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .alert-add-btn { grid-column: 1 / -1; justify-content: center; }
+
+    /* Disclaimer */
+    .disclaimer { font-size: 12px; padding: 14px; }
+
+    /* Toast */
+    .toast { bottom: 12px; right: 12px; left: 12px; font-size: 13px; }
+
+    /* Error box */
+    .error-box { font-size: 13px; padding: 14px; }
+
+    /* Modal */
+    .modal { padding: 24px 20px; }
+    .modal h2 { font-size: 22px; }
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     TABLET — 481px - 768px
+  ═══════════════════════════════════════════════════════ */
+  @media (min-width: 481px) and (max-width: 768px) {
+    .container { padding: 24px 20px 60px; }
+    .hero h1 { font-size: 52px; }
+    .ticker-header { grid-template-columns: 1fr auto; }
+    .wl-btn-wrap { grid-column: unset; }
+    .analysis-grid { grid-template-columns: 1fr; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .tradingview-wrap { height: 380px; }
+    .targets-grid { grid-template-columns: repeat(3, 1fr); }
+    .watchlist-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
 </style>
 </head>
 <body>
