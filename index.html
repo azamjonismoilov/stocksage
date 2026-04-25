@@ -989,6 +989,361 @@
     0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
+
+  /* ═══════════════════════════════════════════════════════
+     WATCHLIST
+  ═══════════════════════════════════════════════════════ */
+  .watchlist-section {
+    margin-bottom: 40px;
+  }
+
+  .watchlist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label i { font-size: 14px; color: var(--accent); }
+
+  .watchlist-empty {
+    background: var(--bg-elevated);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .wl-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .wl-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .wl-card.crypto-card:hover { border-color: var(--crypto); }
+
+  .wl-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .wl-ticker {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+  }
+
+  .wl-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+    display: flex;
+  }
+
+  .wl-remove:hover { color: var(--bear); }
+
+  .wl-price {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .wl-change {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .wl-change.up { color: var(--bull); }
+  .wl-change.down { color: var(--bear); }
+
+  .wl-name {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .wl-loading {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    animation: pulse 1.5s infinite;
+  }
+
+  .add-to-wl-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .add-to-wl-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .add-to-wl-btn.added { border-color: var(--bull); color: var(--bull); }
+  .add-to-wl-btn i { font-size: 14px; }
+
+  /* ═══════════════════════════════════════════════════════
+     EARNINGS CALENDAR
+  ═══════════════════════════════════════════════════════ */
+  .earnings-list { margin-top: 4px; }
+
+  .earnings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .earnings-item:last-child { border-bottom: none; }
+  .earnings-item:first-child { padding-top: 4px; }
+
+  .earnings-ticker {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 14px;
+    min-width: 50px;
+  }
+
+  .earnings-name {
+    font-size: 13px;
+    color: var(--text-dim);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .earnings-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .earnings-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  .earnings-badge.soon {
+    background: rgba(255, 165, 2, 0.15);
+    color: var(--warn);
+    border: 1px solid rgba(255, 165, 2, 0.3);
+  }
+
+  .earnings-badge.today {
+    background: rgba(255, 71, 87, 0.15);
+    color: var(--bear);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+  }
+
+  .earnings-badge.upcoming {
+    background: var(--bg-card);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     PRICE ALERTS
+  ═══════════════════════════════════════════════════════ */
+  .alert-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .alert-item:last-child { border-bottom: none; }
+  .alert-item:first-child { padding-top: 4px; }
+
+  .alert-info { flex: 1; }
+
+  .alert-ticker {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .alert-target {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .alert-target span {
+    font-family: var(--mono);
+    font-weight: 600;
+  }
+
+  .alert-target .above { color: var(--bull); }
+  .alert-target .below { color: var(--bear); }
+
+  .alert-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    transition: color 0.2s;
+  }
+
+  .alert-remove:hover { color: var(--bear); }
+
+  .alert-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .alert-input {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .alert-input:focus { border-color: var(--accent); }
+
+  .alert-select {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .alert-add-btn {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .alert-add-btn:hover { background: #e6ff5c; }
+
+  /* Notification toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 14px;
+    z-index: 9999;
+    animation: slideIn 0.3s ease;
+    max-width: 320px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .toast.alert-toast { border-color: var(--warn); }
+  .toast i { font-size: 20px; color: var(--accent); flex-shrink: 0; }
+  .toast.alert-toast i { color: var(--warn); }
+
+  @keyframes slideIn {
+    from { transform: translateX(100px); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+  }
+
+  /* Dashboard layout */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  @media (max-width: 700px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .watchlist-grid { grid-template-columns: repeat(2, 1fr); }
+    .alert-form { grid-template-columns: 1fr 1fr; }
+    .alert-form .alert-add-btn { grid-column: 1 / -1; }
+  }
 </style>
 </head>
 <body>
@@ -1011,6 +1366,57 @@
     <h1>Bugun bozorga <em>nima bo'ldi?</em> AI tushuntiradi.</h1>
     <p>Real-time narxlar, jonli yangiliklar, texnik signallar — barchasi o'zbek tilida. Sizga maslahat bermaymiz, sizga tushuntiramiz.</p>
   </section>
+
+  <!-- WATCHLIST SECTION -->
+  <section class="watchlist-section" id="watchlist-section">
+    <div class="watchlist-header">
+      <div class="section-label">
+        <i class="ri-bookmark-fill"></i> Mening Watchlistim
+      </div>
+    </div>
+    <div id="watchlist-container">
+      <div class="watchlist-empty" id="watchlist-empty">
+        Hozircha watchlist bosh. Aksiya yoki kriptoni tahlil qilib, Watchlist tugmasini bosing.
+      </div>
+      <div class="watchlist-grid" id="watchlist-grid" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD: Earnings + Alerts -->
+  <div class="dashboard-grid" id="dashboard-grid" style="display:none">
+    <!-- Earnings Calendar -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-calendar-event-fill"></i></div>
+        <div class="card-title">Yaqin Earnings</div>
+      </div>
+      <div class="earnings-list" id="earnings-list">
+        <div class="info-text">Watchlist&#39;ga aksiya qo&#39;shsangiz, earnings sanalar ko&#39;rinadi.</div>
+      </div>
+    </div>
+
+    <!-- Price Alerts -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-notification-3-fill"></i></div>
+        <div class="card-title">Narx Ogohlantirishlari</div>
+      </div>
+      <div id="alerts-list">
+        <div class="info-text" id="alerts-empty">Hozircha ogohlantirish yo'q.</div>
+      </div>
+      <div class="alert-form">
+        <input class="alert-input" id="alert-ticker" placeholder="NVDA" maxlength="10">
+        <input class="alert-input" id="alert-price" placeholder="Narx ($)" type="number">
+        <select class="alert-select" id="alert-direction">
+          <option value="above">↑ Yuqori</option>
+          <option value="below">↓ Pastga</option>
+        </select>
+        <button class="alert-add-btn" id="alert-add-btn">
+          <i class="ri-add-line"></i> Qo'shish
+        </button>
+      </div>
+    </div>
+  </div>
 
   <section class="search-wrap">
     <div class="market-toggle">
@@ -1824,7 +2230,11 @@ Max 3 catalysts${needsSearch ? ', max 5 news' : ''}. JSON only.`;
           <div class="price-change ${priceChangeClass}">
             ${priceChangeSign}${formatPrice(Math.abs(data.change))} (${priceChangeSign}${data.changePercent.toFixed(2)}%)
           </div>
-          <div class="price-meta">${changeLabel} · ${isCrypto ? 'BINANCE LIVE' : 'FINNHUB'}</div>
+          <div class="price-meta">${changeLabel} · ${isCrypto ? 'COINGECKO' : 'FINNHUB'}</div>
+          <button class="add-to-wl-btn" id="add-to-wl-btn" style="margin-top:12px" onclick="toggleWatchlist()">
+            <i class="ri-bookmark-line" id="wl-btn-icon"></i>
+            <span id="wl-btn-text">Watchlist</span>
+          </button>
         </div>
       </div>
 
@@ -1985,6 +2395,353 @@ Max 3 catalysts${needsSearch ? ', max 5 news' : ''}. JSON only.`;
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // WATCHLIST
+  // ═══════════════════════════════════════════════════════════════════════════
+  let watchlist = JSON.parse(localStorage.getItem('ss_watchlist') || '[]');
+  let watchlistPrices = {}; // { ticker: { price, changePercent, name, isCrypto } }
+  let alertCheckInterval = null;
+
+  function saveWatchlist() {
+    localStorage.setItem('ss_watchlist', JSON.stringify(watchlist));
+  }
+
+  function isInWatchlist(ticker) {
+    return watchlist.some(w => w.ticker === ticker);
+  }
+
+  function toggleWatchlist() {
+    if (!currentSymbol) return;
+    const ticker = currentSymbol.toUpperCase();
+    const isCrypto = currentMarket === 'crypto';
+
+    if (isInWatchlist(ticker)) {
+      watchlist = watchlist.filter(w => w.ticker !== ticker);
+      showToast(`<i class="ri-bookmark-line"></i> ${ticker} watchlist'dan olib tashlandi`);
+    } else {
+      watchlist.push({ ticker, isCrypto, addedAt: Date.now() });
+      showToast(`<i class="ri-bookmark-fill"></i> ${ticker} watchlist'ga qo'shildi!`);
+    }
+
+    saveWatchlist();
+    updateWlButton(ticker);
+    renderWatchlist();
+    refreshWatchlistPrices();
+  }
+
+  function updateWlButton(ticker) {
+    const btn = document.getElementById('add-to-wl-btn');
+    const icon = document.getElementById('wl-btn-icon');
+    const text = document.getElementById('wl-btn-text');
+    if (!btn) return;
+    if (isInWatchlist(ticker)) {
+      btn.classList.add('added');
+      icon.className = 'ri-bookmark-fill';
+      text.textContent = "Qo'shildi";
+    } else {
+      btn.classList.remove('added');
+      icon.className = 'ri-bookmark-line';
+      text.textContent = 'Watchlist';
+    }
+  }
+
+  function renderWatchlist() {
+    const grid    = document.getElementById('watchlist-grid');
+    const empty   = document.getElementById('watchlist-empty');
+    const dashboard = document.getElementById('dashboard-grid');
+
+    if (!grid) return;
+
+    if (watchlist.length === 0) {
+      grid.style.display = 'none';
+      empty.style.display = 'block';
+      if (dashboard) dashboard.style.display = 'none';
+      return;
+    }
+
+    empty.style.display = 'none';
+    grid.style.display = 'grid';
+    if (dashboard) dashboard.style.display = 'grid';
+
+    grid.innerHTML = watchlist.map(w => {
+      const p = watchlistPrices[w.ticker];
+      const changeClass = p && p.changePercent >= 0 ? 'up' : 'down';
+      const changeSign  = p && p.changePercent >= 0 ? '+' : '';
+      return `
+        <div class="wl-card ${w.isCrypto ? 'crypto-card' : ''}" onclick="loadFromWatchlist('${w.ticker}', ${w.isCrypto})">
+          <div class="wl-card-top">
+            <span class="wl-ticker">${w.ticker}</span>
+            <button class="wl-remove" onclick="event.stopPropagation(); removeFromWatchlist('${w.ticker}')">
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
+          ${p
+            ? `<div class="wl-price">$${formatPrice(p.price)}</div>
+               <div class="wl-change ${changeClass}">${changeSign}${p.changePercent.toFixed(2)}%</div>
+               <div class="wl-name">${escapeHtml(p.name || w.ticker)}</div>`
+            : `<div class="wl-loading">Yuklanmoqda...</div>`
+          }
+        </div>
+      `;
+    }).join('');
+
+    renderEarningsCalendar();
+  }
+
+  function removeFromWatchlist(ticker) {
+    watchlist = watchlist.filter(w => w.ticker !== ticker);
+    saveWatchlist();
+    renderWatchlist();
+    refreshWatchlistPrices();
+    showToast(`<i class="ri-close-line"></i> ${ticker} olib tashlandi`);
+  }
+
+  function loadFromWatchlist(ticker, isCrypto) {
+    // Market toggle
+    currentMarket = isCrypto ? 'crypto' : 'stock';
+    document.querySelectorAll('.market-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.market === currentMarket);
+    });
+    const searchBox = document.getElementById('search-box');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    if (isCrypto) {
+      searchBox.classList.add('crypto-mode');
+      analyzeBtn.classList.add('crypto-mode');
+    } else {
+      searchBox.classList.remove('crypto-mode');
+      analyzeBtn.classList.remove('crypto-mode');
+    }
+    renderQuickPicks();
+
+    document.getElementById('ticker-input').value = ticker;
+    analyze();
+    window.scrollTo({ top: document.getElementById('results').offsetTop - 20, behavior: 'smooth' });
+  }
+
+  // Watchlist narxlarini yangilash (har 60 soniyada)
+  async function refreshWatchlistPrices() {
+    if (watchlist.length === 0) return;
+
+    for (const w of watchlist) {
+      try {
+        let price, changePercent, name;
+
+        if (w.isCrypto) {
+          const coinId = CGIDS[w.ticker];
+          if (!coinId) continue;
+          const res = await fetch(`${PROXY_URL}/cg/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`);
+          if (!res.ok) continue;
+          const data = await res.json();
+          price = data.market_data.current_price.usd;
+          changePercent = data.market_data.price_change_percentage_24h;
+          name = data.name;
+        } else {
+          const res = await fetch(`${PROXY_URL}/api/quote?symbol=${w.ticker}`);
+          if (!res.ok) continue;
+          const q = await res.json();
+          price = q.c;
+          changePercent = q.dp;
+          const pRes = await fetch(`${PROXY_URL}/api/stock/profile2?symbol=${w.ticker}`);
+          name = pRes.ok ? (await pRes.json()).name : w.ticker;
+        }
+
+        watchlistPrices[w.ticker] = { price, changePercent, name };
+        checkPriceAlerts(w.ticker, price);
+
+      } catch(e) { console.warn('Watchlist price fetch error:', w.ticker, e.message); }
+    }
+
+    renderWatchlist();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EARNINGS CALENDAR
+  // ═══════════════════════════════════════════════════════════════════════════
+  async function renderEarningsCalendar() {
+    const list = document.getElementById('earnings-list');
+    if (!list) return;
+
+    const stockItems = watchlist.filter(w => !w.isCrypto);
+    if (stockItems.length === 0) {
+      list.innerHTML = '<div class="info-text">Aksiya qo&#39;shsangiz, earnings sanalar ko&#39;rinadi.</div>';
+      return;
+    }
+
+    list.innerHTML = '<div class="info-text">Yuklanmoqda...</div>';
+
+    const now   = new Date();
+    const from  = daysAgo(0);
+    const to    = daysAgo(-30); // keyingi 30 kun
+
+    try {
+      const tickers = stockItems.map(w => w.ticker).join(',');
+      const res = await fetch(`${PROXY_URL}/api/calendar/earnings?from=${from}&to=${to}&symbol=${stockItems[0].ticker}`);
+
+      // Har bir ticker uchun alohida fetch (Finnhub free plan limitation)
+      const earningsData = [];
+      for (const w of stockItems.slice(0, 5)) {
+        const r = await fetch(`${PROXY_URL}/api/calendar/earnings?from=${from}&to=${to}&symbol=${w.ticker}`);
+        if (!r.ok) continue;
+        const d = await r.json();
+        if (d.earningsCalendar && d.earningsCalendar.length > 0) {
+          earningsData.push(...d.earningsCalendar.slice(0, 2));
+        }
+      }
+
+      earningsData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      if (earningsData.length === 0) {
+        list.innerHTML = '<div class="info-text">Yaqin 30 kunda earnings yo&#39;q.</div>';
+        return;
+      }
+
+      list.innerHTML = earningsData.map(e => {
+        const eDate   = new Date(e.date);
+        const diffMs  = eDate - now;
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        let badgeClass = 'upcoming', badgeText = `${diffDays} kun`;
+        if (diffDays <= 0) { badgeClass = 'today'; badgeText = 'BUGUN'; }
+        else if (diffDays <= 3) { badgeClass = 'soon'; badgeText = `${diffDays} kun`; }
+
+        return `
+          <div class="earnings-item">
+            <span class="earnings-ticker">${escapeHtml(e.symbol)}</span>
+            <span class="earnings-date">${e.date}</span>
+            <span class="earnings-badge ${badgeClass}">${badgeText}</span>
+          </div>
+        `;
+      }).join('');
+
+    } catch(e) {
+      list.innerHTML = '<div class="info-text">Earnings yuklanmadi.</div>';
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PRICE ALERTS
+  // ═══════════════════════════════════════════════════════════════════════════
+  let alerts = JSON.parse(localStorage.getItem('ss_alerts') || '[]');
+
+  function saveAlerts() {
+    localStorage.setItem('ss_alerts', JSON.stringify(alerts));
+  }
+
+  function renderAlerts() {
+    const list  = document.getElementById('alerts-list');
+    const empty = document.getElementById('alerts-empty');
+    if (!list) return;
+
+    if (alerts.length === 0) {
+      if (empty) empty.style.display = 'block';
+      list.querySelectorAll('.alert-item').forEach(el => el.remove());
+      return;
+    }
+
+    if (empty) empty.style.display = 'none';
+
+    // Remove old items
+    list.querySelectorAll('.alert-item').forEach(el => el.remove());
+
+    alerts.forEach((a, i) => {
+      const el = document.createElement('div');
+      el.className = 'alert-item';
+      el.innerHTML = `
+        <div class="alert-info">
+          <div class="alert-ticker">${escapeHtml(a.ticker)}</div>
+          <div class="alert-target">
+            Narx
+            <span class="${a.direction}">${a.direction === 'above' ? '↑ yuqori' : '↓ pastga'}</span>
+            $<span>${formatPrice(a.targetPrice)}</span> bo&#39;lsa
+          </div>
+        </div>
+        <button class="alert-remove" onclick="removeAlert(${i})">
+          <i class="ri-close-line"></i>
+        </button>
+      `;
+      list.insertBefore(el, list.querySelector('.alert-form'));
+    });
+  }
+
+  function removeAlert(i) {
+    alerts.splice(i, 1);
+    saveAlerts();
+    renderAlerts();
+  }
+
+  document.getElementById('alert-add-btn').addEventListener('click', () => {
+    const ticker    = document.getElementById('alert-ticker').value.trim().toUpperCase();
+    const price     = parseFloat(document.getElementById('alert-price').value);
+    const direction = document.getElementById('alert-direction').value;
+
+    if (!ticker || isNaN(price) || price <= 0) {
+      showToast('<i class="ri-error-warning-fill"></i> Ticker va narx kiriting!', 'warn');
+      return;
+    }
+
+    alerts.push({ ticker, targetPrice: price, direction, createdAt: Date.now() });
+    saveAlerts();
+    renderAlerts();
+    document.getElementById('alert-ticker').value = '';
+    document.getElementById('alert-price').value = '';
+    showToast(`<i class="ri-notification-3-fill"></i> Alert qo'shildi: ${ticker} $${price}`);
+
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  });
+
+  function checkPriceAlerts(ticker, currentPrice) {
+    alerts.forEach((a, i) => {
+      if (a.ticker !== ticker) return;
+      const triggered =
+        (a.direction === 'above' && currentPrice >= a.targetPrice) ||
+        (a.direction === 'below' && currentPrice <= a.targetPrice);
+
+      if (triggered) {
+        const msg = `${ticker}: $${formatPrice(currentPrice)} — maqsad narxga yetdi!`;
+        showToast(`<i class="ri-notification-3-fill"></i> ${msg}`, 'alert');
+
+        // Browser notification
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('StockSage Alert', { body: msg, icon: '/favicon.ico' });
+        }
+
+        // Remove triggered alert
+        alerts.splice(i, 1);
+        saveAlerts();
+        renderAlerts();
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TOAST
+  // ═══════════════════════════════════════════════════════════════════════════
+  let toastTimer = null;
+  function showToast(html, type = 'default') {
+    let toast = document.getElementById('ss-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'ss-toast';
+      document.body.appendChild(toast);
+    }
+    toast.className = 'toast' + (type === 'alert' ? ' alert-toast' : '');
+    toast.innerHTML = html;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.remove(); }, 3500);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INIT on load
+  // ═══════════════════════════════════════════════════════════════════════════
+  renderWatchlist();
+  renderAlerts();
+  refreshWatchlistPrices();
+
+  // Har 60 soniyada watchlist narxlarini yangilash
+  setInterval(refreshWatchlistPrices, 60000);
 </script>
 </body>
 </html>
