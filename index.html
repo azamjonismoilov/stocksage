@@ -5671,7 +5671,6 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
 
   function goToFullAnalysis(ticker) {
     closeHalalDetail();
-    // Stock sifatida tahlilga o'tamiz
     currentMarket = 'stock';
     document.querySelectorAll('.market-btn').forEach(b =>
       b.classList.toggle('active', b.dataset.market === 'stock'));
@@ -5682,7 +5681,7 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
     renderQuickPicks();
     document.getElementById('ticker-input').value = ticker;
     navigateTo('home');
-    analyze();
+    // Foydalanuvchi o'zi "Tahlil qilish" tugmasini bosadi
   }
 
 
