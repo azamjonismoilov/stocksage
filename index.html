@@ -5069,36 +5069,42 @@ Return JSON only. Maximum 3 catalysts.`;
   // ═══════════════════════════════════════════════════════════════════════════
   // NAVIGATION
   // ═══════════════════════════════════════════════════════════════════════════
+  function navigateTo(page) {
+    if (!document.getElementById('page-' + page)) page = 'home';
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    // Save current page to localStorage
+    try { localStorage.setItem('ss_page', page); } catch(e) {}
+
+    if (page === 'heatmap' && !heatmapLoaded) loadHeatmap();
+    if (page === 'screener' && screenerData.length === 0) {
+      document.getElementById('f-sector').value = '';
+      runScreener();
+    }
+    if (page === 'crypto-market' && !cryptoMarketLoaded) loadCryptoMarket();
+    if (page === 'calendar' && !calLoaded.earnings) loadCalendarPage();
+    if (page === 'congress' && !congressLoaded) loadCongressPage();
+    if (page === 'futures' && !futuresLoaded) loadFuturesPage();
+    if (page === 'lists') {
+      initListTabs();
+      if (!listLoaded.highs) loadListPanel('highs');
+    }
+    if (page === 'insider' && !insiderLoaded) {
+      insiderLoaded = true;
+      document.getElementById('insider-results').innerHTML =
+        '<div class="info-text" style="padding:40px">Ticker kiriting va qidiring.</div>';
+    }
+  }
+
   function initNav() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const page = btn.dataset.page;
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-' + page).classList.add('active');
-
-        // Load page data on first visit
-        if (page === 'heatmap' && !heatmapLoaded) loadHeatmap();
-        if (page === 'screener' && screenerData.length === 0) {
-          document.getElementById('f-sector').value = '';
-          runScreener();
-        }
-        if (page === 'crypto-market' && !cryptoMarketLoaded) loadCryptoMarket();
-        if (page === 'calendar' && !calLoaded.earnings) loadCalendarPage();
-        if (page === 'congress' && !congressLoaded) loadCongressPage();
-        if (page === 'futures' && !futuresLoaded) loadFuturesPage();
-        if (page === 'lists') {
-          initListTabs();
-          if (!listLoaded.highs) loadListPanel('highs');
-        }
-        if (page === 'insider' && !insiderLoaded) {
-          insiderLoaded = true;
-          document.getElementById('insider-results').innerHTML =
-            '<div class="info-text" style="padding:40px">Ticker kiriting va qidiring.</div>';
-        }
-      });
+      btn.addEventListener('click', () => navigateTo(btn.dataset.page));
     });
+
+    // Reload da localStorage dan sahifani tiklash
+    const hash = (function(){ try { return localStorage.getItem('ss_page') || 'home'; } catch(e) { return 'home'; } })();
+    navigateTo(hash);
   }
   initNav();
 
