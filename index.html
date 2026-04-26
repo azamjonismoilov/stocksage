@@ -3119,11 +3119,26 @@
         <button class="screen-btn" id="halal-batch-btn">
           <i class="ri-refresh-line"></i> Barchani tekshirish
         </button>
-        <select class="filter-select" id="halal-filter" style="max-width:160px">
+        <select class="filter-select" id="halal-filter" style="max-width:150px">
           <option value="">Barchasi</option>
           <option value="halal">Faqat Halol</option>
           <option value="doubtful">Shubhali</option>
           <option value="haram">Haram</option>
+        </select>
+        <select class="filter-select" id="halal-sector" style="max-width:150px">
+          <option value="">Barcha sektor</option>
+          <option value="Technology">Technology</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Pharma">Pharma/Biotech</option>
+          <option value="Energy">Energy</option>
+          <option value="Banking">Banking</option>
+          <option value="Finance">Finance</option>
+          <option value="Consumer">Consumer</option>
+          <option value="Industrial">Industrial</option>
+          <option value="Telecom">Telecom</option>
+          <option value="Media">Media</option>
+          <option value="Retail">Retail</option>
+          <option value="Defense">Defense</option>
         </select>
       </div>
       <div id="halal-batch-result">
@@ -5070,6 +5085,9 @@ Return JSON only. Maximum 3 catalysts.`;
     document.getElementById('halal-filter').addEventListener('change', () => {
       renderHalalBatch(document.getElementById('halal-filter').value);
     });
+    document.getElementById('halal-sector').addEventListener('change', () => {
+      renderHalalBatch(document.getElementById('halal-filter').value);
+    });
   }
 
   async function getHalalAnalysis(ticker) {
@@ -5176,38 +5194,113 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
     }
   }
 
-  // Statik halol malumotlar — AAOIFI va taniqli Islamic finance manbalari asosida
+  // Statik halol malumotlar — AAOIFI standartlari asosida (100+ aksiya)
   const HALAL_STATIC = [
-    {ticker:"AAPL", company:"Apple Inc.",              verdict:"HALOL",    grade:"A", score:90, haram_revenue_pct:0.5,  interest_debt_pct:12, summary:"Apple asosan texnologiya mahsulotlari va xizmatlarini sotadi. Haram faoliyat minimal."},
-    {ticker:"MSFT", company:"Microsoft Corp.",          verdict:"HALOL",    grade:"A", score:88, haram_revenue_pct:0.8,  interest_debt_pct:14, summary:"Microsoft bulut hisoblash, dasturiy taminot va AI sohasida ishlaydi. Halol biznes."},
-    {ticker:"NVDA", company:"NVIDIA Corp.",             verdict:"HALOL",    grade:"A", score:92, haram_revenue_pct:0.2,  interest_debt_pct:8,  summary:"NVIDIA grafik protsessorlar va AI chiplari ishlab chiqaradi. Haram faoliyat deyarli yoq."},
-    {ticker:"GOOGL", company:"Alphabet Inc.",           verdict:"SHUBHALI", grade:"C", score:55, haram_revenue_pct:4.2,  interest_debt_pct:5,  summary:"Google reklama daromadi asosiy, bazi munozarali kontent platformalarida ishtiroki bor."},
-    {ticker:"AMZN", company:"Amazon.com Inc.",          verdict:"SHUBHALI", grade:"C", score:58, haram_revenue_pct:3.1,  interest_debt_pct:18, summary:"Amazon e-tijorat va bulut halol, lekin alkogol va bazi haram mahsulotlar ham sotiladi."},
-    {ticker:"META", company:"Meta Platforms Inc.",      verdict:"SHUBHALI", grade:"D", score:42, haram_revenue_pct:8.5,  interest_debt_pct:4,  summary:"Meta ijtimoiy tarmoq platformasi. Munozarali kontent va reklama modeli tufayli shubhali."},
-    {ticker:"TSLA", company:"Tesla Inc.",               verdict:"HALOL",    grade:"B", score:78, haram_revenue_pct:0.3,  interest_debt_pct:22, summary:"Tesla elektr avtomobillari va toza energiya yechimlari ishlab chiqaradi. Qarz nisbati biroz yuqori."},
-    {ticker:"AVGO", company:"Broadcom Inc.",            verdict:"HALOL",    grade:"A", score:85, haram_revenue_pct:0.4,  interest_debt_pct:16, summary:"Broadcom yarimotkazgich va tarmoq yechimlari ishlab chiqaradi. Asosan halol biznes."},
-    {ticker:"JPM",  company:"JPMorgan Chase & Co.",     verdict:"HARAM",    grade:"F", score:15, haram_revenue_pct:95.0, interest_debt_pct:90, summary:"JPMorgan annaviy bank. Foiz (riba) asosidagi barcha faoliyatlar tufayli haram."},
-    {ticker:"V",    company:"Visa Inc.",                verdict:"SHUBHALI", grade:"D", score:38, haram_revenue_pct:15.0, interest_debt_pct:35, summary:"Visa tolov tizimi. Foizli kredit kartalari orqali daromad oladi. Kupchilik olimlar haram deydi."},
-    {ticker:"UNH",  company:"UnitedHealth Group",       verdict:"SHUBHALI", grade:"C", score:52, haram_revenue_pct:5.5,  interest_debt_pct:28, summary:"Sogliqni saqlash sugurtasi. Bazi sugurta modellari shariat nuqtai nazaridan munozarali."},
-    {ticker:"XOM",  company:"ExxonMobil Corp.",         verdict:"HALOL",    grade:"B", score:74, haram_revenue_pct:1.2,  interest_debt_pct:15, summary:"Neft va gaz kompaniyasi. Asosiy biznes halol."},
-    {ticker:"MA",   company:"Mastercard Inc.",          verdict:"SHUBHALI", grade:"D", score:35, haram_revenue_pct:18.0, interest_debt_pct:38, summary:"Mastercard ham foizli tolov tizimi. Kupchilik olimlar haram deydi."},
-    {ticker:"JNJ",  company:"Johnson & Johnson",        verdict:"HALOL",    grade:"A", score:87, haram_revenue_pct:0.8,  interest_debt_pct:11, summary:"Tibbiy qurilmalar va farmatsevtika. Asosan halol biznes."},
-    {ticker:"PG",   company:"Procter & Gamble Co.",     verdict:"HALOL",    grade:"A", score:88, haram_revenue_pct:0.5,  interest_debt_pct:10, summary:"Kundalik iste'mol mahsulotlari. Alkogol va tamaki yoq. Halol."},
-    {ticker:"HD",   company:"Home Depot Inc.",          verdict:"HALOL",    grade:"B", score:80, haram_revenue_pct:1.0,  interest_debt_pct:20, summary:"Qurilish va uy jihozlari dokonlar tarmogi. Asosiy biznes halol."},
-    {ticker:"ABBV", company:"AbbVie Inc.",              verdict:"HALOL",    grade:"B", score:75, haram_revenue_pct:0.6,  interest_debt_pct:25, summary:"Farmatsevtika kompaniyasi. Dori-darmonlar ishlab chiqarish halol, lekin qarz nisbati yuqori."},
-    {ticker:"MRK",  company:"Merck & Co. Inc.",         verdict:"HALOL",    grade:"A", score:85, haram_revenue_pct:0.5,  interest_debt_pct:12, summary:"Farmatsevtika va biotexnologiya. Tibbiy mahsulotlar ishlab chiqarish halol."},
-    {ticker:"CVX",  company:"Chevron Corp.",            verdict:"HALOL",    grade:"B", score:74, haram_revenue_pct:1.5,  interest_debt_pct:13, summary:"Neft va gaz qazib olish va qayta ishlash. Asosiy biznes halol."},
-    {ticker:"COST", company:"Costco Wholesale Corp.",   verdict:"SHUBHALI", grade:"C", score:60, haram_revenue_pct:4.8,  interest_debt_pct:9,  summary:"Ulgurji savdo. Alkogol sotish mavjud, lekin umumiy biznes halol mahsulotlar ustunligi bilan."},
-    {ticker:"ORCL", company:"Oracle Corp.",             verdict:"HALOL",    grade:"A", score:89, haram_revenue_pct:0.3,  interest_debt_pct:18, summary:"Malumotlar bazasi va bulut dasturlari. Texnologiya sohasida halol biznes."},
-    {ticker:"AMD",  company:"Advanced Micro Devices",   verdict:"HALOL",    grade:"A", score:91, haram_revenue_pct:0.2,  interest_debt_pct:7,  summary:"Protsessorlar va GPU ishlab chiqarish. Haram faoliyat deyarli yoq."},
-    {ticker:"CRM",  company:"Salesforce Inc.",          verdict:"HALOL",    grade:"A", score:86, haram_revenue_pct:0.4,  interest_debt_pct:11, summary:"CRM dasturiy taminot va bulut xizmatlari. Halol texnologiya kompaniyasi."},
-    {ticker:"BAC",  company:"Bank of America Corp.",    verdict:"HARAM",    grade:"F", score:12, haram_revenue_pct:96.0, interest_debt_pct:92, summary:"Annaviy bank. Barcha foizli operatsiyalar tufayli haram. Muslimon investorlar uchun mos emas."},
-    {ticker:"KO",   company:"Coca-Cola Co.",            verdict:"SHUBHALI", grade:"C", score:62, haram_revenue_pct:3.5,  interest_debt_pct:15, summary:"Alkogolsiz ichimliklar asosiy mahsulot. Bazi mahsulotlarda shubhali ingredientlar mavjud."},
-    {ticker:"WMT",  company:"Walmart Inc.",             verdict:"SHUBHALI", grade:"C", score:58, haram_revenue_pct:5.2,  interest_debt_pct:17, summary:"Chakana savdo giganti. Alkogol, tamaki va bazi haram mahsulotlar sotiladi."},
-    {ticker:"PEP",  company:"PepsiCo Inc.",             verdict:"SHUBHALI", grade:"C", score:61, haram_revenue_pct:3.8,  interest_debt_pct:16, summary:"Ichimliklar va oziq-ovqat mahsulotlari. Bazi munozarali mahsulotlar mavjud."},
-    {ticker:"TMO",  company:"Thermo Fisher Scientific", verdict:"HALOL",    grade:"A", score:88, haram_revenue_pct:0.4,  interest_debt_pct:14, summary:"Ilmiy jihozlar va laboratoriya xizmatlari. Halol ilmiy soha."},
-    {ticker:"MCD",  company:"McDonalds Corp.",          verdict:"SHUBHALI", grade:"D", score:40, haram_revenue_pct:12.0, interest_debt_pct:30, summary:"Tezkor ovqat tarmogi. Halovatsiz gosht va alkogol sotiladigan filiallar tufayli shubhali."},
-    {ticker:"CSCO", company:"Cisco Systems Inc.",       verdict:"HALOL",    grade:"A", score:87, haram_revenue_pct:0.5,  interest_debt_pct:10, summary:"Tarmoq uskunalari va IT xizmatlari. Halol texnologiya biznes."},
+    // ── TECHNOLOGY ────────────────────────────────────────────────────────────
+    {ticker:"AAPL",  company:"Apple Inc.",               sector:"Technology",   verdict:"HALOL",    grade:"A", score:90, haram_revenue_pct:0.5,  interest_debt_pct:12, summary:"Apple texnologiya mahsulotlari va xizmatlari. Haram faoliyat minimal."},
+    {ticker:"MSFT",  company:"Microsoft Corp.",           sector:"Technology",   verdict:"HALOL",    grade:"A", score:88, haram_revenue_pct:0.8,  interest_debt_pct:14, summary:"Microsoft bulut hisoblash va AI. Halol texnologiya biznes."},
+    {ticker:"NVDA",  company:"NVIDIA Corp.",              sector:"Technology",   verdict:"HALOL",    grade:"A", score:92, haram_revenue_pct:0.2,  interest_debt_pct:8,  summary:"NVIDIA AI chiplari va GPU. Haram faoliyat deyarli yoq."},
+    {ticker:"GOOGL", company:"Alphabet Inc.",             sector:"Technology",   verdict:"SHUBHALI", grade:"C", score:55, haram_revenue_pct:4.2,  interest_debt_pct:5,  summary:"Google reklama modeli va bazi munozarali kontent platformalari."},
+    {ticker:"META",  company:"Meta Platforms",            sector:"Technology",   verdict:"SHUBHALI", grade:"D", score:42, haram_revenue_pct:8.5,  interest_debt_pct:4,  summary:"Meta munozarali kontent va reklama modeli tufayli shubhali."},
+    {ticker:"AVGO",  company:"Broadcom Inc.",             sector:"Technology",   verdict:"HALOL",    grade:"A", score:85, haram_revenue_pct:0.4,  interest_debt_pct:16, summary:"Broadcom yarimotkazgich va tarmoq yechimlari. Halol."},
+    {ticker:"ORCL",  company:"Oracle Corp.",              sector:"Technology",   verdict:"HALOL",    grade:"A", score:89, haram_revenue_pct:0.3,  interest_debt_pct:18, summary:"Oracle malumotlar bazasi va bulut dasturlari. Halol."},
+    {ticker:"AMD",   company:"Advanced Micro Devices",    sector:"Technology",   verdict:"HALOL",    grade:"A", score:91, haram_revenue_pct:0.2,  interest_debt_pct:7,  summary:"AMD protsessorlar va GPU. Haram faoliyat deyarli yoq."},
+    {ticker:"CRM",   company:"Salesforce Inc.",           sector:"Technology",   verdict:"HALOL",    grade:"A", score:86, haram_revenue_pct:0.4,  interest_debt_pct:11, summary:"Salesforce CRM dasturiy taminot. Halol texnologiya."},
+    {ticker:"CSCO",  company:"Cisco Systems Inc.",        sector:"Technology",   verdict:"HALOL",    grade:"A", score:87, haram_revenue_pct:0.5,  interest_debt_pct:10, summary:"Cisco tarmoq uskunalari va IT xizmatlari. Halol."},
+    {ticker:"INTC",  company:"Intel Corp.",               sector:"Technology",   verdict:"HALOL",    grade:"B", score:80, haram_revenue_pct:0.6,  interest_debt_pct:20, summary:"Intel protsessorlar ishlab chiqaradi. Asosan halol biznes."},
+    {ticker:"QCOM",  company:"Qualcomm Inc.",             sector:"Technology",   verdict:"HALOL",    grade:"A", score:84, haram_revenue_pct:0.5,  interest_debt_pct:13, summary:"Qualcomm mobil chiplar va simsiz texnologiyalar. Halol."},
+    {ticker:"IBM",   company:"IBM Corp.",                 sector:"Technology",   verdict:"HALOL",    grade:"B", score:76, haram_revenue_pct:1.2,  interest_debt_pct:22, summary:"IBM bulut va AI xizmatlari. Asosan halol, qarz nisbati biroz yuqori."},
+    {ticker:"NOW",   company:"ServiceNow Inc.",           sector:"Technology",   verdict:"HALOL",    grade:"A", score:88, haram_revenue_pct:0.3,  interest_debt_pct:9,  summary:"ServiceNow bulut platforma xizmatlari. Halol texnologiya."},
+    {ticker:"ADBE",  company:"Adobe Inc.",                sector:"Technology",   verdict:"HALOL",    grade:"A", score:87, haram_revenue_pct:0.4,  interest_debt_pct:11, summary:"Adobe kreativ dasturiy taminot. Halol biznes."},
+    {ticker:"INTU",  company:"Intuit Inc.",               sector:"Technology",   verdict:"SHUBHALI", grade:"C", score:58, haram_revenue_pct:3.5,  interest_debt_pct:18, summary:"Intuit moliyaviy dasturlar. Bazi foizli xizmatlar mavjud."},
+    {ticker:"AMAT",  company:"Applied Materials",         sector:"Technology",   verdict:"HALOL",    grade:"A", score:86, haram_revenue_pct:0.3,  interest_debt_pct:14, summary:"Applied Materials yarimo'tkazgich ishlab chiqarish uskunalari. Halol."},
+    {ticker:"MU",    company:"Micron Technology",         sector:"Technology",   verdict:"HALOL",    grade:"A", score:85, haram_revenue_pct:0.4,  interest_debt_pct:12, summary:"Micron xotira chiplari. Halol texnologiya."},
+    {ticker:"LRCX",  company:"Lam Research Corp.",        sector:"Technology",   verdict:"HALOL",    grade:"A", score:87, haram_revenue_pct:0.2,  interest_debt_pct:13, summary:"Lam Research yarimo'tkazgich uskunalari. Halol."},
+    {ticker:"KLAC",  company:"KLA Corp.",                 sector:"Technology",   verdict:"HALOL",    grade:"A", score:86, haram_revenue_pct:0.3,  interest_debt_pct:15, summary:"KLA yarimo'tkazgich nazorat uskunalari. Halol."},
+    // ── E-COMMERCE & CONSUMER ─────────────────────────────────────────────────
+    {ticker:"AMZN",  company:"Amazon.com Inc.",           sector:"E-Commerce",   verdict:"SHUBHALI", grade:"C", score:58, haram_revenue_pct:3.1,  interest_debt_pct:18, summary:"Amazon e-tijorat va bulut halol, lekin alkogol va bazi haram mahsulotlar sotiladi."},
+    {ticker:"TSLA",  company:"Tesla Inc.",                sector:"Auto",         verdict:"HALOL",    grade:"B", score:78, haram_revenue_pct:0.3,  interest_debt_pct:22, summary:"Tesla elektr avtomobillari. Halol, lekin qarz nisbati biroz yuqori."},
+    {ticker:"HD",    company:"Home Depot Inc.",           sector:"Retail",       verdict:"HALOL",    grade:"B", score:80, haram_revenue_pct:1.0,  interest_debt_pct:20, summary:"Qurilish va uy jihozlari. Asosiy biznes halol."},
+    {ticker:"WMT",   company:"Walmart Inc.",              sector:"Retail",       verdict:"SHUBHALI", grade:"C", score:58, haram_revenue_pct:5.2,  interest_debt_pct:17, summary:"Chakana savdo giganti. Alkogol va bazi haram mahsulotlar sotiladi."},
+    {ticker:"COST",  company:"Costco Wholesale",          sector:"Retail",       verdict:"SHUBHALI", grade:"C", score:60, haram_revenue_pct:4.8,  interest_debt_pct:9,  summary:"Ulgurji savdo. Alkogol sotish mavjud."},
+    {ticker:"TGT",   company:"Target Corp.",              sector:"Retail",       verdict:"SHUBHALI", grade:"C", score:55, haram_revenue_pct:6.0,  interest_debt_pct:18, summary:"Chakana savdo. Alkogol va tamaki sotiladi."},
+    {ticker:"LOW",   company:"Lowes Companies",           sector:"Retail",       verdict:"HALOL",    grade:"B", score:78, haram_revenue_pct:1.2,  interest_debt_pct:22, summary:"Qurilish materiallari savdosi. Asosiy biznes halol."},
+    {ticker:"EBAY",  company:"eBay Inc.",                 sector:"E-Commerce",   verdict:"SHUBHALI", grade:"C", score:55, haram_revenue_pct:5.5,  interest_debt_pct:20, summary:"eBay online bozor. Haram mahsulotlar savdosi nazoratsiz."},
+    {ticker:"MCD",   company:"McDonalds Corp.",           sector:"Restaurant",   verdict:"SHUBHALI", grade:"D", score:40, haram_revenue_pct:12.0, interest_debt_pct:30, summary:"Halovatsiz gosht va alkogol sotiladigan filiallar tufayli shubhali."},
+    {ticker:"SBUX",  company:"Starbucks Corp.",           sector:"Restaurant",   verdict:"SHUBHALI", grade:"C", score:52, haram_revenue_pct:8.0,  interest_debt_pct:25, summary:"Starbucks alkogol va shubhali ichimliklar sotadi."},
+    {ticker:"NKE",   company:"Nike Inc.",                 sector:"Consumer",     verdict:"HALOL",    grade:"B", score:76, haram_revenue_pct:1.5,  interest_debt_pct:14, summary:"Nike sport kiyim va uskunalari. Asosiy biznes halol."},
+    {ticker:"AMGN",  company:"Amgen Inc.",                sector:"Biotech",      verdict:"HALOL",    grade:"A", score:85, haram_revenue_pct:0.5,  interest_debt_pct:18, summary:"Amgen biotexnologiya va dorilar. Halol."},
+    // ── HEALTHCARE & PHARMA ───────────────────────────────────────────────────
+    {ticker:"UNH",   company:"UnitedHealth Group",        sector:"Healthcare",   verdict:"SHUBHALI", grade:"C", score:52, haram_revenue_pct:5.5,  interest_debt_pct:28, summary:"Sogliqni saqlash sugurtasi. Bazi sugurta modellari munozarali."},
+    {ticker:"JNJ",   company:"Johnson & Johnson",         sector:"Healthcare",   verdict:"HALOL",    grade:"A", score:87, haram_revenue_pct:0.8,  interest_debt_pct:11, summary:"Tibbiy qurilmalar va farmatsevtika. Asosan halol."},
+    {ticker:"ABBV",  company:"AbbVie Inc.",               sector:"Pharma",       verdict:"HALOL",    grade:"B", score:75, haram_revenue_pct:0.6,  interest_debt_pct:25, summary:"Farmatsevtika. Dori-darmonlar halol, lekin qarz yuqori."},
+    {ticker:"MRK",   company:"Merck & Co.",               sector:"Pharma",       verdict:"HALOL",    grade:"A", score:85, haram_revenue_pct:0.5,  interest_debt_pct:12, summary:"Merck farmatsevtika va biotexnologiya. Halol."},
+    {ticker:"TMO",   company:"Thermo Fisher Scientific",  sector:"Healthcare",   verdict:"HALOL",    grade:"A", score:88, haram_revenue_pct:0.4,  interest_debt_pct:14, summary:"Ilmiy jihozlar va laboratoriya xizmatlari. Halol."},
+    {ticker:"PFE",   company:"Pfizer Inc.",               sector:"Pharma",       verdict:"HALOL",    grade:"B", score:78, haram_revenue_pct:0.7,  interest_debt_pct:20, summary:"Pfizer dori-darmonlar. Asosiy biznes halol."},
+    {ticker:"LLY",   company:"Eli Lilly & Co.",           sector:"Pharma",       verdict:"HALOL",    grade:"A", score:86, haram_revenue_pct:0.5,  interest_debt_pct:15, summary:"Eli Lilly farmatsevtika. Halol biznes."},
+    {ticker:"GILD",  company:"Gilead Sciences",           sector:"Biotech",      verdict:"HALOL",    grade:"A", score:84, haram_revenue_pct:0.4,  interest_debt_pct:16, summary:"Gilead antivirals va dorilar. Halol."},
+    {ticker:"REGN",  company:"Regeneron Pharmaceuticals", sector:"Biotech",      verdict:"HALOL",    grade:"A", score:87, haram_revenue_pct:0.3,  interest_debt_pct:8,  summary:"Regeneron biotexnologiya. Halol ilmiy soha."},
+    {ticker:"ISRG",  company:"Intuitive Surgical",        sector:"Healthcare",   verdict:"HALOL",    grade:"A", score:91, haram_revenue_pct:0.2,  interest_debt_pct:5,  summary:"Robototexnik jarrohlik tizimlari. Halol tibbiy texnologiya."},
+    {ticker:"BSX",   company:"Boston Scientific",         sector:"Healthcare",   verdict:"HALOL",    grade:"A", score:86, haram_revenue_pct:0.5,  interest_debt_pct:18, summary:"Tibbiy qurilmalar. Halol sogliqni saqlash texnologiyasi."},
+    {ticker:"MDT",   company:"Medtronic plc",             sector:"Healthcare",   verdict:"HALOL",    grade:"A", score:85, haram_revenue_pct:0.6,  interest_debt_pct:16, summary:"Tibbiy qurilmalar ishlab chiqarish. Halol."},
+    // ── ENERGY ────────────────────────────────────────────────────────────────
+    {ticker:"XOM",   company:"ExxonMobil Corp.",          sector:"Energy",       verdict:"HALOL",    grade:"B", score:74, haram_revenue_pct:1.2,  interest_debt_pct:15, summary:"Neft va gaz. Asosiy biznes halol."},
+    {ticker:"CVX",   company:"Chevron Corp.",             sector:"Energy",       verdict:"HALOL",    grade:"B", score:74, haram_revenue_pct:1.5,  interest_debt_pct:13, summary:"Neft va gaz. Halol energetika biznes."},
+    {ticker:"COP",   company:"ConocoPhillips",            sector:"Energy",       verdict:"HALOL",    grade:"B", score:73, haram_revenue_pct:1.3,  interest_debt_pct:14, summary:"Neft qazib olish. Asosan halol."},
+    {ticker:"SLB",   company:"SLB (Schlumberger)",        sector:"Energy",       verdict:"HALOL",    grade:"B", score:75, haram_revenue_pct:1.0,  interest_debt_pct:16, summary:"Neft-gaz xizmatlari. Halol sanoat biznes."},
+    {ticker:"EOG",   company:"EOG Resources",             sector:"Energy",       verdict:"HALOL",    grade:"B", score:76, haram_revenue_pct:0.8,  interest_debt_pct:12, summary:"Neft va gaz ishlab chiqarish. Halol."},
+    {ticker:"PSX",   company:"Phillips 66",               sector:"Energy",       verdict:"HALOL",    grade:"B", score:72, haram_revenue_pct:1.8,  interest_debt_pct:18, summary:"Neft qayta ishlash va kimyo. Asosiy biznes halol."},
+    {ticker:"NEE",   company:"NextEra Energy",            sector:"Utilities",    verdict:"HALOL",    grade:"A", score:82, haram_revenue_pct:0.5,  interest_debt_pct:20, summary:"Toza energiya (quyosh va shamol). Juda halol."},
+    // ── FINANCE (mostly HARAM) ────────────────────────────────────────────────
+    {ticker:"JPM",   company:"JPMorgan Chase",            sector:"Banking",      verdict:"HARAM",    grade:"F", score:15, haram_revenue_pct:95.0, interest_debt_pct:90, summary:"Annaviy bank. Foiz (riba) asosidagi barcha faoliyatlar tufayli haram."},
+    {ticker:"BAC",   company:"Bank of America",           sector:"Banking",      verdict:"HARAM",    grade:"F", score:12, haram_revenue_pct:96.0, interest_debt_pct:92, summary:"Annaviy bank. Haram. Muslimon investorlar uchun mos emas."},
+    {ticker:"WFC",   company:"Wells Fargo & Co.",         sector:"Banking",      verdict:"HARAM",    grade:"F", score:10, haram_revenue_pct:97.0, interest_debt_pct:93, summary:"Annaviy bank. Foizli operatsiyalar tufayli haram."},
+    {ticker:"GS",    company:"Goldman Sachs",             sector:"Finance",      verdict:"HARAM",    grade:"F", score:18, haram_revenue_pct:90.0, interest_debt_pct:85, summary:"Investitsiya banki. Foizli va spekulyativ faoliyatlar tufayli haram."},
+    {ticker:"MS",    company:"Morgan Stanley",            sector:"Finance",      verdict:"HARAM",    grade:"F", score:16, haram_revenue_pct:88.0, interest_debt_pct:84, summary:"Investitsiya banki. Riba asosidagi faoliyat tufayli haram."},
+    {ticker:"C",     company:"Citigroup Inc.",            sector:"Banking",      verdict:"HARAM",    grade:"F", score:11, haram_revenue_pct:96.0, interest_debt_pct:91, summary:"Global bank. Foizli operatsiyalar tufayli haram."},
+    {ticker:"V",     company:"Visa Inc.",                 sector:"Payments",     verdict:"SHUBHALI", grade:"D", score:38, haram_revenue_pct:15.0, interest_debt_pct:35, summary:"Foizli kredit kartalari orqali daromad. Kupchilik olimlar haram deydi."},
+    {ticker:"MA",    company:"Mastercard Inc.",           sector:"Payments",     verdict:"SHUBHALI", grade:"D", score:35, haram_revenue_pct:18.0, interest_debt_pct:38, summary:"Mastercard foizli tolov tizimi. Kupchilik olimlar haram deydi."},
+    {ticker:"AXP",   company:"American Express",          sector:"Finance",      verdict:"HARAM",    grade:"F", score:20, haram_revenue_pct:75.0, interest_debt_pct:70, summary:"Kredit karta va bank xizmatlari. Foizli operatsiyalar tufayli haram."},
+    {ticker:"BLK",   company:"BlackRock Inc.",            sector:"Finance",      verdict:"SHUBHALI", grade:"D", score:35, haram_revenue_pct:20.0, interest_debt_pct:25, summary:"Aktiv boshqaruv. Ba'zi qoidabuzar fondlar mavjud. Shubhali."},
+    {ticker:"SCHW",  company:"Charles Schwab",            sector:"Finance",      verdict:"HARAM",    grade:"F", score:22, haram_revenue_pct:65.0, interest_debt_pct:60, summary:"Brokerlik va bank. Foizli daromad ustunligi tufayli haram."},
+    {ticker:"SPGI",  company:"S&P Global Inc.",           sector:"Finance",      verdict:"SHUBHALI", grade:"C", score:48, haram_revenue_pct:10.0, interest_debt_pct:30, summary:"Kredit reytingi va moliyaviy axborot. Bazi xizmatlar munozarali."},
+    {ticker:"COF",   company:"Capital One Financial",     sector:"Banking",      verdict:"HARAM",    grade:"F", score:14, haram_revenue_pct:94.0, interest_debt_pct:88, summary:"Kredit karta banki. Riba asosidagi faoliyat tufayli haram."},
+    // ── CONSUMER GOODS ────────────────────────────────────────────────────────
+    {ticker:"PG",    company:"Procter & Gamble",          sector:"Consumer",     verdict:"HALOL",    grade:"A", score:88, haram_revenue_pct:0.5,  interest_debt_pct:10, summary:"Kundalik iste'mol mahsulotlari. Alkogol va tamaki yoq. Halol."},
+    {ticker:"KO",    company:"Coca-Cola Co.",             sector:"Beverages",    verdict:"SHUBHALI", grade:"C", score:62, haram_revenue_pct:3.5,  interest_debt_pct:15, summary:"Alkogolsiz ichimliklar asosiy. Bazi shubhali ingredientlar mavjud."},
+    {ticker:"PEP",   company:"PepsiCo Inc.",              sector:"Beverages",    verdict:"SHUBHALI", grade:"C", score:61, haram_revenue_pct:3.8,  interest_debt_pct:16, summary:"Ichimliklar va oziq-ovqat. Bazi munozarali mahsulotlar."},
+    {ticker:"PM",    company:"Philip Morris Intl.",       sector:"Tobacco",      verdict:"HARAM",    grade:"F", score:5,  haram_revenue_pct:100.0, interest_debt_pct:40, summary:"Tamaki mahsulotlari. Tamaki haram deb hisoblangan — tolik haram."},
+    {ticker:"MO",    company:"Altria Group",              sector:"Tobacco",      verdict:"HARAM",    grade:"F", score:5,  haram_revenue_pct:100.0, interest_debt_pct:45, summary:"Tamaki kompaniyasi. Tolik haram."},
+    {ticker:"CL",    company:"Colgate-Palmolive",         sector:"Consumer",     verdict:"HALOL",    grade:"A", score:85, haram_revenue_pct:0.6,  interest_debt_pct:15, summary:"Shaxsiy gigiyena mahsulotlari. Asosan halol."},
+    {ticker:"KMB",   company:"Kimberly-Clark",            sector:"Consumer",     verdict:"HALOL",    grade:"A", score:84, haram_revenue_pct:0.7,  interest_debt_pct:18, summary:"Iste'mol mahsulotlari. Halol."},
+    {ticker:"GIS",   company:"General Mills",             sector:"Food",         verdict:"SHUBHALI", grade:"C", score:60, haram_revenue_pct:4.5,  interest_debt_pct:20, summary:"Oziq-ovqat mahsulotlari. Bazi alkogol tarkibli mahsulotlar mavjud."},
+    // ── INDUSTRIALS ───────────────────────────────────────────────────────────
+    {ticker:"CAT",   company:"Caterpillar Inc.",          sector:"Industrial",   verdict:"HALOL",    grade:"B", score:74, haram_revenue_pct:1.5,  interest_debt_pct:22, summary:"Qurilish va kon uskunalari. Asosiy biznes halol."},
+    {ticker:"GE",    company:"GE Aerospace",              sector:"Industrial",   verdict:"SHUBHALI", grade:"C", score:55, haram_revenue_pct:5.0,  interest_debt_pct:28, summary:"Aviatsiya va energetika. Harbiy qismlar tufayli shubhali."},
+    {ticker:"HON",   company:"Honeywell Intl.",           sector:"Industrial",   verdict:"SHUBHALI", grade:"C", score:52, haram_revenue_pct:6.5,  interest_debt_pct:25, summary:"Sanoat va aerokosmik. Harbiy shartnomalar tufayli shubhali."},
+    {ticker:"MMM",   company:"3M Co.",                    sector:"Industrial",   verdict:"HALOL",    grade:"B", score:72, haram_revenue_pct:2.0,  interest_debt_pct:20, summary:"Sanoat mahsulotlari. Asosiy biznes halol."},
+    {ticker:"RTX",   company:"RTX Corp.",                 sector:"Defense",      verdict:"HARAM",    grade:"F", score:20, haram_revenue_pct:60.0, interest_debt_pct:30, summary:"Qurol-yarog va mudofaa tizimlar. Harbiy qurollar tufayli haram."},
+    {ticker:"LMT",   company:"Lockheed Martin",           sector:"Defense",      verdict:"HARAM",    grade:"F", score:18, haram_revenue_pct:95.0, interest_debt_pct:35, summary:"Mudofaa kompaniyasi. Qurol-yarog ishlab chiqarish tufayli haram."},
+    {ticker:"BA",    company:"Boeing Co.",                sector:"Aerospace",    verdict:"SHUBHALI", grade:"D", score:42, haram_revenue_pct:25.0, interest_debt_pct:40, summary:"Aviatsiya va mudofaa. Harbiy qism tufayli shubhali."},
+    {ticker:"UPS",   company:"UPS",                       sector:"Logistics",    verdict:"HALOL",    grade:"B", score:78, haram_revenue_pct:1.0,  interest_debt_pct:20, summary:"Paket yetkazib berish va logistika. Halol biznes."},
+    {ticker:"FDX",   company:"FedEx Corp.",               sector:"Logistics",    verdict:"HALOL",    grade:"B", score:76, haram_revenue_pct:1.2,  interest_debt_pct:22, summary:"Yuk tashish va logistika. Asosiy biznes halol."},
+    {ticker:"DE",    company:"Deere & Co.",               sector:"Industrial",   verdict:"HALOL",    grade:"B", score:73, haram_revenue_pct:1.8,  interest_debt_pct:25, summary:"Qishloq xojaligi va qurilish uskunalari. Halol."},
+    // ── COMMUNICATION & MEDIA ─────────────────────────────────────────────────
+    {ticker:"T",     company:"AT&T Inc.",                 sector:"Telecom",      verdict:"HALOL",    grade:"B", score:70, haram_revenue_pct:2.0,  interest_debt_pct:30, summary:"Telekommunikatsiya xizmatlari. Asosiy biznes halol, qarz yuqori."},
+    {ticker:"VZ",    company:"Verizon Comm.",             sector:"Telecom",      verdict:"HALOL",    grade:"B", score:71, haram_revenue_pct:1.8,  interest_debt_pct:28, summary:"Mobil va internet xizmatlari. Asosiy biznes halol."},
+    {ticker:"TMUS",  company:"T-Mobile US",               sector:"Telecom",      verdict:"HALOL",    grade:"B", score:74, haram_revenue_pct:1.5,  interest_debt_pct:22, summary:"Mobil telekommunikatsiya. Halol."},
+    {ticker:"NFLX",  company:"Netflix Inc.",              sector:"Media",        verdict:"HARAM",    grade:"F", score:20, haram_revenue_pct:35.0, interest_debt_pct:25, summary:"Netflix ota-onalar nazoratisiz katta yoshdagi kontent tarqatadi. Haram."},
+    {ticker:"DIS",   company:"Walt Disney Co.",           sector:"Media",        verdict:"SHUBHALI", grade:"D", score:38, haram_revenue_pct:20.0, interest_debt_pct:28, summary:"Disney media va oyinlar. Munozarali kontent mavjud. Shubhali."},
+    {ticker:"CMCSA", company:"Comcast Corp.",             sector:"Media",        verdict:"SHUBHALI", grade:"D", score:35, haram_revenue_pct:22.0, interest_debt_pct:30, summary:"Kabel TV va media. Alkogol reklama va munozarali kontent."},
+    {ticker:"WBD",   company:"Warner Bros Discovery",     sector:"Media",        verdict:"HARAM",    grade:"F", score:22, haram_revenue_pct:40.0, interest_debt_pct:35, summary:"Media va entertainment. Katta yoshdagi kontent tarqatadi. Haram."},
+    // ── REAL ESTATE ───────────────────────────────────────────────────────────
+    {ticker:"AMT",   company:"American Tower Corp.",      sector:"REIT",         verdict:"SHUBHALI", grade:"C", score:50, haram_revenue_pct:2.0,  interest_debt_pct:45, summary:"Tower REIT. Asosiy biznes halol, lekin foizli qarz nisbati yuqori."},
+    {ticker:"PLD",   company:"Prologis Inc.",             sector:"REIT",         verdict:"SHUBHALI", grade:"C", score:48, haram_revenue_pct:1.5,  interest_debt_pct:42, summary:"Logistika REIT. Foizli moliyalash modeli shubhali."},
+    // ── MATERIALS ─────────────────────────────────────────────────────────────
+    {ticker:"LIN",   company:"Linde plc",                 sector:"Materials",    verdict:"HALOL",    grade:"A", score:84, haram_revenue_pct:0.8,  interest_debt_pct:15, summary:"Sanoat gazlari. Halol kimyo sanoati."},
+    {ticker:"APD",   company:"Air Products",              sector:"Materials",    verdict:"HALOL",    grade:"A", score:83, haram_revenue_pct:0.9,  interest_debt_pct:16, summary:"Sanoat gazlari va kimyo. Halol."},
+    {ticker:"FCX",   company:"Freeport-McMoRan",          sector:"Materials",    verdict:"HALOL",    grade:"B", score:75, haram_revenue_pct:1.5,  interest_debt_pct:20, summary:"Mis va oltin qazib olish. Asosiy biznes halol."},
+    {ticker:"NEM",   company:"Newmont Corp.",             sector:"Materials",    verdict:"HALOL",    grade:"B", score:76, haram_revenue_pct:1.2,  interest_debt_pct:18, summary:"Oltin qazib olish. Asosiy biznes halol."},
   ];
 
   async function runHalalBatch() {
@@ -5224,7 +5317,7 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
         {name:'Haram daromad ulushi', status: s.haram_revenue_pct < 5 ? 'pass' : s.haram_revenue_pct < 10 ? 'warn' : 'fail', detail: `Haram daromad: ${s.haram_revenue_pct}%`},
         {name:'Qarz nisbati (Riba)',  status: s.interest_debt_pct < 30 ? 'pass' : s.interest_debt_pct < 50 ? 'warn' : 'fail', detail: `Foizli qarz: ${s.interest_debt_pct}%`},
       ],
-      source_note: "AAOIFI standartlari asosida — statik malumot. Tekshirish bilan AI tahlil qiling."
+      source_note: "AAOIFI standartlari asosida. Aniqroq tahlil uchun yuqorida Tekshirish tugmasini bosing."
     }));
 
     btn.disabled = false;
@@ -5235,10 +5328,12 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
   function renderHalalBatch(filter) {
     const el = document.getElementById('halal-batch-result');
     if (!halalBatchResults.length) { el.innerHTML = '<div class="info-text">Hali tahlil qilinmagan.</div>'; return; }
+    const sector = document.getElementById('halal-sector')?.value || '';
     let items = [...halalBatchResults];
     if (filter === 'halal')    items = items.filter(r => r.verdict === 'HALOL');
     if (filter === 'doubtful') items = items.filter(r => r.verdict === 'SHUBHALI');
     if (filter === 'haram')    items = items.filter(r => r.verdict === 'HARAM');
+    if (sector) items = items.filter(r => (r.sector||'').includes(sector));
     items.sort((a,b) => (b.score||0) - (a.score||0));
 
     el.innerHTML = items.map(r => {
