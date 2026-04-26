@@ -1944,32 +1944,67 @@
   .market-stats-bar {
     background: var(--bg-card);
     border-bottom: 1px solid var(--border);
-    padding: 8px 24px;
     margin-left: -24px;
     margin-right: -24px;
+    overflow: hidden;
+    position: relative;
+    font-family: var(--mono);
+    font-size: 11px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Ticker tape scroll */
+  .ticker-tape {
     display: flex;
     align-items: center;
     gap: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    font-family: var(--mono);
-    font-size: 11px;
+    white-space: nowrap;
+    animation: tickerScroll 60s linear infinite;
+    will-change: transform;
   }
 
-  .market-stats-bar::-webkit-scrollbar { display: none; }
+  .ticker-tape:hover { animation-play-state: paused; }
+
+  @keyframes tickerScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Fade edges */
+  .market-stats-bar::before,
+  .market-stats-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 48px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .market-stats-bar::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg-card), transparent);
+  }
+
+  .market-stats-bar::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg-card), transparent);
+  }
 
   .mstat {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 0 16px;
+    padding: 0 20px;
     border-right: 1px solid var(--border);
     white-space: nowrap;
     flex-shrink: 0;
+    height: 36px;
   }
 
-  .mstat:first-child { padding-left: 0; }
-  .mstat:last-child { border-right: none; }
+  .mstat:last-child { border-right: 1px solid var(--border); }
 
   .mstat-label {
     color: var(--text-muted);
@@ -1985,6 +2020,22 @@
 
   .mstat-val.up { color: var(--bull); }
   .mstat-val.down { color: var(--bear); }
+
+  /* Divider between stock/crypto sections */
+  .mstat-divider {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 16px;
+    height: 36px;
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--border);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    gap: 6px;
+  }
 
   /* Fear & Greed */
   .fg-badge {
@@ -2016,7 +2067,7 @@
 
   @media (max-width: 700px) {
     .crypto-market-grid { grid-template-columns: 1fr; }
-    .market-stats-bar { padding: 8px 14px; margin-left: -14px; margin-right: -14px; }
+    .market-stats-bar { margin-left: -14px; margin-right: -14px; }
     .mstat { padding: 0 10px; }
   }
 
@@ -2435,12 +2486,41 @@
 
   <!-- GLOBAL MARKET STATS BAR -->
   <div class="market-stats-bar" id="market-stats-bar">
-    <div class="mstat"><span class="mstat-label">Bozor Cap</span><span class="mstat-val" id="ms-mcap">—</span></div>
-    <div class="mstat"><span class="mstat-label">24s Hajm</span><span class="mstat-val" id="ms-vol">—</span></div>
-    <div class="mstat"><span class="mstat-label">BTC Dom</span><span class="mstat-val" id="ms-btc">—</span></div>
-    <div class="mstat"><span class="mstat-label">ETH Dom</span><span class="mstat-val" id="ms-eth">—</span></div>
-    <div class="mstat"><span class="mstat-label">Aktivlar</span><span class="mstat-val" id="ms-coins">—</span></div>
-    <div class="mstat"><span class="mstat-label">Qo'rquv indeksi</span><span id="ms-fear">—</span></div>
+    <div class="ticker-tape" id="ticker-tape">
+      <!-- Stock section -->
+      <div class="mstat-divider"><i class="ri-stock-fill"></i> STOCKS</div>
+      <div class="mstat"><span class="mstat-label">S&P 500</span><span class="mstat-val" id="ms-spy">—</span></div>
+      <div class="mstat"><span class="mstat-label">NASDAQ</span><span class="mstat-val" id="ms-qqq">—</span></div>
+      <div class="mstat"><span class="mstat-label">DOW</span><span class="mstat-val" id="ms-dia">—</span></div>
+      <div class="mstat"><span class="mstat-label">VIX</span><span class="mstat-val" id="ms-vix">—</span></div>
+      <div class="mstat"><span class="mstat-label">NVDA</span><span class="mstat-val" id="ms-nvda">—</span></div>
+      <div class="mstat"><span class="mstat-label">AAPL</span><span class="mstat-val" id="ms-aapl">—</span></div>
+      <div class="mstat"><span class="mstat-label">TSLA</span><span class="mstat-val" id="ms-tsla">—</span></div>
+      <div class="mstat"><span class="mstat-label">MSFT</span><span class="mstat-val" id="ms-msft">—</span></div>
+      <!-- Crypto section -->
+      <div class="mstat-divider"><i class="ri-bit-coin-fill"></i> CRYPTO</div>
+      <div class="mstat"><span class="mstat-label">BTC</span><span class="mstat-val" id="ms-btc">—</span></div>
+      <div class="mstat"><span class="mstat-label">ETH</span><span class="mstat-val" id="ms-eth">—</span></div>
+      <div class="mstat"><span class="mstat-label">SOL</span><span class="mstat-val" id="ms-sol">—</span></div>
+      <div class="mstat"><span class="mstat-label">BNB</span><span class="mstat-val" id="ms-bnb">—</span></div>
+      <div class="mstat"><span class="mstat-label">Fear & Greed</span><span id="ms-fear">—</span></div>
+      <!-- Duplicate for seamless loop -->
+      <div class="mstat-divider"><i class="ri-stock-fill"></i> STOCKS</div>
+      <div class="mstat"><span class="mstat-label">S&P 500</span><span class="mstat-val" id="ms-spy2">—</span></div>
+      <div class="mstat"><span class="mstat-label">NASDAQ</span><span class="mstat-val" id="ms-qqq2">—</span></div>
+      <div class="mstat"><span class="mstat-label">DOW</span><span class="mstat-val" id="ms-dia2">—</span></div>
+      <div class="mstat"><span class="mstat-label">VIX</span><span class="mstat-val" id="ms-vix2">—</span></div>
+      <div class="mstat"><span class="mstat-label">NVDA</span><span class="mstat-val" id="ms-nvda2">—</span></div>
+      <div class="mstat"><span class="mstat-label">AAPL</span><span class="mstat-val" id="ms-aapl2">—</span></div>
+      <div class="mstat"><span class="mstat-label">TSLA</span><span class="mstat-val" id="ms-tsla2">—</span></div>
+      <div class="mstat"><span class="mstat-label">MSFT</span><span class="mstat-val" id="ms-msft2">—</span></div>
+      <div class="mstat-divider"><i class="ri-bit-coin-fill"></i> CRYPTO</div>
+      <div class="mstat"><span class="mstat-label">BTC</span><span class="mstat-val" id="ms-btc2">—</span></div>
+      <div class="mstat"><span class="mstat-label">ETH</span><span class="mstat-val" id="ms-eth2">—</span></div>
+      <div class="mstat"><span class="mstat-label">SOL</span><span class="mstat-val" id="ms-sol2">—</span></div>
+      <div class="mstat"><span class="mstat-label">BNB</span><span class="mstat-val" id="ms-bnb2">—</span></div>
+      <div class="mstat"><span class="mstat-label">Fear & Greed</span><span id="ms-fear2">—</span></div>
+    </div>
   </div>
 
   <!-- MAIN NAVIGATION -->
@@ -4534,46 +4614,106 @@ Return JSON only. Maximum 3 catalysts.`;
   // ═══════════════════════════════════════════════════════════════════════════
   // GLOBAL MARKET STATS BAR
   // ═══════════════════════════════════════════════════════════════════════════
+  function setTickerVal(ids, text, cls) {
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      if (cls) el.className = 'mstat-val ' + cls;
+    });
+  }
+
+  function setTickerHTML(ids, html) {
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    });
+  }
+
   async function loadGlobalStats() {
-    await new Promise(r => setTimeout(r, 600));
+    await new Promise(r => setTimeout(r, 400));
     try {
-      const [globalRes, fearRes] = await Promise.all([
-        fetch(`${PROXY_URL}/global`).catch(() => null),
+      // Parallel: stocks + crypto
+      const [stockRes, cryptoRes, fearRes] = await Promise.all([
+        fetch(`${PROXY_URL}/api/quote?symbol=SPY`).catch(() => null),
+        fetch(`${PROXY_URL}/cg/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,binancecoin&order=market_cap_desc&per_page=4&page=1&sparkline=false`).catch(() => null),
         fetch(`${PROXY_URL}/fear`).catch(() => null)
       ]);
 
-      // Global stats
-      if (globalRes && globalRes.ok) {
-        const json = await globalRes.json();
-        const g = json.data || {};
-        const mcap  = g.total_market_cap?.usd || 0;
-        const vol   = g.total_volume?.usd || 0;
-        const btcd  = g.market_cap_percentage?.btc || 0;
-        const ethd  = g.market_cap_percentage?.eth || 0;
-        const coins = g.active_cryptocurrencies || 0;
-        const chg   = g.market_cap_change_percentage_24h_usd || 0;
+      // Stock indices
+      if (stockRes && stockRes.ok) {
+        const spy = await stockRes.json();
+        if (spy.c) {
+          const spyUp = spy.dp >= 0;
+          const spyText = `$${formatPrice(spy.c)} ${spyUp?'+':''}${spy.dp?.toFixed(2)}%`;
+          setTickerVal(['ms-spy','ms-spy2'], spyText, spyUp?'up':'down');
+        }
+      }
 
-        document.getElementById('ms-mcap').textContent = formatBigNumber(mcap);
-        document.getElementById('ms-mcap').className   = 'mstat-val';
-        document.getElementById('ms-vol').textContent  = formatBigNumber(vol);
-        document.getElementById('ms-btc').textContent  = btcd.toFixed(1) + '%';
-        document.getElementById('ms-eth').textContent  = ethd.toFixed(1) + '%';
-        document.getElementById('ms-eth').className    = 'mstat-val';
-        document.getElementById('ms-coins').textContent = coins.toLocaleString();
+      // Load other indices in parallel
+      const [qqqRes, diaRes, vixRes, nvdaRes, aaplRes, tslaRes, msftRes] = await Promise.all([
+        fetch(`${PROXY_URL}/api/quote?symbol=QQQ`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=DIA`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=VXX`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=NVDA`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=AAPL`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=TSLA`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=MSFT`).catch(()=>null),
+      ]);
+
+      const setStock = async (res, ids) => {
+        if (!res || !res.ok) return;
+        const q = await res.json();
+        if (!q.c) return;
+        const up = q.dp >= 0;
+        setTickerVal(ids, `$${formatPrice(q.c)} ${up?'+':''}${(q.dp||0).toFixed(2)}%`, up?'up':'down');
+      };
+
+      await Promise.all([
+        setStock(qqqRes,  ['ms-qqq','ms-qqq2']),
+        setStock(diaRes,  ['ms-dia','ms-dia2']),
+        setStock(vixRes,  ['ms-vix','ms-vix2']),
+        setStock(nvdaRes, ['ms-nvda','ms-nvda2']),
+        setStock(aaplRes, ['ms-aapl','ms-aapl2']),
+        setStock(tslaRes, ['ms-tsla','ms-tsla2']),
+        setStock(msftRes, ['ms-msft','ms-msft2']),
+      ]);
+
+      // Crypto
+      if (cryptoRes && cryptoRes.ok) {
+        const coins = await cryptoRes.json();
+        const set = (id1, id2, coin) => {
+          if (!coin) return;
+          const up = coin.price_change_percentage_24h >= 0;
+          const t = `$${formatPrice(coin.current_price)} ${up?'+':''}${(coin.price_change_percentage_24h||0).toFixed(2)}%`;
+          setTickerVal([id1, id2], t, up?'up':'down');
+        };
+        set('ms-btc','ms-btc2', coins.find(c=>c.id==='bitcoin'));
+        set('ms-eth','ms-eth2', coins.find(c=>c.id==='ethereum'));
+        set('ms-sol','ms-sol2', coins.find(c=>c.id==='solana'));
+        set('ms-bnb','ms-bnb2', coins.find(c=>c.id==='binancecoin'));
       }
 
       // Fear & Greed
       if (fearRes && fearRes.ok) {
-        const f   = await fearRes.json();
+        const f = await fearRes.json();
         const val = parseInt(f.data?.[0]?.value || 50);
         const cls = val<=25?'extreme-fear':val<=45?'fear':val<=55?'neutral':val<=75?'greed':'extreme-greed';
-        const lbl = val<=25?'Qattiq qo&#39;rquv':val<=45?'Qo&#39;rquv':val<=55?'Neytral':val<=75?'Ochko&#39;zlik':'Haddan oshgan';
-        document.getElementById('ms-fear').innerHTML =
-          `<span class="fg-badge ${cls}">${val} &middot; ${lbl}</span>`;
+        const lbl = val<=25?'Qo&#39;rquv':val<=45?'Qo&#39;rquv':val<=55?'Neytral':val<=75?'Ochko&#39;zlik':'Haddan oshgan';
+        const html = `<span class="fg-badge ${cls}">${val} ${lbl}</span>`;
+        setTickerHTML(['ms-fear','ms-fear2'], html);
         renderFearDetail(val, cls, lbl, f.data?.[0]?.value_classification);
       }
 
-    } catch(e) { /* stats bar optional */ }
+      // Adjust animation speed based on content width
+      const tape = document.getElementById('ticker-tape');
+      if (tape) {
+        const w = tape.scrollWidth / 2;
+        const speed = Math.max(40, w / 8); // px/sec
+        tape.style.animationDuration = speed + 's';
+      }
+
+    } catch(e) { /* silent */ }
   }
 
 
