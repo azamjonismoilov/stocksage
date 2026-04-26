@@ -2546,6 +2546,9 @@
     <button class="nav-btn" data-page="lists">
       <i class="ri-list-check-3"></i><span>Ro'yxatlar</span>
     </button>
+    <button class="nav-btn" data-page="futures">
+      <i class="ri-stock-fill"></i><span>Fyuchers</span>
+    </button>
   </nav>
 
   <section class="hero">
@@ -2870,6 +2873,51 @@
       <div class="list-panel" id="list-aristocrats"><div class="info-text">Yuklanmoqda...</div></div>
       <div class="list-panel" id="list-options"><div class="info-text">Yuklanmoqda...</div></div>
     </div>
+  </div>
+
+  <!-- FUTURES PAGE -->
+  <div class="page" id="page-futures">
+
+    <!-- Commodities -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-copper-coin-fill"></i></div>
+        <div class="card-title">Tovarlar (Commodities)</div>
+      </div>
+      <div id="fut-commodities"><div class="info-text">Yuklanmoqda...</div></div>
+    </div>
+
+    <div class="mb-grid">
+
+      <!-- Currencies -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ri-exchange-dollar-fill"></i></div>
+          <div class="card-title">Valyutalar (Forex)</div>
+        </div>
+        <div id="fut-forex"><div class="info-text">Yuklanmoqda...</div></div>
+      </div>
+
+      <!-- Bonds -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ri-government-fill"></i></div>
+          <div class="card-title">Obligatsiyalar (Bonds)</div>
+        </div>
+        <div id="fut-bonds"><div class="info-text">Yuklanmoqda...</div></div>
+      </div>
+
+    </div>
+
+    <!-- Indices -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-bar-chart-2-fill"></i></div>
+        <div class="card-title">Bozor Indekslari</div>
+      </div>
+      <div id="fut-indices"><div class="info-text">Yuklanmoqda...</div></div>
+    </div>
+
   </div>
 
   <!-- INSIDER TRADING PAGE -->
@@ -4597,6 +4645,169 @@ Return JSON only. Maximum 3 catalysts.`;
   }
 
 
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FUTURES PAGE
+  // ═══════════════════════════════════════════════════════════════════════════
+  let futuresLoaded = false;
+
+  async function loadFuturesPage() {
+    if (futuresLoaded) return;
+    futuresLoaded = true;
+    await Promise.all([
+      loadCommodities(),
+      loadForex(),
+      loadBonds(),
+      loadIndices()
+    ]);
+  }
+
+  // Reusable: fetch quote and return formatted data
+  async function fq(symbol) {
+    try {
+      const r = await fetch(`${PROXY_URL}/api/quote?symbol=${symbol}`);
+      if (!r.ok) return null;
+      const q = await r.json();
+      if (!q.c) return null;
+      return { symbol, price: q.c, change: q.d||0, changePct: q.dp||0, high: q.h, low: q.l };
+    } catch(e) { return null; }
+  }
+
+  function futRow(d, label, unit='$', note='') {
+    if (!d) return '';
+    const up = d.changePct >= 0;
+    const price = d.price >= 100
+      ? d.price.toLocaleString('en-US', {maximumFractionDigits: 2})
+      : formatPrice(d.price);
+    return `
+      <div class="cal-row" style="grid-template-columns:auto 1fr auto auto auto"
+        onclick="loadTickerFromScreener('${d.symbol}')">
+        <span class="cal-ticker">${d.symbol}</span>
+        <span class="cal-name">${label}${note ? ' <span style=\'font-size:10px;color:var(--text-muted)\'>('+note+')</span>' : ''}</span>
+        <span style="font-family:var(--mono);font-weight:600">${unit}${price}</span>
+        <span class="${up?'st-up':'st-down'}" style="font-family:var(--mono);font-weight:700">
+          ${up?'+':''}${d.changePct.toFixed(2)}%
+        </span>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">
+          H: ${unit}${formatPrice(d.high)} L: ${unit}${formatPrice(d.low)}
+        </span>
+      </div>`;
+  }
+
+  async function loadCommodities() {
+    const el = document.getElementById('fut-commodities');
+    if (!el) return;
+
+    const COMMODITIES = [
+      { sym: 'GLD',  label: 'Oltin (Gold)',          note: 'GLD ETF' },
+      { sym: 'SLV',  label: 'Kumush (Silver)',        note: 'SLV ETF' },
+      { sym: 'USO',  label: 'Neft (WTI Crude Oil)',   note: 'USO ETF' },
+      { sym: 'UNG',  label: 'Tabiiy Gaz',             note: 'UNG ETF' },
+      { sym: 'CORN', label: 'Makkajoxori (Corn)',   note: 'CORN ETF' },
+      { sym: 'WEAT', label: 'Bugdoy (Wheat)',       note: 'WEAT ETF' },
+      { sym: 'SOYB', label: 'Soya',                  note: 'SOYB ETF' },
+      { sym: 'CPER', label: 'Mis (Copper)',           note: 'CPER ETF' },
+      { sym: 'PALL', label: 'Palladiy',               note: 'PALL ETF' },
+      { sym: 'PPLT', label: 'Platina',                note: 'PPLT ETF' },
+    ];
+
+    el.innerHTML = '<div class="info-text">Yuklanmoqda...</div>';
+
+    // Batch: 5 ta bir vaqtda
+    const results = [];
+    for (let i = 0; i < COMMODITIES.length; i += 5) {
+      const chunk = COMMODITIES.slice(i, i + 5);
+      const batch = await Promise.all(chunk.map(c => fq(c.sym).then(d => ({ ...c, d }))));
+      results.push(...batch);
+      if (i + 5 < COMMODITIES.length) await new Promise(r => setTimeout(r, 200));
+    }
+
+    const html = results.map(r => futRow(r.d, r.label, '$', r.note)).filter(Boolean).join('');
+    el.innerHTML = html || '<div class="info-text">Ma&#39;lumot kelmadi.</div>';
+  }
+
+  async function loadForex() {
+    const el = document.getElementById('fut-forex');
+    if (!el) return;
+
+    // Finnhub forex quotes
+    const FOREX = [
+      { sym: 'UUP',  label: 'USD Index',    note: 'UUP ETF' },
+      { sym: 'FXE',  label: 'EUR/USD',      note: 'FXE ETF' },
+      { sym: 'FXY',  label: 'USD/JPY',      note: 'FXY ETF' },
+      { sym: 'FXB',  label: 'GBP/USD',      note: 'FXB ETF' },
+      { sym: 'FXC',  label: 'USD/CAD',      note: 'FXC ETF' },
+      { sym: 'FXA',  label: 'AUD/USD',      note: 'FXA ETF' },
+      { sym: 'CYB',  label: 'CNY/USD',      note: 'CYB ETF' },
+    ];
+
+    const results = [];
+    for (let i = 0; i < FOREX.length; i += 5) {
+      const chunk = FOREX.slice(i, i + 5);
+      const batch = await Promise.all(chunk.map(c => fq(c.sym).then(d => ({ ...c, d }))));
+      results.push(...batch);
+      if (i + 5 < FOREX.length) await new Promise(r => setTimeout(r, 200));
+    }
+
+    const html = results.map(r => futRow(r.d, r.label, '$', r.note)).filter(Boolean).join('');
+    el.innerHTML = html || '<div class="info-text">Ma&#39;lumot kelmadi.</div>';
+  }
+
+  async function loadBonds() {
+    const el = document.getElementById('fut-bonds');
+    if (!el) return;
+
+    const BONDS = [
+      { sym: 'TLT',  label: '20+ Yillik Treasury',  note: 'TLT ETF' },
+      { sym: 'IEF',  label: '10 Yillik Treasury',    note: 'IEF ETF' },
+      { sym: 'SHY',  label: '1-3 Yillik Treasury',   note: 'SHY ETF' },
+      { sym: 'LQD',  label: 'Korporativ Obligatsiya', note: 'LQD ETF' },
+      { sym: 'HYG',  label: 'High Yield Bonds',       note: 'HYG ETF' },
+      { sym: 'EMB',  label: 'Emerging Market Bonds',  note: 'EMB ETF' },
+    ];
+
+    const results = [];
+    for (let i = 0; i < BONDS.length; i += 5) {
+      const chunk = BONDS.slice(i, i + 5);
+      const batch = await Promise.all(chunk.map(c => fq(c.sym).then(d => ({ ...c, d }))));
+      results.push(...batch);
+      if (i + 5 < BONDS.length) await new Promise(r => setTimeout(r, 200));
+    }
+
+    const html = results.map(r => futRow(r.d, r.label, '$', r.note)).filter(Boolean).join('');
+    el.innerHTML = html || '<div class="info-text">Ma&#39;lumot kelmadi.</div>';
+  }
+
+  async function loadIndices() {
+    const el = document.getElementById('fut-indices');
+    if (!el) return;
+
+    const INDICES = [
+      { sym: 'SPY',  label: 'S&P 500 ETF',          note: 'SPY' },
+      { sym: 'QQQ',  label: 'NASDAQ 100 ETF',         note: 'QQQ' },
+      { sym: 'DIA',  label: 'Dow Jones ETF',           note: 'DIA' },
+      { sym: 'IWM',  label: 'Russell 2000 (Small Cap)',note: 'IWM' },
+      { sym: 'VXX',  label: 'VIX Futures (Qorquv)', note: 'VXX' },
+      { sym: 'EEM',  label: 'Emerging Markets',        note: 'EEM' },
+      { sym: 'EFA',  label: 'Xalqaro bozorlar',        note: 'EFA' },
+      { sym: 'GDX',  label: 'Oltin Konchilari',        note: 'GDX' },
+      { sym: 'XLE',  label: 'Energetika Sektori',      note: 'XLE' },
+      { sym: 'XLF',  label: 'Moliya Sektori',          note: 'XLF' },
+    ];
+
+    const results = [];
+    for (let i = 0; i < INDICES.length; i += 5) {
+      const chunk = INDICES.slice(i, i + 5);
+      const batch = await Promise.all(chunk.map(c => fq(c.sym).then(d => ({ ...c, d }))));
+      results.push(...batch);
+      if (i + 5 < INDICES.length) await new Promise(r => setTimeout(r, 200));
+    }
+
+    const html = results.map(r => futRow(r.d, r.label, '$', r.note)).filter(Boolean).join('');
+    el.innerHTML = html || '<div class="info-text">Ma&#39;lumot kelmadi.</div>';
+  }
+
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
@@ -4845,6 +5056,7 @@ Return JSON only. Maximum 3 catalysts.`;
         if (page === 'crypto-market' && !cryptoMarketLoaded) loadCryptoMarket();
         if (page === 'calendar' && !calLoaded.earnings) loadCalendarPage();
         if (page === 'congress' && !congressLoaded) loadCongressPage();
+        if (page === 'futures' && !futuresLoaded) loadFuturesPage();
         if (page === 'lists') {
           initListTabs();
           if (!listLoaded.highs) loadListPanel('highs');
