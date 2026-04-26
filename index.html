@@ -4373,31 +4373,55 @@ Return JSON only. Maximum 3 catalysts.`;
     } catch(e) { el.innerHTML = '<div class="info-text">Yuklanmadi.</div>'; }
   }
 
+  // Batch fetch — Finnhub rate limit ga tushamaslik uchun 5 tadan
+  async function batchQuotes(syms, el) {
+    const batchSize = 5;
+    const results = [];
+    for (let i = 0; i < syms.length; i += batchSize) {
+      const chunk = syms.slice(i, i + batchSize);
+      if (el) el.innerHTML = `<div class="info-text">Yuklanmoqda... ${Math.min(i+batchSize, syms.length)}/${syms.length}</div>`;
+      const batch = await Promise.all(chunk.map(item => {
+        const ticker = typeof item === 'object' ? item.s : item;
+        return fetch(`${PROXY_URL}/api/quote?symbol=${ticker}`)
+          .then(r => r.ok ? r.json().then(q => ({ item, ticker, q })) : null)
+          .catch(() => null);
+      }));
+      results.push(...batch.filter(Boolean));
+      if (i + batchSize < syms.length) await new Promise(r => setTimeout(r, 250));
+    }
+    return results;
+  }
+
   async function load52Week(el, isHigh) {
     const syms = ['AAPL','MSFT','NVDA','GOOGL','AMZN','META','TSLA','AVGO','JPM',
       'V','UNH','XOM','MA','JNJ','PG','HD','ABBV','MRK','CVX','COST',
       'ORCL','AMD','CRM','BAC','KO','WMT','PEP','TMO','MCD','CSCO'];
-    const quotes = await Promise.all(syms.map(s =>
-      fetch(`${PROXY_URL}/api/quote?symbol=${s}`)
-        .then(r => r.ok ? r.json().then(q => ({s,q})) : null).catch(() => null)
-    ));
-    const results = quotes.filter(x=>x&&x.q&&x.q.c&&x.q.h)
+
+    const raw = await batchQuotes(syms, el);
+    const results = raw
+      .filter(x => x && x.q && x.q.c && x.q.h)
       .map(x => {
+        const s = x.ticker;
         const pct = x.q.h > x.q.l ? (x.q.c - x.q.l) / (x.q.h - x.q.l) * 100 : 50;
-        return {s:x.s, price:x.q.c, change:x.q.dp, h52:x.q.h, l52:x.q.l, pct};
+        return { s, price: x.q.c, change: x.q.dp||0, h52: x.q.h, l52: x.q.l, pct };
       })
-      .sort((a,b) => isHigh ? b.pct-a.pct : a.pct-b.pct)
+      .sort((a,b) => isHigh ? b.pct - a.pct : a.pct - b.pct)
       .slice(0, 15);
+
+    if (!results.length) {
+      el.innerHTML = '<div class="info-text">Ma&#39;lumot kelmadi. Finnhub API tekshiring.</div>'; return;
+    }
+
     el.innerHTML = results.map((r,i) => `
       <div class="hl-row" onclick="loadTickerFromScreener('${r.s}')">
         <span class="hl-rank">#${i+1}</span>
         <span class="cal-ticker">${r.s}</span>
         <span style="font-family:var(--mono)">$${formatPrice(r.price)}</span>
         <span class="${r.change>=0?'st-up':'st-down'}" style="font-family:var(--mono);font-weight:700">
-          ${r.change>=0?'+':''}${(r.change||0).toFixed(2)}%
+          ${r.change>=0?'+':''}${r.change.toFixed(2)}%
         </span>
         <span class="hl-vol" style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">
-          ${isHigh?'High: $'+formatPrice(r.h52):'Low: $'+formatPrice(r.l52)}
+          ${isHigh?'52W High: $'+formatPrice(r.h52):'52W Low: $'+formatPrice(r.l52)}
         </span>
       </div>`).join('');
   }
@@ -4410,11 +4434,18 @@ Return JSON only. Maximum 3 catalysts.`;
   ];
 
   async function loadAristocrats(el) {
-    const quotes = await Promise.all(ARISTOCRATS.map(a =>
-      fetch(`${PROXY_URL}/api/quote?symbol=${a.s}`)
-        .then(r => r.ok ? r.json().then(q => ({...a,q})) : null).catch(() => null)
-    ));
-    el.innerHTML = quotes.filter(x=>x&&x.q&&x.q.c).map(r => `
+    const raw = await batchQuotes(ARISTOCRATS, el);
+    const results = raw.filter(x => x && x.q && x.q.c).map(x => ({
+      s: x.ticker,
+      y: typeof x.item === 'object' ? x.item.y : 0,
+      q: x.q
+    }));
+
+    if (!results.length) {
+      el.innerHTML = '<div class="info-text">Ma&#39;lumot kelmadi.</div>'; return;
+    }
+
+    el.innerHTML = results.map(r => `
       <div class="aristocrat-row" onclick="loadTickerFromScreener('${r.s}')">
         <span class="cal-ticker">${r.s}</span>
         <span style="font-family:var(--mono)">$${formatPrice(r.q.c)}</span>
