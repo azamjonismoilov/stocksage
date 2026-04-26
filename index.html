@@ -5093,8 +5093,12 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
       })
     });
 
-    if (!res.ok) throw new Error('API ' + res.status);
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error('API ' + res.status + ': ' + errText.substring(0, 200));
+    }
     const data = await res.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
     const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
     let json = text.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
     const fb = json.indexOf('{'), lb = json.lastIndexOf('}');
