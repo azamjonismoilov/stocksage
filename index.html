@@ -1962,8 +1962,9 @@
     align-items: center;
     gap: 0;
     white-space: nowrap;
-    animation: tickerScroll 10s linear infinite;
+    animation: tickerScroll 25s linear infinite;
     will-change: transform;
+    min-width: max-content;
   }
 
   .ticker-tape:hover { animation-play-state: paused; }
@@ -4944,12 +4945,7 @@ Return JSON only. Maximum 3 catalysts.`;
         renderFearDetail(val, cls, lbl, f.data?.[0]?.value_classification);
       }
 
-      // Adjust animation speed
-      const tape = document.getElementById('ticker-tape');
-      if (tape) {
-        const w = tape.scrollWidth / 2;
-        tape.style.animationDuration = Math.max(8, w / 35) + 's';
-      }
+      // Animation speed fixed in CSS — no dynamic adjustment needed
 
     } catch(e) { /* silent */ }
   }
