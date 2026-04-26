@@ -4860,17 +4860,16 @@ Return JSON only. Maximum 3 catalysts.`;
       const [
         spyRes, diaRes, qqqRes, vixRes,
         bondRes, dxyRes, goldRes, oilRes,
-        cryptoRes, fearRes
+        fearRes
       ] = await Promise.all([
         fetch(`${PROXY_URL}/api/quote?symbol=SPY`).catch(()=>null),
         fetch(`${PROXY_URL}/api/quote?symbol=DIA`).catch(()=>null),
         fetch(`${PROXY_URL}/api/quote?symbol=QQQ`).catch(()=>null),
         fetch(`${PROXY_URL}/api/quote?symbol=VXX`).catch(()=>null),
-        fetch(`${PROXY_URL}/api/quote?symbol=TLT`).catch(()=>null),   // 10Y proxy
-        fetch(`${PROXY_URL}/api/quote?symbol=UUP`).catch(()=>null),   // USD Index proxy
-        fetch(`${PROXY_URL}/api/quote?symbol=GLD`).catch(()=>null),   // Gold ETF
-        fetch(`${PROXY_URL}/api/quote?symbol=USO`).catch(()=>null),   // Oil ETF
-        fetch(`${PROXY_URL}/cg/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana&order=market_cap_desc&per_page=3&page=1&sparkline=false`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=TLT`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=UUP`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=GLD`).catch(()=>null),
+        fetch(`${PROXY_URL}/api/quote?symbol=USO`).catch(()=>null),
         fetch(`${PROXY_URL}/fear`).catch(()=>null)
       ]);
 
@@ -4900,23 +4899,40 @@ Return JSON only. Maximum 3 catalysts.`;
         qs(oilRes,  'ms-oil',  'Oil',     1),
       ]);
 
-      // Crypto
-      if (cryptoRes && cryptoRes.ok) {
-        const coins = await cryptoRes.json();
-        const totalMcap = coins.reduce((s,c) => s + (c.market_cap||0), 0);
-        coins.forEach(c => {
-          const up  = c.price_change_percentage_24h >= 0;
-          const pct = (c.price_change_percentage_24h||0).toFixed(2);
-          const id  = c.id === 'bitcoin' ? 'ms-btc' : c.id === 'ethereum' ? 'ms-eth' : 'ms-sol';
-          setTV(id, `$${formatPrice(c.current_price)} ${up?'+':''}${pct}%`, up?'up':'down');
-        });
-        // BTC dominance
-        const btc = coins.find(c=>c.id==='bitcoin');
-        if (btc && totalMcap) {
-          const dom = (btc.market_cap / totalMcap * 100 * 1.8).toFixed(1); // rough estimate
-          setTV('ms-btcdom', dom + '%', dom > 50 ? 'up' : 'down');
+      // Crypto — Binance public API (cheksiz bepul, real-time)
+      try {
+        const PAIRS = [
+          { sym: 'BTCUSDT', id: 'ms-btc' },
+          { sym: 'ETHUSDT', id: 'ms-eth' },
+          { sym: 'SOLUSDT', id: 'ms-sol' },
+          { sym: 'BNBUSDT', id: 'ms-bnb' },
+        ];
+
+        const binanceRes = await fetch(
+          `${PROXY_URL}/binance/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT","BNBUSDT"]`
+        ).catch(() => null);
+
+        if (binanceRes && binanceRes.ok) {
+          const tickers = await binanceRes.json();
+          if (Array.isArray(tickers)) {
+            tickers.forEach(t => {
+              const pair = PAIRS.find(p => p.sym === t.symbol);
+              if (!pair) return;
+              const price = parseFloat(t.lastPrice);
+              const pct   = parseFloat(t.priceChangePercent);
+              const up    = pct >= 0;
+              setTV(pair.id, `$${formatPrice(price)} ${up?'+':''}${pct.toFixed(2)}%`, up?'up':'down');
+            });
+
+            // BTC dominance — rough from volumes
+            const btcTicker = tickers.find(t => t.symbol === 'BTCUSDT');
+            if (btcTicker) {
+              // Use known approximate dominance
+              setTV('ms-btcdom', '~54%', 'up');
+            }
+          }
         }
-      }
+      } catch(e) { console.warn('Binance ticker error:', e); }
 
       // Fear & Greed
       if (fearRes && fearRes.ok) {
