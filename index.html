@@ -4350,6 +4350,8 @@ Return JSON only. Maximum 3 catalysts.`;
 
   function initListTabs() {
     document.querySelectorAll('.list-tab').forEach(tab => {
+      if (tab._listBound) return;
+      tab._listBound = true;
       tab.addEventListener('click', () => {
         document.querySelectorAll('.list-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.list-panel').forEach(p => p.classList.remove('active'));
@@ -4370,7 +4372,7 @@ Return JSON only. Maximum 3 catalysts.`;
       if (type === 'highs' || type === 'lows') await load52Week(el, type === 'highs');
       else if (type === 'aristocrats') await loadAristocrats(el);
       else if (type === 'options') await loadUnusualOptions(el);
-    } catch(e) { el.innerHTML = '<div class="info-text">Yuklanmadi.</div>'; }
+    } catch(e) { console.error('loadListPanel error:', type, e); el.innerHTML = '<div class="info-text">Xato: ' + e.message + '</div>'; }
   }
 
   // Batch fetch — Finnhub rate limit ga tushamaslik uchun 5 tadan
@@ -4398,6 +4400,8 @@ Return JSON only. Maximum 3 catalysts.`;
       'ORCL','AMD','CRM','BAC','KO','WMT','PEP','TMO','MCD','CSCO'];
 
     const raw = await batchQuotes(syms, el);
+    console.log('52W raw results:', raw.length, raw[0]);
+
     const results = raw
       .filter(x => x && x.q && x.q.c && x.q.h)
       .map(x => {
@@ -4408,8 +4412,10 @@ Return JSON only. Maximum 3 catalysts.`;
       .sort((a,b) => isHigh ? b.pct - a.pct : a.pct - b.pct)
       .slice(0, 15);
 
+    console.log('52W filtered results:', results.length);
+
     if (!results.length) {
-      el.innerHTML = '<div class="info-text">Ma&#39;lumot kelmadi. Finnhub API tekshiring.</div>'; return;
+      el.innerHTML = '<div class="info-text">Ma&#39;lumot kelmadi. (raw=' + raw.length + ')</div>'; return;
     }
 
     el.innerHTML = results.map((r,i) => `
@@ -4434,12 +4440,24 @@ Return JSON only. Maximum 3 catalysts.`;
   ];
 
   async function loadAristocrats(el) {
-    const raw = await batchQuotes(ARISTOCRATS, el);
-    const results = raw.filter(x => x && x.q && x.q.c).map(x => ({
-      s: x.ticker,
-      y: typeof x.item === 'object' ? x.item.y : 0,
-      q: x.q
-    }));
+    // Fetch one by one with metadata preserved
+    el.innerHTML = '<div class="info-text">Yuklanmoqda... 0/' + ARISTOCRATS.length + '</div>';
+    const results = [];
+
+    for (let i = 0; i < ARISTOCRATS.length; i++) {
+      const a = ARISTOCRATS[i];
+      if (i % 5 === 0) {
+        el.innerHTML = '<div class="info-text">Yuklanmoqda... ' + i + '/' + ARISTOCRATS.length + '</div>';
+        if (i > 0) await new Promise(r => setTimeout(r, 250));
+      }
+      try {
+        const res = await fetch(`${PROXY_URL}/api/quote?symbol=${a.s}`);
+        if (res.ok) {
+          const q = await res.json();
+          if (q.c) results.push({ s: a.s, y: a.y, q });
+        }
+      } catch(e) {}
+    }
 
     if (!results.length) {
       el.innerHTML = '<div class="info-text">Ma&#39;lumot kelmadi.</div>'; return;
@@ -4457,27 +4475,48 @@ Return JSON only. Maximum 3 catalysts.`;
   }
 
   async function loadUnusualOptions(el) {
-    const syms = ['AAPL','MSFT','NVDA','TSLA','AMZN','SPY','QQQ','META'];
-    const results = [];
-    for (const sym of syms) {
-      try {
-        const r = await fetch(`${PROXY_URL}/api/stock/option-chain?symbol=${sym}`);
-        if (!r.ok) continue;
-        const d = await r.json();
-        const opts = [...(d.options?.[0]?.call||[]),...(d.options?.[0]?.put||[])]
-          .filter(o=>o.openInterest>5000).sort((a,b)=>b.openInterest-a.openInterest).slice(0,2);
-        opts.forEach(o=>results.push({sym,...o}));
-      } catch(e){}
+    el.innerHTML = '<div class="info-text">AI orqali unusual options yuklanmoqda...</div>';
+    try {
+      const res = await fetch(`${PROXY_URL}/claude`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 800,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          messages: [{
+            role: 'user',
+            content: `Search for today's top unusual options activity in the stock market. Find 10-15 notable unusual options trades (large call/put volume, high open interest). Return ONLY this JSON array, no markdown:
+[{"sym":"AAPL","type":"CALL","strike":200,"expiry":"2025-05-16","oi":50000,"note":"Large call sweep"},...]`
+          }]
+        })
+      });
+
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+      const json = text.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
+      const fb = json.indexOf('['), lb = json.lastIndexOf(']');
+      const items = JSON.parse(fb !== -1 ? json.substring(fb, lb+1) : json);
+
+      if (!items.length) throw new Error('empty');
+
+      el.innerHTML = `
+        <div style="margin-bottom:12px;font-family:var(--mono);font-size:11px;color:var(--text-muted)">
+          AI web search orqali topilgan bugungi unusual options
+        </div>
+        ${items.map(o => `
+        <div class="options-row" onclick="loadTickerFromScreener('${escapeHtml(o.sym||'')}')">
+          <span class="opt-type ${(o.type||'call').toLowerCase()}">${(o.type||'CALL').toUpperCase()}</span>
+          <span class="cal-ticker">${escapeHtml(o.sym||'')}</span>
+          <span style="font-family:var(--mono);font-size:12px">Strike: $${o.strike||'N/A'}</span>
+          <span style="font-family:var(--mono);font-size:12px">OI: ${o.oi ? Number(o.oi).toLocaleString() : 'N/A'}</span>
+          <span class="cal-date">${escapeHtml(o.expiry||'N/A')}</span>
+        </div>`).join('')}
+      `;
+    } catch(e) {
+      el.innerHTML = '<div class="info-text">Unusual options yuklanmadi: ' + e.message + '</div>';
     }
-    if (!results.length) { el.innerHTML = '<div class="info-text">Options data mavjud emas.</div>'; return; }
-    el.innerHTML = results.slice(0,20).map(o => `
-      <div class="options-row" onclick="loadTickerFromScreener('${o.sym}')">
-        <span class="opt-type ${(o.type||'call').toLowerCase()}">${(o.type||'CALL').toUpperCase()}</span>
-        <span class="cal-ticker">${o.sym}</span>
-        <span style="font-family:var(--mono);font-size:12px">Strike: $${o.strike||'N/A'}</span>
-        <span style="font-family:var(--mono);font-size:12px">OI: ${(o.openInterest||0).toLocaleString()}</span>
-        <span class="cal-date">${o.expirationDate||'N/A'}</span>
-      </div>`).join('');
   }
 
 
@@ -4592,7 +4631,7 @@ Return JSON only. Maximum 3 catalysts.`;
           <div class="trending-change ${chg>=0?'st-up':'st-down'}">${chg>=0?'+':''}${chg.toFixed(2)}%</div>
         </div>`;
       }).join('');
-    } catch(e) { el.innerHTML = '<div class="info-text">Yuklanmadi.</div>'; }
+    } catch(e) { console.error('loadListPanel error:', type, e); el.innerHTML = '<div class="info-text">Xato: ' + e.message + '</div>'; }
   }
 
   async function loadGainersLosers() {
@@ -4632,7 +4671,7 @@ Return JSON only. Maximum 3 catalysts.`;
             <td class="insider-role">${c.activated_at?new Date(c.activated_at*1000).toLocaleDateString():'N/A'}</td>
           </tr>`).join('')}
         </tbody></table>`;
-    } catch(e) { el.innerHTML = '<div class="info-text">Yuklanmadi.</div>'; }
+    } catch(e) { console.error('loadListPanel error:', type, e); el.innerHTML = '<div class="info-text">Xato: ' + e.message + '</div>'; }
   }
 
   function loadCryptoFromMarket(symbol) {
@@ -4670,7 +4709,10 @@ Return JSON only. Maximum 3 catalysts.`;
         if (page === 'crypto-market' && !cryptoMarketLoaded) loadCryptoMarket();
         if (page === 'calendar' && !calLoaded.earnings) loadCalendarPage();
         if (page === 'congress' && !congressLoaded) loadCongressPage();
-        if (page === 'lists' && !listLoaded.highs) { initListTabs(); loadListPanel('highs'); }
+        if (page === 'lists') {
+          initListTabs();
+          if (!listLoaded.highs) loadListPanel('highs');
+        }
         if (page === 'insider' && !insiderLoaded) {
           insiderLoaded = true;
           document.getElementById('insider-results').innerHTML =
