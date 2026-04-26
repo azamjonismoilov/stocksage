@@ -2630,6 +2630,108 @@
     .halal-result-row { grid-template-columns: auto 1fr auto; }
   }
 
+
+  /* ═══════════════════════════════════════════════════════
+     HALOL DETAIL PANEL (sahifa ichida, modal emas)
+  ═══════════════════════════════════════════════════════ */
+  .halal-detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+    padding: 0;
+  }
+
+  .halal-detail-panel {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 680px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 24px 28px 32px;
+    animation: slideUp 0.3s cubic-bezier(.16,1,.3,1);
+    position: relative;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .halal-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .halal-panel-ticker {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.03em;
+  }
+
+  .halal-panel-close {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .halal-panel-close:hover { color: var(--text); border-color: var(--text-muted); }
+
+  .halal-panel-nav {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .halal-nav-btn {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    justify-content: center;
+  }
+
+  .halal-nav-btn:hover { color: var(--text); border-color: var(--text-muted); }
+  .halal-nav-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+
+  @media (max-width: 480px) {
+    .halal-detail-panel { padding: 20px 16px 24px; border-radius: 16px 16px 0 0; }
+    .halal-panel-ticker { font-size: 22px; }
+  }
+
 </style>
 </head>
 <body>
@@ -5415,7 +5517,7 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
     el.innerHTML = pageItems.map(r => {
       const vCls = r.verdict === 'HALOL' ? 'halal' : r.verdict === 'SHUBHALI' ? 'doubtful' : 'haram';
       const gradeCls = 'grade-' + (r.grade || 'C');
-      return `<div class="halal-result-row" onclick="loadTickerFromScreener('${r.ticker}')">
+      return `<div class="halal-result-row" onclick="showHalalDetail('${r.ticker}')" style="cursor:pointer">
         <div class="${gradeCls} halal-grade">${r.grade||'?'}</div>
         <div style="min-width:0">
           <div style="font-family:var(--mono);font-weight:700;font-size:13px">${r.ticker}</div>
@@ -5425,9 +5527,12 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
         <span class="halal-badge ${vCls}" style="padding:5px 12px;font-size:11px">
           <i class="ri ${vIcon(r.verdict)}"></i> ${r.verdict}
         </span>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-family:var(--mono);font-weight:700;font-size:15px">${r.score||0}%</div>
-          <div style="font-family:var(--mono);font-size:10px;color:var(--text-muted)">Haram: ${r.haram_revenue_pct||0}%</div>
+        <div style="text-align:right;flex-shrink:0;display:flex;align-items:center;gap:10px">
+          <div>
+            <div style="font-family:var(--mono);font-weight:700;font-size:15px">${r.score||0}%</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text-muted)">Haram: ${r.haram_revenue_pct||0}%</div>
+          </div>
+          <i class="ri ri-arrow-right-s-line" style="color:var(--text-muted);font-size:18px"></i>
         </div>
       </div>`;
     }).join('') || '<div class="info-text">Topilmadi.</div>';
@@ -5451,6 +5556,133 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
     halalPage = page;
     renderHalalBatch(document.getElementById('halal-filter')?.value || '');
     document.getElementById('halal-batch-result')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+
+
+  // ── Halol detail modal ────────────────────────────────────────────────────
+  function showHalalDetail(ticker) {
+    const r = halalBatchResults.find(x => x.ticker === ticker);
+
+    // Overlay yaratamiz
+    const overlay = document.createElement('div');
+    overlay.className = 'halal-detail-overlay';
+    overlay.id = 'halal-overlay';
+
+    const vCls = r ? (r.verdict === 'HALOL' ? 'halal' : r.verdict === 'SHUBHALI' ? 'doubtful' : 'haram') : 'neutral';
+    const scoreColor = r ? ((r.score||0) >= 70 ? 'var(--bull)' : (r.score||0) >= 40 ? 'var(--warn)' : 'var(--bear)') : 'var(--text)';
+
+    overlay.innerHTML = `
+      <div class="halal-detail-panel" id="halal-detail-panel">
+        <div class="halal-panel-header">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span class="halal-panel-ticker">${ticker}</span>
+            ${r ? `<span class="halal-badge ${vCls}" style="font-size:12px">${r.verdict}</span>` : ''}
+          </div>
+          <button class="halal-panel-close" onclick="closeHalalDetail()">
+            <i class="ri ri-close-line"></i>
+          </button>
+        </div>
+
+        <!-- Static info -->
+        ${r ? `
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
+          <div class="halal-score-ring" style="color:${scoreColor};border-color:${scoreColor};width:64px;height:64px;font-size:22px">
+            ${r.score||0}
+          </div>
+          <div>
+            <div style="font-size:14px;color:var(--text-dim);margin-bottom:6px">${escapeHtml(r.company||'')}</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">
+              Sektor: ${r.sector||'N/A'} &nbsp;|&nbsp;
+              Haram daromad: ${r.haram_revenue_pct||0}% &nbsp;|&nbsp;
+              Faiz qarz: ${r.interest_debt_pct||0}%
+            </div>
+          </div>
+        </div>
+        <div style="font-size:14px;color:var(--text-dim);line-height:1.6;padding:14px;background:var(--bg-card);border-radius:10px;border-left:3px solid ${scoreColor};margin-bottom:16px">
+          ${escapeHtml(r.summary||'')}
+        </div>
+        ${r.purification_pct > 0 ? `
+        <div class="purify-box" style="margin-bottom:16px">
+          <strong><i class="ri ri-hand-heart-fill"></i> Tozalash:</strong>
+          Foydangizning <strong>${r.purification_pct.toFixed(2)}%</strong>ini sadaqa qilishingiz tavsiya etiladi.
+        </div>` : ''}
+        ` : `<div class="info-text">Ma'lumot yuklanmoqda...</div>`}
+
+        <!-- AI deep analysis button -->
+        <div id="halal-ai-result-${ticker}">
+          <button class="screen-btn" onclick="runHalalAI('${ticker}')" style="width:100%;justify-content:center;margin-bottom:4px">
+            <i class="ri ri-sparkling-2-fill"></i> AI bilan chuqurroq tahlil qilish
+          </button>
+          <div style="text-align:center;font-family:var(--mono);font-size:10px;color:var(--text-muted)">
+            Claude AI web search orqali real-time tahlil qiladi
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="halal-panel-nav">
+          <button class="halal-nav-btn" onclick="closeHalalDetail()">
+            <i class="ri ri-arrow-left-line"></i> Ro'yxatga qaytish
+          </button>
+          <button class="halal-nav-btn primary" onclick="goToFullAnalysis('${ticker}')">
+            <i class="ri ri-bar-chart-fill"></i> To'liq tahlil
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Overlay background click — yopish
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) closeHalalDetail();
+    });
+
+    // ESC bilan yopish
+    document.addEventListener('keydown', halalEscHandler);
+  }
+
+  function halalEscHandler(e) {
+    if (e.key === 'Escape') closeHalalDetail();
+  }
+
+  function closeHalalDetail() {
+    const overlay = document.getElementById('halal-overlay');
+    if (overlay) overlay.remove();
+    document.removeEventListener('keydown', halalEscHandler);
+  }
+
+  async function runHalalAI(ticker) {
+    const el = document.getElementById('halal-ai-result-' + ticker);
+    if (!el) return;
+    el.innerHTML = '<div class="info-text">AI tahlil qilinmoqda...</div>';
+    try {
+      const r = await getHalalAnalysis(ticker);
+      // Cache ni yangilaymiz
+      const idx = halalBatchResults.findIndex(x => x.ticker === ticker);
+      if (idx !== -1) {
+        halalBatchResults[idx] = { ...halalBatchResults[idx], ...r, _aiChecked: true };
+      }
+      el.innerHTML = renderHalalCard(r);
+    } catch(e) {
+      el.innerHTML = '<div class="info-text">AI tahlil amalga oshmadi: ' + e.message + '</div>';
+    }
+  }
+
+  function goToFullAnalysis(ticker) {
+    closeHalalDetail();
+    // Stock sifatida tahlilga o'tamiz
+    currentMarket = 'stock';
+    document.querySelectorAll('.market-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.market === 'stock'));
+    document.getElementById('search-box').classList.remove('crypto-mode');
+    document.getElementById('analyze-btn').classList.remove('crypto-mode');
+    document.getElementById('analyze-btn').style.background = '';
+    document.getElementById('analyze-btn').style.color = '';
+    renderQuickPicks();
+    document.getElementById('ticker-input').value = ticker;
+    navigateTo('home');
+    analyze();
   }
 
 
