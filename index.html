@@ -2732,6 +2732,203 @@
     .halal-panel-ticker { font-size: 22px; }
   }
 
+
+  /* ═══════════════════════════════════════════════════════
+     PUMP SIGNAL PAGE
+  ═══════════════════════════════════════════════════════ */
+  .pump-warning {
+    background: rgba(255,165,2,0.08);
+    border: 1px solid rgba(255,165,2,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .pump-warning i {
+    color: var(--warn);
+    font-size: 22px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .pump-warning-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .pump-warning-text strong { color: var(--warn); }
+
+  .pump-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 14px;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pump-card:hover {
+    border-color: var(--bull);
+    transform: translateY(-2px);
+  }
+
+  .pump-card.high-risk { border-left: 3px solid var(--bear); }
+  .pump-card.med-risk  { border-left: 3px solid var(--warn); }
+  .pump-card.low-risk  { border-left: 3px solid var(--bull); }
+
+  .pump-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pump-symbol {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .pump-change {
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+  }
+
+  .pump-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: 10px;
+  }
+
+  .pump-stat {
+    text-align: center;
+  }
+
+  .pump-stat-val {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .pump-stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .pump-explain {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .pump-explain-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+
+  .pump-risk-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .pump-risk-tag.high {
+    background: rgba(255,71,87,0.15);
+    color: var(--bear);
+    border: 1px solid rgba(255,71,87,0.3);
+  }
+
+  .pump-risk-tag.medium {
+    background: rgba(255,165,2,0.15);
+    color: var(--warn);
+    border: 1px solid rgba(255,165,2,0.3);
+  }
+
+  .pump-risk-tag.low {
+    background: rgba(0,217,126,0.15);
+    color: var(--bull);
+    border: 1px solid rgba(0,217,126,0.3);
+  }
+
+  .pump-history {
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    border-left: 2px solid var(--text-muted);
+  }
+
+  .pump-history strong { color: var(--text-dim); }
+
+  .pump-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+  }
+
+  .pump-refresh-btn {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .pump-refresh-btn:hover { background: #e6ff5c; }
+  .pump-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 </style>
 </head>
 <body>
@@ -2816,6 +3013,9 @@
     </button>
     <button class="nav-btn" data-page="halal">
       <i class="ri-shield-check-fill"></i><span>Halol</span>
+    </button>
+    <button class="nav-btn" data-page="pump">
+      <i class="ri-rocket-2-fill"></i><span>Pump Signal</span>
     </button>
   </nav>
 
@@ -3245,6 +3445,51 @@
 
       <!-- Pagination -->
       <div id="halal-pagination" style="display:flex;gap:6px;justify-content:center;margin-top:20px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+  <!-- PUMP SIGNAL PAGE -->
+  <div class="page" id="page-pump">
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-icon"><i class="ri-rocket-2-fill" style="color:var(--bull)"></i></div>
+        <div class="card-title" id="pump-title">Bugungi Eng Faol Kriptolar — AI Tahlili</div>
+      </div>
+
+      <div class="pump-warning">
+        <i class="ri-error-warning-fill"></i>
+        <div class="pump-warning-text">
+          <strong>OGOHLANTIRISH:</strong> Bu sahifa investitsiya maslahati emas, faqat ma'lumot beradi.
+          Pump'larning <strong>80% keyin tushib ketadi</strong>. FOMO bilan harakat qilmang.
+          Faqat yo'qotishga tayyor pulingiz bilan tavakkal qiling.
+        </div>
+      </div>
+
+      <!-- Market type toggle -->
+      <div class="market-toggle" style="margin-bottom:16px;max-width:400px">
+        <button class="market-btn active" data-pump-type="crypto"><i class="ri-bit-coin-fill"></i> Kripto</button>
+        <button class="market-btn" data-pump-type="stock"><i class="ri-line-chart-fill"></i> Aksiyalar</button>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+        <button class="pump-refresh-btn" id="pump-refresh-btn">
+          <i class="ri-refresh-line"></i> Yangilash
+        </button>
+        <select class="filter-select" id="pump-filter" style="max-width:180px">
+          <option value="all">Barchasi</option>
+          <option value="top10">Top 10</option>
+          <option value="high">Yuqori xavf</option>
+          <option value="medium">O'rtacha xavf</option>
+          <option value="low">Kam xavf</option>
+        </select>
+        <span id="pump-count" style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-left:auto"></span>
+      </div>
+
+      <div id="pump-results">
+        <div class="pump-loading">
+          "Yangilash" tugmasini bosing — top harakat qilayotgan kriptolar tahlil qilinadi
+        </div>
+      </div>
     </div>
   </div>
 
@@ -5685,6 +5930,339 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
   }
 
 
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PUMP SIGNAL PAGE
+  // ═══════════════════════════════════════════════════════════════════════════
+  let pumpLoaded = false;
+  let pumpData = [];
+
+  let pumpType = 'crypto'; // 'crypto' yoki 'stock'
+
+  function initPumpPage() {
+    if (pumpLoaded) return;
+    pumpLoaded = true;
+
+    document.getElementById('pump-refresh-btn').addEventListener('click', () => {
+      pumpType === 'crypto' ? loadPumpCrypto() : loadPumpStocks();
+    });
+    document.getElementById('pump-filter').addEventListener('change', renderPumpResults);
+
+    document.querySelectorAll('[data-pump-type]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pumpType = btn.dataset.pumpType;
+        document.querySelectorAll('[data-pump-type]').forEach(b =>
+          b.classList.toggle('active', b.dataset.pumpType === pumpType));
+        document.getElementById('pump-title').textContent =
+          pumpType === 'crypto'
+            ? 'Bugungi Eng Faol Kriptolar — AI Tahlili'
+            : 'Bugungi Eng Faol Aksiyalar — AI Tahlili';
+        pumpData = [];
+        document.getElementById('pump-results').innerHTML =
+          '<div class="pump-loading">Yangilash tugmasini bosing</div>';
+        pumpType === 'crypto' ? loadPumpCrypto() : loadPumpStocks();
+      });
+    });
+
+    loadPumpCrypto();
+  }
+
+  async function loadPumpCrypto() {
+    const btn = document.getElementById('pump-refresh-btn');
+    const el  = document.getElementById('pump-results');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Yuklanmoqda...';
+    el.innerHTML = '<div class="pump-loading">Binance dan top movers olinmoqda...</div>';
+
+    try {
+      const res = await fetch(`${PROXY_URL}/binance/api/v3/ticker/24hr`);
+      if (!res.ok) throw new Error('Binance ' + res.status);
+      const all = await res.json();
+
+      const movers = all
+        .filter(t => t.symbol.endsWith('USDT') && !t.symbol.includes('UPUSDT') && !t.symbol.includes('DOWNUSDT'))
+        .filter(t => parseFloat(t.priceChangePercent) > 5)
+        .filter(t => parseFloat(t.quoteVolume) > 500000)
+        .map(t => ({
+          symbol: t.symbol.replace('USDT', ''),
+          price: parseFloat(t.lastPrice),
+          change24h: parseFloat(t.priceChangePercent),
+          volume: parseFloat(t.quoteVolume),
+          trades: parseInt(t.count),
+          high: parseFloat(t.highPrice),
+          low: parseFloat(t.lowPrice),
+          volumeScore: parseFloat(t.quoteVolume) / 1000000,
+        }))
+        .sort((a, b) => b.change24h - a.change24h)
+        .slice(0, 15);
+
+      if (!movers.length) {
+        el.innerHTML = '<div class="pump-loading">Hozir kuchli harakat topilmadi.</div>';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-refresh-line"></i> Yangilash';
+        return;
+      }
+
+      el.innerHTML = '<div class="pump-loading">AI tahlil qilinmoqda... (~30 soniya)</div>';
+
+      pumpData = movers.map(m => {
+        let risk = 'medium';
+        if (m.change24h > 50 || m.volume < 2000000) risk = 'high';
+        else if (m.change24h < 15 && m.volume > 50000000) risk = 'low';
+        return { ...m, risk };
+      });
+
+      // AI tushuntirish — top 8 uchun
+      const aiPromises = pumpData.slice(0, 8).map(p =>
+        getPumpExplanation(p).catch(() => ({
+          explanation: p.symbol + " hajmi katta. AI tahlili yuklanmadi.",
+          history: ""
+        }))
+      );
+
+      const explanations = await Promise.all(aiPromises);
+      pumpData.slice(0, 8).forEach((p, i) => {
+        p.explanation = explanations[i]?.explanation || '';
+        p.history = explanations[i]?.history || '';
+      });
+
+      // Qolganlar — template tushuntirish
+      pumpData.slice(8).forEach(p => {
+        p.explanation = p.symbol + " bugun +" + p.change24h.toFixed(1) + "% o'sayapti. Hajm: $" + formatBigNumber(p.volume) + ". Texnik tahlil qiling, FOMO emas.";
+        p.history = '';
+      });
+
+      renderPumpResults();
+    } catch(e) {
+      el.innerHTML = '<div class="pump-loading">Xato: ' + e.message + '</div>';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ri-refresh-line"></i> Yangilash';
+    }
+  }
+
+  async function getPumpExplanation(p) {
+    const prompt = `${p.symbol} kripto bugun +${p.change24h.toFixed(1)}% oshdi. 24 soat hajm: $${formatBigNumber(p.volume)}. Search the web for why this token is pumping today.
+
+Return ONLY this JSON (no markdown):
+{"explanation":"2-3 jumla o'zbek tilida nega o'sayapti","history":"1 jumla o'zbek tilida tarixiy o'xshashlik"}`;
+
+    const res = await fetch(`${PROXY_URL}/claude`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) throw new Error('AI ' + res.status);
+    const data = await res.json();
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    let json = text.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+    const fb = json.indexOf('{'), lb = json.lastIndexOf('}');
+    if (fb !== -1) json = json.substring(fb, lb + 1);
+    return JSON.parse(json);
+  }
+
+  // Top 50 S&P 500 + popular stocks for pump scanning
+  const PUMP_STOCK_TICKERS = [
+    'AAPL','MSFT','NVDA','GOOGL','AMZN','META','TSLA','AVGO','AMD','CRM',
+    'NFLX','ORCL','INTC','QCOM','MU','MRVL','PLTR','SMCI','ARM','SNOW',
+    'COIN','HOOD','RBLX','SHOP','UBER','LYFT','ABNB','DASH','SOFI','PYPL',
+    'JPM','BAC','GS','XOM','CVX','BA','GE','CAT','DIS','NKE',
+    'MCD','SBUX','WMT','TGT','HD','LOW','UNH','JNJ','PFE','LLY',
+    'GILD','MRNA','BNTX','ROKU','SPOT','TWLO','DDOG','NET','ZS','OKTA'
+  ];
+
+  async function loadPumpStocks() {
+    const btn = document.getElementById('pump-refresh-btn');
+    const el  = document.getElementById('pump-results');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Yuklanmoqda...';
+    el.innerHTML = '<div class="pump-loading">Aksiyalar tahlil qilinmoqda... 0/' + PUMP_STOCK_TICKERS.length + '</div>';
+
+    try {
+      // Batch fetch — 5 tadan
+      const results = [];
+      for (let i = 0; i < PUMP_STOCK_TICKERS.length; i += 5) {
+        const chunk = PUMP_STOCK_TICKERS.slice(i, i + 5);
+        el.innerHTML = '<div class="pump-loading">Yuklanmoqda... ' + Math.min(i+5, PUMP_STOCK_TICKERS.length) + '/' + PUMP_STOCK_TICKERS.length + '</div>';
+
+        const batch = await Promise.all(chunk.map(async t => {
+          try {
+            const r = await fetch(`${PROXY_URL}/api/quote?symbol=${t}`);
+            if (!r.ok) return null;
+            const q = await r.json();
+            if (!q.c) return null;
+            return {
+              symbol: t,
+              price: q.c,
+              change24h: q.dp || 0,
+              high: q.h,
+              low: q.l,
+              prevClose: q.pc,
+            };
+          } catch(e) { return null; }
+        }));
+        results.push(...batch.filter(Boolean));
+        if (i + 5 < PUMP_STOCK_TICKERS.length) await new Promise(r => setTimeout(r, 250));
+      }
+
+      // Faqat 3%+ o'sganlar
+      const movers = results
+        .filter(r => r.change24h >= 3)
+        .sort((a, b) => b.change24h - a.change24h)
+        .slice(0, 15);
+
+      if (!movers.length) {
+        el.innerHTML = '<div class="pump-loading">Bugun kuchli o\'sayotgan aksiya topilmadi (>3%).</div>';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-refresh-line"></i> Yangilash';
+        return;
+      }
+
+      el.innerHTML = '<div class="pump-loading">' + movers.length + ' ta aksiya topildi. AI tahlil qilinmoqda...</div>';
+
+      // Risk: kichik o'zgarish + mega cap = past, katta o'zgarish = yuqori
+      pumpData = movers.map(m => {
+        let risk = 'medium';
+        if (m.change24h > 15) risk = 'high';
+        else if (m.change24h < 5) risk = 'low';
+        // Volatillik
+        const volatility = m.high && m.low ? ((m.high - m.low) / m.low * 100) : 0;
+        return { ...m, risk, volume: 0, trades: 0, volatility };
+      });
+
+      // AI tushuntirish — top 8 uchun
+      const aiPromises = pumpData.slice(0, 8).map(p =>
+        getStockPumpExplanation(p).catch(() => ({
+          explanation: p.symbol + " bugun +" + p.change24h.toFixed(2) + "% o'sayapti. AI tahlili yuklanmadi.",
+          history: ""
+        }))
+      );
+
+      const explanations = await Promise.all(aiPromises);
+      pumpData.slice(0, 8).forEach((p, i) => {
+        p.explanation = explanations[i]?.explanation || '';
+        p.history = explanations[i]?.history || '';
+      });
+
+      pumpData.slice(8).forEach(p => {
+        p.explanation = p.symbol + " bugun +" + p.change24h.toFixed(2) + "% o'sayapti. Earnings, analyst upgrade yoki bozor sentimentini tekshiring.";
+        p.history = '';
+      });
+
+      renderPumpResults();
+    } catch(e) {
+      el.innerHTML = '<div class="pump-loading">Xato: ' + e.message + '</div>';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ri-refresh-line"></i> Yangilash';
+    }
+  }
+
+  async function getStockPumpExplanation(p) {
+    const prompt = `${p.symbol} aksiya bugun +${p.change24h.toFixed(2)}% oshdi. Search the web for why this stock is up today. Look for: earnings beat, analyst upgrade, M&A news, FDA approval, AI announcement, partnership, or sector rotation.
+
+Return ONLY this JSON (no markdown):
+{"explanation":"2-3 jumla o'zbek tilida nega o'sayapti","history":"1 jumla o'zbek tilida — bu kompaniyaning so'nggi pump'lardan keyin qanday harakat qilganligi"}`;
+
+    const res = await fetch(`${PROXY_URL}/claude`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) throw new Error('AI ' + res.status);
+    const data = await res.json();
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    let json = text.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+    const fb = json.indexOf('{'), lb = json.lastIndexOf('}');
+    if (fb !== -1) json = json.substring(fb, lb + 1);
+    return JSON.parse(json);
+  }
+
+  function renderPumpResults() {
+    const filter = document.getElementById('pump-filter')?.value || 'all';
+    const el = document.getElementById('pump-results');
+    const cntEl = document.getElementById('pump-count');
+
+    let items = [...pumpData];
+    if (filter === 'top10')   items = items.slice(0, 10);
+    if (filter === 'high')    items = items.filter(p => p.risk === 'high');
+    if (filter === 'medium')  items = items.filter(p => p.risk === 'medium');
+    if (filter === 'low')     items = items.filter(p => p.risk === 'low');
+
+    if (cntEl) cntEl.textContent = items.length + ' ta kripto';
+
+    if (!items.length) {
+      el.innerHTML = '<div class="pump-loading">Filtrga mos kripto topilmadi.</div>';
+      return;
+    }
+
+    el.innerHTML = items.map(p => {
+      const riskCls = p.risk === 'high' ? 'high-risk' : p.risk === 'medium' ? 'med-risk' : 'low-risk';
+      const riskLbl = p.risk === 'high' ? 'Yuqori xavf' : p.risk === 'medium' ? 'Orta xavf' : 'Kam xavf';
+      const riskTag = p.risk === 'high' ? 'high' : p.risk === 'medium' ? 'medium' : 'low';
+      const riskIcon = p.risk === 'high' ? 'ri-alarm-warning-fill' : p.risk === 'medium' ? 'ri-error-warning-fill' : 'ri-shield-check-fill';
+
+      const priceFmt = p.price < 0.01 ? p.price.toFixed(6) : p.price < 1 ? p.price.toFixed(4) : p.price.toFixed(2);
+      const tradesFmt = p.trades > 1000 ? (p.trades/1000).toFixed(0) + 'K' : p.trades;
+      const isStock = pumpType === 'stock';
+
+      return '<div class="pump-card ' + riskCls + '" onclick="loadPumpToAnalyze(\''+p.symbol+'\')">'
+        + '<div class="pump-card-top">'
+        + '<div><div class="pump-symbol">' + p.symbol + '</div>'
+        + '<div style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:2px">$' + priceFmt + '</div></div>'
+        + '<div style="text-align:right">'
+        + '<div class="pump-change st-up">+' + p.change24h.toFixed(2) + '%</div>'
+        + '<span class="pump-risk-tag ' + riskTag + '" style="margin-top:4px"><i class="ri ' + riskIcon + '"></i> ' + riskLbl + '</span>'
+        + '</div></div>'
+        + '<div class="pump-stats-row">'
+        + (isStock
+           ? '<div class="pump-stat"><div class="pump-stat-val">$' + (p.high?p.high.toFixed(2):'—') + '</div><div class="pump-stat-label">Kun yuqori</div></div>'
+             + '<div class="pump-stat"><div class="pump-stat-val">$' + (p.low?p.low.toFixed(2):'—') + '</div><div class="pump-stat-label">Kun pastki</div></div>'
+             + '<div class="pump-stat"><div class="pump-stat-val">' + (p.volatility||0).toFixed(2) + '%</div><div class="pump-stat-label">Volatillik</div></div>'
+           : '<div class="pump-stat"><div class="pump-stat-val">$' + formatBigNumber(p.volume) + '</div><div class="pump-stat-label">24s Hajm</div></div>'
+             + '<div class="pump-stat"><div class="pump-stat-val">' + tradesFmt + '</div><div class="pump-stat-label">Tranzaksiya</div></div>'
+             + '<div class="pump-stat"><div class="pump-stat-val">' + ((p.high - p.low) / p.low * 100).toFixed(1) + '%</div><div class="pump-stat-label">Volatillik</div></div>')
+        + '</div>'
+        + (p.explanation ? '<div class="pump-explain"><div class="pump-explain-head"><i class="ri ri-sparkling-2-fill"></i> AI Tahlili</div>' + escapeHtml(p.explanation) + '</div>' : '')
+        + (p.history ? '<div class="pump-history"><strong>Tarixiy ohshashlik:</strong> ' + escapeHtml(p.history) + '</div>' : '')
+        + '</div>';
+    }).join('');
+  }
+
+  function loadPumpToAnalyze(symbol) {
+    if (pumpType === 'crypto') {
+      currentMarket = 'crypto';
+      document.querySelectorAll('.market-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.market === 'crypto'));
+      document.getElementById('search-box').classList.add('crypto-mode');
+      document.getElementById('analyze-btn').classList.add('crypto-mode');
+    } else {
+      currentMarket = 'stock';
+      document.querySelectorAll('.market-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.market === 'stock'));
+      document.getElementById('search-box').classList.remove('crypto-mode');
+      document.getElementById('analyze-btn').classList.remove('crypto-mode');
+    }
+    document.getElementById('analyze-btn').style.background = '';
+    document.getElementById('analyze-btn').style.color = '';
+    renderQuickPicks();
+    document.getElementById('ticker-input').value = symbol;
+    navigateTo('home');
+  }
+
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
@@ -5944,6 +6522,7 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
     if (page === 'congress' && !congressLoaded) loadCongressPage();
     if (page === 'futures' && !futuresLoaded) loadFuturesPage();
     if (page === 'halal') initHalalPage();
+    if (page === 'pump') initPumpPage();
     if (page === 'lists') {
       initListTabs();
       if (!listLoaded.highs) loadListPanel('highs');
