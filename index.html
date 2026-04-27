@@ -3006,6 +3006,191 @@
     .page-mini-desc { font-size: 12px; }
   }
 
+
+  /* ═══════════════════════════════════════════════════════
+     MEGA SCREENER (10K+ stocks)
+  ═══════════════════════════════════════════════════════ */
+  .mega-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .mega-stat-box {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .mega-stat-num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .mega-stat-lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .mega-stat-num.up { color: var(--bull); }
+  .mega-stat-num.down { color: var(--bear); }
+
+  .mega-table-wrap {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .mega-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  .mega-table thead {
+    background: var(--bg-card);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .mega-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .mega-table th.sortable:hover { color: var(--text); }
+  .mega-table th.active { color: var(--accent); }
+  .mega-table th .sort-arrow { font-size: 8px; opacity: 0.5; margin-left: 4px; }
+  .mega-table th.active .sort-arrow { opacity: 1; }
+
+  .mega-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .mega-table tbody tr {
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .mega-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+  .mega-ticker {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .mega-name {
+    font-family: var(--font-base);
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .mega-table .pos { color: var(--bull); font-weight: 700; }
+  .mega-table .neg { color: var(--bear); font-weight: 700; }
+
+  .mega-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .mega-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mega-filter-group label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .mega-filter-group input,
+  .mega-filter-group select {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+  }
+
+  .mega-filter-group input:focus,
+  .mega-filter-group select:focus { border-color: var(--accent); }
+
+  .mega-pagination {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 16px;
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+
+  .mega-page-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    min-width: 36px;
+  }
+
+  .mega-page-btn.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+  }
+
+  .mega-page-btn:hover:not(.active) {
+    color: var(--text);
+    border-color: var(--text-muted);
+  }
+
+  .mega-table-scroll {
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  @media (max-width: 768px) {
+    .mega-table th, .mega-table td { padding: 10px 12px; font-size: 12px; }
+    .mega-name { display: none; }
+  }
+
 </style>
 </head>
 <body>
@@ -3185,89 +3370,118 @@
   <section class="results" id="results"></section>
   </div>
 
-  <!-- SCREENER PAGE -->
+  <!-- SCREENER PAGE (Polygon.io 10K+ stocks) -->
   <div class="page" id="page-screener">
     <div class="page-mini-hero">
-      <div class="page-mini-icon"><i class="ri-filter-3-fill"></i></div>
+      <div class="page-mini-icon" style="color:#00d4ff"><i class="ri-filter-3-fill"></i></div>
       <div class="page-mini-text">
-        <div class="page-mini-tag">Stock Screener · Filter</div>
-        <div class="page-mini-title">Aksiyani <em>filterlab</em> toping</div>
-        <div class="page-mini-desc">Sektor, market cap, P/E va analyst tavsiyasiga ko'ra 60+ S&P 500 aksiyalarni saralang</div>
+        <div class="page-mini-tag">Stock Screener · Polygon.io</div>
+        <div class="page-mini-title">10,000+ aksiyani <em>filterlab</em> toping</div>
+        <div class="page-mini-desc">NYSE va NASDAQ barcha aksiyalari — real-time narx, hajm, change% bo'yicha tezkor qidiruv</div>
       </div>
     </div>
-    <div class="screener-filters">
-      <div class="filters-grid">
-        <div class="filter-group">
-          <label>Sektor</label>
-          <select class="filter-select" id="f-sector">
-            <option value="">Barchasi</option>
-            <option value="Technology">Technology</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Finance">Finance</option>
-            <option value="Energy">Energy</option>
-            <option value="Consumer Cyclical">Consumer</option>
-            <option value="Communication Services">Communication</option>
-            <option value="Industrials">Industrials</option>
-            <option value="Utilities">Utilities</option>
+
+    <!-- Stats bar -->
+    <div class="mega-stats-bar" id="mega-stats">
+      <div class="mega-stat-box">
+        <div class="mega-stat-num" id="mega-total">—</div>
+        <div class="mega-stat-lbl">Jami aksiyalar</div>
+      </div>
+      <div class="mega-stat-box">
+        <div class="mega-stat-num up" id="mega-gainers">—</div>
+        <div class="mega-stat-lbl">↑ Gainers</div>
+      </div>
+      <div class="mega-stat-box">
+        <div class="mega-stat-num down" id="mega-losers">—</div>
+        <div class="mega-stat-lbl">↓ Losers</div>
+      </div>
+      <div class="mega-stat-box">
+        <div class="mega-stat-num" id="mega-volume">—</div>
+        <div class="mega-stat-lbl">Total hajm</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="mega-filters">
+        <div class="mega-filter-group">
+          <label>Qidiruv</label>
+          <input id="mega-search" placeholder="AAPL, MSFT..." maxlength="30">
+        </div>
+        <div class="mega-filter-group">
+          <label>Min narx ($)</label>
+          <input id="mega-min-price" type="number" placeholder="0">
+        </div>
+        <div class="mega-filter-group">
+          <label>Max narx ($)</label>
+          <input id="mega-max-price" type="number" placeholder="∞">
+        </div>
+        <div class="mega-filter-group">
+          <label>Min change %</label>
+          <input id="mega-min-change" type="number" placeholder="-100">
+        </div>
+        <div class="mega-filter-group">
+          <label>Max change %</label>
+          <input id="mega-max-change" type="number" placeholder="100">
+        </div>
+        <div class="mega-filter-group">
+          <label>Min hajm</label>
+          <select id="mega-min-volume">
+            <option value="0">Barchasi</option>
+            <option value="100000">100K+</option>
+            <option value="1000000">1M+</option>
+            <option value="10000000">10M+</option>
+            <option value="100000000">100M+</option>
           </select>
         </div>
-        <div class="filter-group">
-          <label>Market Cap</label>
-          <select class="filter-select" id="f-mcap">
+        <div class="mega-filter-group">
+          <label>Tur</label>
+          <select id="mega-type">
             <option value="">Barchasi</option>
-            <option value="mega">Mega ($200B+)</option>
-            <option value="large">Large ($10B-200B)</option>
-            <option value="mid">Mid ($2B-10B)</option>
-            <option value="small">Small ($300M-2B)</option>
+            <option value="CS">Common Stock</option>
+            <option value="ETF">ETF</option>
+            <option value="ADRC">ADR</option>
           </select>
         </div>
-        <div class="filter-group">
-          <label>P/E nisbati</label>
-          <select class="filter-select" id="f-pe">
-            <option value="">Barchasi</option>
-            <option value="low">Past (0-15)</option>
-            <option value="mid">O'rta (15-30)</option>
-            <option value="high">Yuqori (30+)</option>
-            <option value="neg">Salbiy</option>
+        <div class="mega-filter-group">
+          <label>Tezkor</label>
+          <select id="mega-quick">
+            <option value="">Standart</option>
+            <option value="top-gainers">↑ Top Gainers</option>
+            <option value="top-losers">↓ Top Losers</option>
+            <option value="most-active">🔥 Most Active</option>
           </select>
-        </div>
-        <div class="filter-group">
-          <label>52 haftalik holat</label>
-          <select class="filter-select" id="f-52w">
-            <option value="">Barchasi</option>
-            <option value="near_high">Yuqoriga yaqin (90%+)</option>
-            <option value="near_low">Pastga yaqin (10%-)</option>
-            <option value="mid">O'rtada</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Analyst tavsiya</label>
-          <select class="filter-select" id="f-rating">
-            <option value="">Barchasi</option>
-            <option value="strongBuy">Strong Buy</option>
-            <option value="buy">Buy</option>
-            <option value="hold">Hold</option>
-            <option value="sell">Sell</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Ticker qidirish</label>
-          <input class="filter-input" id="f-ticker" placeholder="AAPL, MSFT...">
         </div>
       </div>
-      <div class="filter-actions">
-        <button class="screen-btn" id="screen-btn">
-          <i class="ri-search-2-line"></i> Qidirish
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center">
+        <button class="screen-btn" id="mega-refresh-btn">
+          <i class="ri-refresh-line"></i> Yangilash
         </button>
-        <button class="reset-btn" id="reset-btn">
-          <i class="ri-refresh-line"></i> Tozalash
-        </button>
-        <span class="results-count" id="results-count"></span>
+        <span id="mega-count" style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-left:auto"></span>
       </div>
     </div>
-    <div class="screener-table-wrap" id="screener-results">
-      <div class="info-text" style="padding:40px">Filtrlarni tanlang va "Qidirish" bosing.</div>
+
+    <!-- Table -->
+    <div class="mega-table-wrap">
+      <div class="mega-table-scroll">
+        <table class="mega-table">
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="ticker">Ticker <span class="sort-arrow">▼</span></th>
+              <th class="sortable" data-sort="price">Narx <span class="sort-arrow">▼</span></th>
+              <th class="sortable active" data-sort="change">Change% <span class="sort-arrow">▼</span></th>
+              <th class="sortable" data-sort="volume">Hajm <span class="sort-arrow">▼</span></th>
+              <th class="sortable" data-sort="dollarVolume">$ Hajm <span class="sort-arrow">▼</span></th>
+            </tr>
+          </thead>
+          <tbody id="mega-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:60px;color:var(--text-muted)">10,000+ aksiya yuklanmoqda...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
+    <div class="mega-pagination" id="mega-pagination"></div>
   </div>
 
   <!-- HEATMAP PAGE -->
@@ -5836,25 +6050,34 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
   let halalCurrentSector = '';
 
   function initHalalBatch() {
+    const filterEl = document.getElementById('halal-filter');
+    const searchEl = document.getElementById('halal-search');
+    const sectorTabs = document.querySelectorAll('#halal-sector-tabs .cal-tab');
+
+    if (!filterEl || !searchEl || !sectorTabs.length) {
+      console.warn('Halal page elements not ready');
+      return;
+    }
+
     // Sector tabs
-    document.querySelectorAll('#halal-sector-tabs .cal-tab').forEach(tab => {
+    sectorTabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('#halal-sector-tabs .cal-tab').forEach(t => t.classList.remove('active'));
+        sectorTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         halalCurrentSector = tab.dataset.sector;
         halalPage = 0;
-        renderHalalBatch(document.getElementById('halal-filter').value);
+        renderHalalBatch(filterEl.value);
       });
     });
-    // Verdict filter
-    document.getElementById('halal-filter').addEventListener('change', () => {
+
+    filterEl.addEventListener('change', () => {
       halalPage = 0;
-      renderHalalBatch(document.getElementById('halal-filter').value);
+      renderHalalBatch(filterEl.value);
     });
-    // Search
-    document.getElementById('halal-search').addEventListener('input', () => {
+
+    searchEl.addEventListener('input', () => {
       halalPage = 0;
-      renderHalalBatch(document.getElementById('halal-filter').value);
+      renderHalalBatch(filterEl.value);
     });
     // Load data immediately
     halalBatchResults = HALAL_STATIC.map(s => ({
@@ -6222,36 +6445,33 @@ Return ONLY this JSON (no markdown):
     const el  = document.getElementById('pump-results');
     btn.disabled = true;
     btn.innerHTML = '<i class="ri-loader-4-line"></i> Yuklanmoqda...';
-    el.innerHTML = '<div class="pump-loading">Aksiyalar tahlil qilinmoqda... 0/' + PUMP_STOCK_TICKERS.length + '</div>';
+    el.innerHTML = '<div class="pump-loading">10,000+ aksiya skanerlanmoqda...</div>';
 
     try {
-      // Batch fetch — 5 tadan
-      const results = [];
-      for (let i = 0; i < PUMP_STOCK_TICKERS.length; i += 5) {
-        const chunk = PUMP_STOCK_TICKERS.slice(i, i + 5);
-        el.innerHTML = '<div class="pump-loading">Yuklanmoqda... ' + Math.min(i+5, PUMP_STOCK_TICKERS.length) + '/' + PUMP_STOCK_TICKERS.length + '</div>';
+      // Polygon snapshot — bir requestda 10K+ aksiya
+      const res = await fetch(`${PROXY_URL}/polygon/v2/snapshot/locale/us/markets/stocks/tickers`);
+      if (!res.ok) throw new Error('Polygon ' + res.status);
+      const data = await res.json();
+      if (!data.tickers) throw new Error('Bosh natija');
 
-        const batch = await Promise.all(chunk.map(async t => {
-          try {
-            const r = await fetch(`${PROXY_URL}/api/quote?symbol=${t}`);
-            if (!r.ok) return null;
-            const q = await r.json();
-            if (!q.c) return null;
-            return {
-              symbol: t,
-              price: q.c,
-              change24h: q.dp || 0,
-              high: q.h,
-              low: q.l,
-              prevClose: q.pc,
-            };
-          } catch(e) { return null; }
-        }));
-        results.push(...batch.filter(Boolean));
-        if (i + 5 < PUMP_STOCK_TICKERS.length) await new Promise(r => setTimeout(r, 250));
-      }
+      const results = data.tickers.map(t => {
+        const day = t.day || {};
+        const prev = t.prevDay || {};
+        const price = day.c || prev.c || 0;
+        const prevClose = prev.c || 0;
+        const change = prevClose ? ((price - prevClose) / prevClose * 100) : 0;
+        return {
+          symbol: t.ticker,
+          price,
+          change24h: change,
+          high: day.h || 0,
+          low: day.l || 0,
+          prevClose,
+          volume: day.v || 0,
+        };
+      }).filter(r => r.price > 1 && r.volume > 500000); // Filter penny stocks va kam hajm
 
-      // Faqat 3%+ o'sganlar
+      // Faqat 3%+ o'sganlar, top 15 (highest gainers)
       const movers = results
         .filter(r => r.change24h >= 3)
         .sort((a, b) => b.change24h - a.change24h)
@@ -6399,6 +6619,237 @@ Return ONLY this JSON (no markdown):
     document.getElementById('analyze-btn').style.color = '';
     renderQuickPicks();
     document.getElementById('ticker-input').value = symbol;
+    navigateTo('home');
+  }
+
+
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MEGA SCREENER (10K+ aksiya orqali Polygon.io)
+  // ═══════════════════════════════════════════════════════════════════════════
+  let megaLoaded = false;
+  let megaData = [];
+  let megaFiltered = [];
+  let megaPage = 0;
+  const MEGA_PER_PAGE = 50;
+  let megaSortKey = 'change';
+  let megaSortDir = 'desc';
+
+  function initMegaPage() {
+    if (megaLoaded) return;
+    const refreshBtn = document.getElementById('mega-refresh-btn');
+    if (!refreshBtn) {
+      console.warn('Mega page elements not ready, retry in 100ms');
+      setTimeout(initMegaPage, 100);
+      return;
+    }
+    megaLoaded = true;
+    refreshBtn.addEventListener('click', loadMegaData);
+
+    // Filter listeners — debounced
+    let filterTimer;
+    const filterIds = ['mega-search', 'mega-min-price', 'mega-max-price', 'mega-min-change', 'mega-max-change', 'mega-min-volume', 'mega-type', 'mega-quick'];
+    filterIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) { console.warn('Mega filter element not found:', id); return; }
+      el.addEventListener('input', () => {
+        clearTimeout(filterTimer);
+        filterTimer = setTimeout(applyMegaFilters, 200);
+      });
+      el.addEventListener('change', applyMegaFilters);
+    });
+
+    // Sort headers
+    document.querySelectorAll('.mega-table th.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (megaSortKey === key) {
+          megaSortDir = megaSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          megaSortKey = key;
+          megaSortDir = 'desc';
+        }
+        document.querySelectorAll('.mega-table th').forEach(t => t.classList.remove('active'));
+        th.classList.add('active');
+        th.querySelector('.sort-arrow').textContent = megaSortDir === 'desc' ? '▼' : '▲';
+        applyMegaFilters();
+      });
+    });
+
+    loadMegaData();
+  }
+
+  async function loadMegaData() {
+    const btn = document.getElementById('mega-refresh-btn');
+    const tbody = document.getElementById('mega-tbody');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line"></i> Yuklanmoqda...';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:60px;color:var(--text-muted)">10,000+ aksiya yuklanmoqda... (5-10 soniya)</td></tr>';
+
+    try {
+      // Polygon snapshot endpoint — barcha aksiyalarni bir requestda oladi
+      const res = await fetch(`${PROXY_URL}/polygon/v2/snapshot/locale/us/markets/stocks/tickers`);
+      if (!res.ok) throw new Error('Polygon ' + res.status);
+      const data = await res.json();
+
+      if (!data.tickers || !data.tickers.length) {
+        throw new Error('Bo\'sh natija. Polygon API key tekshirilsin.');
+      }
+
+      megaData = data.tickers.map(t => {
+        const day = t.day || {};
+        const prev = t.prevDay || {};
+        const price = day.c || prev.c || 0;
+        const prevClose = prev.c || 0;
+        const change = prevClose ? ((price - prevClose) / prevClose * 100) : 0;
+        const volume = day.v || 0;
+        return {
+          ticker: t.ticker,
+          name: t.ticker, // Polygon snapshot da name yo'q
+          price,
+          prevClose,
+          change,
+          volume,
+          dollarVolume: volume * price,
+          high: day.h || 0,
+          low: day.l || 0,
+          updated: t.updated || 0,
+        };
+      }).filter(t => t.price > 0);
+
+      // Stats
+      updateMegaStats();
+      applyMegaFilters();
+
+    } catch(e) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:60px;color:var(--bear)">Xato: ' + e.message + '</td></tr>';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ri-refresh-line"></i> Yangilash';
+    }
+  }
+
+  function updateMegaStats() {
+    document.getElementById('mega-total').textContent = formatBigNumber(megaData.length).replace('$','');
+    const gainers = megaData.filter(t => t.change > 0).length;
+    const losers  = megaData.filter(t => t.change < 0).length;
+    const totalVol = megaData.reduce((s, t) => s + t.dollarVolume, 0);
+    document.getElementById('mega-gainers').textContent = formatBigNumber(gainers).replace('$','');
+    document.getElementById('mega-losers').textContent  = formatBigNumber(losers).replace('$','');
+    document.getElementById('mega-volume').textContent  = '$' + formatBigNumber(totalVol);
+  }
+
+  function applyMegaFilters() {
+    const getVal = id => document.getElementById(id)?.value || '';
+    const search   = getVal('mega-search').trim().toUpperCase();
+    const minPrice = parseFloat(getVal('mega-min-price')) || 0;
+    const maxPrice = parseFloat(getVal('mega-max-price')) || Infinity;
+    const minCh    = parseFloat(getVal('mega-min-change'));
+    const maxCh    = parseFloat(getVal('mega-max-change'));
+    const minVol   = parseFloat(getVal('mega-min-volume')) || 0;
+    const quick    = getVal('mega-quick');
+
+    let items = [...megaData];
+
+    if (search)  items = items.filter(t => t.ticker.includes(search));
+    if (minPrice) items = items.filter(t => t.price >= minPrice);
+    if (maxPrice !== Infinity) items = items.filter(t => t.price <= maxPrice);
+    if (!isNaN(minCh)) items = items.filter(t => t.change >= minCh);
+    if (!isNaN(maxCh)) items = items.filter(t => t.change <= maxCh);
+    if (minVol)  items = items.filter(t => t.volume >= minVol);
+
+    // Quick filters
+    if (quick === 'top-gainers')  items = items.filter(t => t.change > 0);
+    if (quick === 'top-losers')   items = items.filter(t => t.change < 0);
+    if (quick === 'most-active') {
+      // Already filtered, just sort by volume
+      megaSortKey = 'volume';
+      megaSortDir = 'desc';
+    }
+
+    // Sort
+    items.sort((a, b) => {
+      let av = a[megaSortKey], bv = b[megaSortKey];
+      if (megaSortKey === 'ticker') {
+        return megaSortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+      }
+      return megaSortDir === 'desc' ? bv - av : av - bv;
+    });
+
+    megaFiltered = items;
+    megaPage = 0;
+    renderMegaTable();
+  }
+
+  function renderMegaTable() {
+    const tbody = document.getElementById('mega-tbody');
+    const cntEl = document.getElementById('mega-count');
+    const pgEl  = document.getElementById('mega-pagination');
+
+    if (cntEl) cntEl.textContent = megaFiltered.length + ' ta topildi';
+
+    if (!megaFiltered.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:60px;color:var(--text-muted)">Hech narsa topilmadi</td></tr>';
+      pgEl.innerHTML = '';
+      return;
+    }
+
+    const start = megaPage * MEGA_PER_PAGE;
+    const items = megaFiltered.slice(start, start + MEGA_PER_PAGE);
+    const pages = Math.ceil(megaFiltered.length / MEGA_PER_PAGE);
+
+    tbody.innerHTML = items.map(t => {
+      const chCls = t.change > 0 ? 'pos' : t.change < 0 ? 'neg' : '';
+      const chSign = t.change > 0 ? '+' : '';
+      return `<tr onclick="loadMegaTicker('${t.ticker}')">
+        <td><span class="mega-ticker">${t.ticker}</span></td>
+        <td>$${t.price < 1 ? t.price.toFixed(4) : t.price.toFixed(2)}</td>
+        <td class="${chCls}">${chSign}${t.change.toFixed(2)}%</td>
+        <td>${formatBigNumber(t.volume).replace('$','')}</td>
+        <td>$${formatBigNumber(t.dollarVolume)}</td>
+      </tr>`;
+    }).join('');
+
+    // Pagination — max 7 ta tugma + first/last
+    if (pages > 1) {
+      let html = '';
+      const maxBtns = 7;
+      let startPage = Math.max(0, megaPage - 3);
+      let endPage = Math.min(pages, startPage + maxBtns);
+      if (endPage - startPage < maxBtns) startPage = Math.max(0, endPage - maxBtns);
+
+      if (startPage > 0) html += `<button class="mega-page-btn" onclick="megaGoPage(0)">1</button>`;
+      if (startPage > 1) html += '<span style="color:var(--text-muted);align-self:center">...</span>';
+
+      for (let i = startPage; i < endPage; i++) {
+        html += `<button class="mega-page-btn ${i===megaPage?'active':''}" onclick="megaGoPage(${i})">${i+1}</button>`;
+      }
+
+      if (endPage < pages - 1) html += '<span style="color:var(--text-muted);align-self:center">...</span>';
+      if (endPage < pages) html += `<button class="mega-page-btn" onclick="megaGoPage(${pages-1})">${pages}</button>`;
+
+      pgEl.innerHTML = html;
+    } else {
+      pgEl.innerHTML = '';
+    }
+  }
+
+  function megaGoPage(page) {
+    megaPage = page;
+    renderMegaTable();
+    document.querySelector('.mega-table-wrap')?.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function loadMegaTicker(ticker) {
+    currentMarket = 'stock';
+    document.querySelectorAll('.market-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.market === 'stock'));
+    document.getElementById('search-box').classList.remove('crypto-mode');
+    document.getElementById('analyze-btn').classList.remove('crypto-mode');
+    document.getElementById('analyze-btn').style.background = '';
+    document.getElementById('analyze-btn').style.color = '';
+    renderQuickPicks();
+    document.getElementById('ticker-input').value = ticker;
     navigateTo('home');
   }
 
@@ -6653,16 +7104,14 @@ Return ONLY this JSON (no markdown):
     try { localStorage.setItem('ss_page', page); } catch(e) {}
 
     if (page === 'heatmap' && !heatmapLoaded) loadHeatmap();
-    if (page === 'screener' && screenerData.length === 0) {
-      document.getElementById('f-sector').value = '';
-      runScreener();
-    }
+    if (page === 'screener') initMegaPage();
     if (page === 'crypto-market' && !cryptoMarketLoaded) loadCryptoMarket();
     if (page === 'calendar' && !calLoaded.earnings) loadCalendarPage();
     if (page === 'congress' && !congressLoaded) loadCongressPage();
     if (page === 'futures' && !futuresLoaded) loadFuturesPage();
     if (page === 'halal') initHalalPage();
     if (page === 'pump') initPumpPage();
+
     if (page === 'lists') {
       initListTabs();
       if (!listLoaded.highs) loadListPanel('highs');
