@@ -3108,21 +3108,22 @@
     </div>
   </div>
 
-  <!-- WATCHLIST SECTION -->
-  <section class="watchlist-section" id="watchlist-section">
-    <div class="watchlist-header">
-      <div class="section-label">
-        <i class="ri-bookmark-fill"></i> Mening Watchlistim
-      </div>
-    </div>
-    <div id="watchlist-container">
-      <div class="watchlist-empty" id="watchlist-empty">
-        Hozircha watchlist bosh. Aksiya yoki kriptoni tahlil qilib, Watchlist tugmasini bosing.
-      </div>
-      <div class="watchlist-grid" id="watchlist-grid" style="display:none"></div>
-    </div>
-  </section>
 
+  <section class="search-wrap">
+    <div class="market-toggle">
+      <button class="market-btn active" data-market="stock"><i class="ri-line-chart-fill"></i> Aksiyalar</button>
+      <button class="market-btn" data-market="crypto"><i class="ri-bit-coin-fill"></i> Kripto (Binance)</button>
+      <button class="market-btn" data-market="futures"><i class="ri-copper-coin-fill"></i> Fyuchers</button>
+    </div>
+    <div class="search-box" id="search-box">
+      <input type="text" id="ticker-input" placeholder="Aksiya tickerini kiriting (masalan, AAPL, TSLA, NVDA)..." autocomplete="off">
+      <button class="analyze-btn" id="analyze-btn">
+        Tahlil qilish
+        <i class="ri-arrow-right-line"></i>
+      </button>
+    </div>
+    <div class="quick-picks" id="quick-picks"></div>
+  </section>
   <!-- DASHBOARD: Earnings + Alerts -->
   <div class="dashboard-grid" id="dashboard-grid" style="display:none">
     <!-- Earnings Calendar -->
@@ -3158,21 +3159,19 @@
       </div>
     </div>
   </div>
-
-  <section class="search-wrap">
-    <div class="market-toggle">
-      <button class="market-btn active" data-market="stock"><i class="ri-line-chart-fill"></i> Aksiyalar</button>
-      <button class="market-btn" data-market="crypto"><i class="ri-bit-coin-fill"></i> Kripto (Binance)</button>
-      <button class="market-btn" data-market="futures"><i class="ri-copper-coin-fill"></i> Fyuchers</button>
+  <!-- WATCHLIST SECTION -->
+  <section class="watchlist-section" id="watchlist-section">
+    <div class="watchlist-header">
+      <div class="section-label">
+        <i class="ri-bookmark-fill"></i> Mening Watchlistim
+      </div>
     </div>
-    <div class="search-box" id="search-box">
-      <input type="text" id="ticker-input" placeholder="Aksiya tickerini kiriting (masalan, AAPL, TSLA, NVDA)..." autocomplete="off">
-      <button class="analyze-btn" id="analyze-btn">
-        Tahlil qilish
-        <i class="ri-arrow-right-line"></i>
-      </button>
+    <div id="watchlist-container">
+      <div class="watchlist-empty" id="watchlist-empty">
+        Hozircha watchlist bosh. Aksiya yoki kriptoni tahlil qilib, Watchlist tugmasini bosing.
+      </div>
+      <div class="watchlist-grid" id="watchlist-grid" style="display:none"></div>
     </div>
-    <div class="quick-picks" id="quick-picks"></div>
   </section>
 
   <div class="error-box" id="error-box"></div>
