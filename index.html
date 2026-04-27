@@ -3576,6 +3576,53 @@
     .gdp-ticker { font-size: 22px; }
   }
 
+
+  /* ═══ TICKER LOGOS ═════════════════════════════════════════════════════════ */
+  .ticker-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .ticker-logo-sm {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .ticker-logo-lg {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    padding: 4px;
+  }
+
+  .ticker-logo-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
 </style>
 </head>
 <body>
@@ -7155,10 +7202,14 @@ Return ONLY this JSON (no markdown):
         ? `H: $${p.high?p.high.toFixed(2):'—'}`
         : `Trades: ${p.trades>1000?(p.trades/1000).toFixed(0)+'K':p.trades}`;
 
+      const mType = pumpType === 'crypto' ? 'crypto' : 'stock';
       return `<div class="pump-list-item ${riskCls}" onclick="loadPumpToAnalyze('${p.symbol}')">
-        <div>
-          <div class="pump-list-sym">${p.symbol}</div>
-          <div class="pump-list-price">$${priceFmt}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          \${tickerLogoImg('${p.symbol}', '${mType}', 'ticker-logo-sm')}
+          <div>
+            <div class="pump-list-sym">${p.symbol}</div>
+            <div class="pump-list-price">$${priceFmt}</div>
+          </div>
         </div>
         <div class="pump-list-explain">
           ${p.explanation ? escapeHtml(p.explanation) : '<span style="color:var(--text-muted)">AI tahlili yuklanmoqda...</span>'}
@@ -7405,7 +7456,12 @@ Return ONLY this JSON (no markdown):
       const chCls = t.change > 0 ? 'pos' : t.change < 0 ? 'neg' : '';
       const chSign = t.change > 0 ? '+' : '';
       return `<tr onclick="loadMegaTicker('${t.ticker}')">
-        <td><span class="mega-ticker">${t.ticker}</span></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            \${tickerLogoImg('${t.ticker}', 'stock', 'ticker-logo-sm')}
+            <span class="mega-ticker">${t.ticker}</span>
+          </div>
+        </td>
         <td>$${t.price < 1 ? t.price.toFixed(4) : t.price.toFixed(2)}</td>
         <td class="${chCls}">${chSign}${t.change.toFixed(2)}%</td>
         <td>${formatBigNumber(t.volume).replace('$','')}</td>
@@ -7702,6 +7758,7 @@ Return ONLY this JSON (no markdown):
         <div class="gdp-handle"></div>
         <div class="gdp-header">
           <div class="gdp-ticker-info">
+            \${tickerLogoImg(ticker, marketType, 'ticker-logo-lg')}
             <span class="gdp-ticker">${ticker}</span>
             <div class="gdp-price-wrap">
               <span class="gdp-price" id="gdp-price">Yuklanmoqda...</span>
@@ -8042,6 +8099,30 @@ Return ONLY JSON:
     closeTickerPanel();
   }
 
+
+
+  // ── Ticker Logo Helper ────────────────────────────────────────────────────────
+  function getTickerLogoUrl(ticker, type) {
+    if (type === 'crypto') {
+      // CryptoCompare CDN — eng ishonchli kripto logo manba
+      return `https://www.cryptocompare.com/media/37746338/${ticker.toLowerCase()}.png`;
+    }
+    // TradingView logo CDN — barcha aksiyalar uchun
+    return `https://s3-symbol-logo.tradingview.com/${ticker.toLowerCase()}--big.svg`;
+  }
+
+  function tickerLogoImg(ticker, type, sizeCls) {
+    sizeCls = sizeCls || 'ticker-logo';
+    const url = getTickerLogoUrl(ticker, type);
+    const initials = ticker.substring(0, 2).toUpperCase();
+    return `<img
+      src="${url}"
+      class="${sizeCls}"
+      alt="${ticker}"
+      onerror="this.outerHTML='<div class=\"ticker-logo-fallback ${sizeCls}\" style=\"font-size:${sizeCls==='ticker-logo-sm'?'9':'11'}px\">${initials}</div>'"
+      loading="lazy"
+    >`;
+  }
 
   function escapeHtml(s) {
     if (s == null) return '';
