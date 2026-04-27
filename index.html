@@ -6012,9 +6012,14 @@ Return JSON only. Maximum 3 catalysts.`;
       if (el) el.innerHTML = `<div class="info-text">Yuklanmoqda... ${Math.min(i+batchSize, syms.length)}/${syms.length}</div>`;
       const batch = await Promise.all(chunk.map(item => {
         const ticker = typeof item === 'object' ? item.s : item;
-        return fetch(`${PROXY_URL}/api/quote?symbol=${ticker}`)
-          .then(r => r.ok ? r.json().then(q => ({ item, ticker, q })) : null)
-          .catch(() => null);
+        const dAgoB=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
+        return fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${ticker}/range/1/day/${dAgoB(5)}/${dAgoB(1)}?adjusted=true&sort=asc&limit=5`)
+          .then(r=>r.ok?r.json().then(d=>{
+            if(!d.results||!d.results.length) return null;
+            const last=d.results[d.results.length-1],prev=d.results.length>=2?d.results[d.results.length-2]:last;
+            const q={c:last.c,d:last.c-prev.c,dp:prev.c?((last.c-prev.c)/prev.c*100):0,h:last.h,l:last.l,pc:prev.c};
+            return {item,ticker,q};
+          }):null).catch(()=>null);
       }));
       results.push(...batch.filter(Boolean));
       if (i + batchSize < syms.length) await new Promise(r => setTimeout(r, 250));
@@ -6165,15 +6170,28 @@ Return JSON only. Maximum 3 catalysts.`;
     ]);
   }
 
-  // Reusable: fetch quote and return formatted data
+  // Reusable: fetch quote via Polygon (Finnhub fallback)
   async function fq(symbol) {
     try {
-      const r = await fetch(`${PROXY_URL}/api/quote?symbol=${symbol}`);
-      if (!r.ok) return null;
-      const q = await r.json();
-      if (!q.c) return null;
-      return { symbol, price: q.c, change: q.d||0, changePct: q.dp||0, high: q.h, low: q.l };
-    } catch(e) { return null; }
+      const dAgo = n => { const d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; };
+      const r = await fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${symbol}/range/1/day/${dAgo(5)}/${dAgo(1)}?adjusted=true&sort=asc&limit=5`);
+      if (!r.ok) throw new Error('poly ' + r.status);
+      const d = await r.json();
+      if (!d.results || d.results.length < 2) throw new Error('no data');
+      const last = d.results[d.results.length-1];
+      const prev = d.results[d.results.length-2];
+      const changePct = ((last.c - prev.c) / prev.c * 100);
+      return { symbol, price: last.c, change: last.c-prev.c, changePct, high: last.h, low: last.l };
+    } catch(e) {
+      // Finnhub fallback
+      try {
+        const r2 = await fetch(`${PROXY_URL}/api/quote?symbol=${symbol}`);
+        if (!r2.ok) return null;
+        const q = await r2.json();
+        if (!q.c) return null;
+        return { symbol, price: q.c, change: q.d||0, changePct: q.dp||0, high: q.h, low: q.l };
+      } catch(e2) { return null; }
+    }
   }
 
   function futRow(d, label, unit='$', note='') {
@@ -6184,7 +6202,7 @@ Return JSON only. Maximum 3 catalysts.`;
       : formatPrice(d.price);
     return `
       <div class="cal-row" style="grid-template-columns:auto 1fr auto auto auto"
-        onclick="loadTickerFromScreener('${d.symbol}')">
+        onclick="showTickerPanel('${d.symbol}','stock')">
         <span class="cal-ticker">${d.symbol}</span>
         <span class="cal-name">${label}${note ? ' <span style=\'font-size:10px;color:var(--text-muted)\'>('+note+')</span>' : ''}</span>
         <span style="font-family:var(--mono);font-weight:600">${unit}${price}</span>
@@ -8507,7 +8525,7 @@ Return ONLY JSON:
         const quotes = await Promise.all(chunk.map(async t => {
           try {
             const [qRes, pRes, rRes] = await Promise.all([
-              fetch(`${PROXY_URL}/api/quote?symbol=${t}`),
+              fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${t}/range/1/day/${(()=>{const d=new Date();d.setDate(d.getDate()-5);return d.toISOString().split('T')[0];})()}/${(()=>{const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().split('T')[0];})()}?adjusted=true&sort=asc&limit=5`),
               fetch(`${PROXY_URL}/api/stock/profile2?symbol=${t}`),
               fetch(`${PROXY_URL}/api/recommendation?symbol=${t}`)
             ]);
@@ -8945,7 +8963,8 @@ Return ONLY JSON:
           changePercent = data.market_data.price_change_percentage_24h;
           name = data.name;
         } else {
-          const res = await fetch(`${PROXY_URL}/api/quote?symbol=${w.ticker}`);
+const dAgoB=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
+          const res = await fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${w.ticker}/range/1/day/${dAgoB(5)}/${dAgoB(1)}?adjusted=true&sort=asc&limit=5`);
           if (!res.ok) { console.error('Quote fetch failed for', w.ticker, res.status); continue; }
           const q = await res.json();
           console.log('Quote for', w.ticker, ':', q);
