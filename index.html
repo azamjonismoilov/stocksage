@@ -3931,7 +3931,7 @@
   // ==================== MODAL ====================
 
 
-  document.getElementById('api-save-btn').addEventListener('click', () => {
+  document.getElementById('api-save-btn')?.addEventListener('click', () => {
     document.getElementById('api-modal').classList.remove('active');
   });
 
@@ -3986,10 +3986,10 @@
   }
   renderQuickPicks();
 
-  document.getElementById('ticker-input').addEventListener('keypress', e => {
+  document.getElementById('ticker-input')?.addEventListener('keypress', e => {
     if (e.key === 'Enter') analyze();
   });
-  document.getElementById('analyze-btn').addEventListener('click', analyze);
+  document.getElementById('analyze-btn')?.addEventListener('click', analyze);
 
   // ==================== MAIN ANALYZE ====================
   async function analyze() {
@@ -5771,13 +5771,13 @@ Return JSON only. Maximum 3 catalysts.`;
     if (halalLoaded) return;
     halalLoaded = true;
 
-    document.getElementById('halal-check-btn').addEventListener('click', () => {
+    document.getElementById('halal-check-btn')?.addEventListener('click', () => {
       const t = document.getElementById('halal-input').value.trim().toUpperCase();
       if (!t) return;
       checkHalalSingle(t, document.getElementById('halal-single-result'));
     });
 
-    document.getElementById('halal-input').addEventListener('keypress', e => {
+    document.getElementById('halal-input')?.addEventListener('keypress', e => {
       if (e.key === 'Enter') document.getElementById('halal-check-btn').click();
     });
 
@@ -6306,10 +6306,10 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
     if (pumpLoaded) return;
     pumpLoaded = true;
 
-    document.getElementById('pump-refresh-btn').addEventListener('click', () => {
+    document.getElementById('pump-refresh-btn')?.addEventListener('click', () => {
       pumpType === 'crypto' ? loadPumpCrypto() : loadPumpStocks();
     });
-    document.getElementById('pump-filter').addEventListener('change', renderPumpResults);
+    document.getElementById('pump-filter')?.addEventListener('change', renderPumpResults);
 
     document.querySelectorAll('[data-pump-type]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -7183,7 +7183,7 @@ Return ONLY this JSON (no markdown):
   let sortCol = 'dp';
   let sortAsc = false;
 
-  document.getElementById('screen-btn').addEventListener('click', runScreener);
+  document.getElementById('screen-btn')?.addEventListener('click', runScreener);
 
   // Real-time filter — select o'zgarganda qayta filter qilinsin
   ['f-sector','f-mcap','f-pe','f-52w','f-rating'].forEach(id => {
@@ -7206,7 +7206,7 @@ Return ONLY this JSON (no markdown):
       renderScreenerTable(filtered);
     }
   });
-  document.getElementById('reset-btn').addEventListener('click', () => {
+  document.getElementById('reset-btn')?.addEventListener('click', () => {
     ['f-sector','f-mcap','f-pe','f-52w','f-rating'].forEach(id => {
       document.getElementById(id).value = '';
     });
@@ -7467,8 +7467,8 @@ Return ONLY this JSON (no markdown):
   // ═══════════════════════════════════════════════════════════════════════════
   let insiderLoaded = false;
 
-  document.getElementById('insider-search-btn').addEventListener('click', loadInsider);
-  document.getElementById('insider-ticker').addEventListener('keypress', e => {
+  document.getElementById('insider-search-btn')?.addEventListener('click', loadInsider);
+  document.getElementById('insider-ticker')?.addEventListener('keypress', e => {
     if (e.key === 'Enter') loadInsider();
   });
 
@@ -7812,7 +7812,7 @@ Return ONLY this JSON (no markdown):
     renderAlerts();
   }
 
-  document.getElementById('alert-add-btn').addEventListener('click', () => {
+  document.getElementById('alert-add-btn')?.addEventListener('click', () => {
     const ticker    = document.getElementById('alert-ticker').value.trim().toUpperCase();
     const price     = parseFloat(document.getElementById('alert-price').value);
     const direction = document.getElementById('alert-direction').value;
