@@ -7589,39 +7589,49 @@ Return ONLY this JSON (no markdown):
 
   async function loadHalalMegaData() {
     const el = document.getElementById('halal-batch-result');
-    el.innerHTML = '<div class="info-text">10,000+ aksiya Polygon\'dan yuklanmoqda...</div>';
+    el.innerHTML = '<div class="info-text">Polygon dan aksiyalar yuklanmoqda...</div>';
 
     try {
-      // Polygon /v3/reference/tickers — barcha aksiyalar (10K+)
-      // 1000 ta limitda paginate qilamiz
-      let allTickers = [];
-      let nextUrl = `${PROXY_URL}/polygon/v3/reference/tickers?market=stocks&active=true&type=CS&limit=1000`;
-      let pageCount = 0;
-      const MAX_PAGES = 12; // 12 * 1000 = 12,000 aksiya
-
-      while (nextUrl && pageCount < MAX_PAGES) {
-        const res = await fetch(nextUrl);
-        if (!res.ok) throw new Error('Polygon ' + res.status);
-        const data = await res.json();
-        if (!data.results) break;
-
-        allTickers.push(...data.results);
-        pageCount++;
-        el.innerHTML = `<div class="info-text">Yuklanmoqda... ${allTickers.length} ta aksiya</div>`;
-
-        if (data.next_url) {
-          // next_url to'liq URL, biz proxy orqali ishlatamiz
-          const cursor = data.next_url.split('cursor=')[1];
-          if (!cursor) break;
-          nextUrl = `${PROXY_URL}/polygon/v3/reference/tickers?market=stocks&active=true&type=CS&limit=1000&cursor=${cursor}`;
-        } else {
-          break;
-        }
+      // Yechim: Grouped Daily Bars — 1 requestda barcha aksiyalar narxi
+      // + reference/tickers faqat 1 marta (sektor/nom uchun)
+      function daysAgoStr(n) {
+        const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().split('T')[0];
       }
 
-      el.innerHTML = `<div class="info-text">${allTickers.length} ta aksiya tahlil qilinmoqda...</div>`;
+      const [barsRes, refRes] = await Promise.all([
+        fetch(`${PROXY_URL}/polygon/v2/aggs/grouped/locale/us/market/stocks/${daysAgoStr(2)}?adjusted=true`),
+        fetch(`${PROXY_URL}/polygon/v3/reference/tickers?market=stocks&active=true&type=CS&limit=1000`),
+      ]);
+
+      if (!barsRes.ok) throw new Error('Polygon ' + barsRes.status);
+      const barsData = await barsRes.json();
+      let bars = barsData.results || [];
+
+      // Backup — dam olish kuni
+      if (!bars.length) {
+        const res2 = await fetch(`${PROXY_URL}/polygon/v2/aggs/grouped/locale/us/market/stocks/${daysAgoStr(5)}?adjusted=true`);
+        const d2 = await res2.json();
+        bars = d2.results || [];
+      }
+
+      // Reference ma'lumotlar (nom, sektor) — 1000 ta
+      const refMap = {};
+      if (refRes.ok) {
+        const refData = await refRes.json();
+        (refData.results || []).forEach(r => {
+          refMap[r.ticker] = { name: r.name, sic: r.sic_description };
+        });
+      }
+
+      el.innerHTML = `<div class="info-text">${bars.length} ta aksiya tahlil qilinmoqda...</div>`;
 
       // AAOIFI logic — har biriga
+      const allTickers = bars.map(b => ({
+        ticker: b.T,
+        name: refMap[b.T]?.name || b.T,
+        sic_description: refMap[b.T]?.sic || '',
+      }));
+
       halalMegaData = allTickers.map(t =>
         classifyHalal(t.ticker, t.name, t.sic_description)
       );
