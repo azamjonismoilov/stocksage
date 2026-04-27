@@ -6448,28 +6448,53 @@ Return ONLY this JSON (no markdown):
     el.innerHTML = '<div class="pump-loading">10,000+ aksiya skanerlanmoqda...</div>';
 
     try {
-      // Polygon snapshot — bir requestda 10K+ aksiya
-      const res = await fetch(`${PROXY_URL}/polygon/v2/snapshot/locale/us/markets/stocks/tickers`);
-      if (!res.ok) throw new Error('Polygon ' + res.status);
-      const data = await res.json();
-      if (!data.tickers) throw new Error('Bosh natija');
+      // Grouped Daily Bars — Starter planda ishlaydi
+      function daysAgo(n) {
+        const d = new Date();
+        d.setDate(d.getDate() - n);
+        return d.toISOString().split('T')[0];
+      }
+      const date1 = daysAgo(2);
+      const date2 = daysAgo(1);
 
-      const results = data.tickers.map(t => {
-        const day = t.day || {};
-        const prev = t.prevDay || {};
-        const price = day.c || prev.c || 0;
-        const prevClose = prev.c || 0;
+      const [r1, r2] = await Promise.all([
+        fetch(`${PROXY_URL}/polygon/v2/aggs/grouped/locale/us/market/stocks/${date1}?adjusted=true`),
+        fetch(`${PROXY_URL}/polygon/v2/aggs/grouped/locale/us/market/stocks/${date2}?adjusted=true`),
+      ]);
+
+      if (!r1.ok || !r2.ok) throw new Error('Polygon ' + (r1.status || r2.status));
+      let d1 = await r1.json();
+      let d2 = await r2.json();
+
+      // Backup — agar dam olish kuni
+      if (!d1.results || !d1.results.length) {
+        const [b1, b2] = await Promise.all([
+          fetch(`${PROXY_URL}/polygon/v2/aggs/grouped/locale/us/market/stocks/${daysAgo(5)}?adjusted=true`),
+          fetch(`${PROXY_URL}/polygon/v2/aggs/grouped/locale/us/market/stocks/${daysAgo(4)}?adjusted=true`),
+        ]);
+        d1 = await b1.json();
+        d2 = await b2.json();
+        if (!d1.results) throw new Error('Bozor yopiq edi');
+      }
+      if (!d2.results || !d2.results.length) d2.results = d1.results;
+
+      const prevMap = {};
+      (d1.results || []).forEach(r => { prevMap[r.T] = r.c; });
+
+      const results = (d2.results || []).map(r => {
+        const prevClose = prevMap[r.T] || r.o;
+        const price = r.c;
         const change = prevClose ? ((price - prevClose) / prevClose * 100) : 0;
         return {
-          symbol: t.ticker,
+          symbol: r.T,
           price,
           change24h: change,
-          high: day.h || 0,
-          low: day.l || 0,
+          high: r.h || 0,
+          low: r.l || 0,
           prevClose,
-          volume: day.v || 0,
+          volume: r.v || 0,
         };
-      }).filter(r => r.price > 1 && r.volume > 500000); // Filter penny stocks va kam hajm
+      }).filter(r => r.price > 1 && r.volume > 500000);
 
       // Faqat 3%+ o'sganlar, top 15 (highest gainers)
       const movers = results
