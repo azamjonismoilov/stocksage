@@ -7836,8 +7836,12 @@ Return ONLY this JSON (no markdown):
           </div>` : ''}
 
           <!-- To'liq tahlil tugmasi -->
-          <button class="gdp-full-btn" onclick="gdpGoFull('${ticker}', '${marketType}')">
-            <i class="ri ri-bar-chart-fill"></i> Chuqur tahlil (Tahlil tabida)
+          <button onclick="closeTickerPanel()" style="
+            width:100%;padding:12px;background:var(--bg-card);color:var(--text-muted);
+            border:1px solid var(--border);border-radius:12px;font-family:var(--mono);
+            font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px">
+            <i class="ri ri-close-line"></i> Yopish
+          </button>
           </button>
         </div>
       </div>
