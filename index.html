@@ -3342,6 +3342,240 @@
     .pump-list-explain { display: none; }
   }
 
+
+  /* ═══════════════════════════════════════════════════════
+     GLOBAL TICKER DETAIL PANEL (barcha tabda ishlaydi)
+  ═══════════════════════════════════════════════════════ */
+  .gdp-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 300;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .gdp-panel {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s cubic-bezier(.16,1,.3,1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gdp-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 12px auto 0;
+    flex-shrink: 0;
+  }
+
+  .gdp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    background: var(--bg-elevated);
+    z-index: 2;
+  }
+
+  .gdp-ticker-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .gdp-ticker {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+  }
+
+  .gdp-price-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gdp-price {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  .gdp-change {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .gdp-close-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .gdp-close-btn:hover { color: var(--text); }
+
+  .gdp-body {
+    padding: 20px 24px 32px;
+    flex: 1;
+  }
+
+  .gdp-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .gdp-tab {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .gdp-tab.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .gdp-tab-content { display: none; }
+  .gdp-tab-content.active { display: block; }
+
+  .gdp-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .gdp-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .gdp-stat-val {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .gdp-stat-lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .gdp-ai-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .gdp-ai-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .gdp-news-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .gdp-news-item:last-child { border-bottom: none; }
+
+  .gdp-news-title {
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .gdp-news-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .gdp-full-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.2s;
+  }
+
+  .gdp-full-btn:hover { background: #e6ff5c; }
+
+  @media (max-width: 480px) {
+    .gdp-panel { border-radius: 20px 20px 0 0; }
+    .gdp-body { padding: 16px 16px 24px; }
+    .gdp-header { padding: 12px 16px; }
+    .gdp-ticker { font-size: 22px; }
+  }
+
 </style>
 </head>
 <body>
@@ -6956,24 +7190,7 @@ Return ONLY this JSON (no markdown):
   }
 
   function loadPumpToAnalyze(symbol) {
-    if (pumpType === 'crypto') {
-      currentMarket = 'crypto';
-      document.querySelectorAll('.market-btn').forEach(b =>
-        b.classList.toggle('active', b.dataset.market === 'crypto'));
-      document.getElementById('search-box').classList.add('crypto-mode');
-      document.getElementById('analyze-btn').classList.add('crypto-mode');
-    } else {
-      currentMarket = 'stock';
-      document.querySelectorAll('.market-btn').forEach(b =>
-        b.classList.toggle('active', b.dataset.market === 'stock'));
-      document.getElementById('search-box').classList.remove('crypto-mode');
-      document.getElementById('analyze-btn').classList.remove('crypto-mode');
-    }
-    document.getElementById('analyze-btn').style.background = '';
-    document.getElementById('analyze-btn').style.color = '';
-    renderQuickPicks();
-    document.getElementById('ticker-input').value = symbol;
-    navigateTo('home');
+    showTickerPanel(symbol, pumpType === 'crypto' ? 'crypto' : 'stock');
   }
 
 
@@ -7227,16 +7444,7 @@ Return ONLY this JSON (no markdown):
   }
 
   function loadMegaTicker(ticker) {
-    currentMarket = 'stock';
-    document.querySelectorAll('.market-btn').forEach(b =>
-      b.classList.toggle('active', b.dataset.market === 'stock'));
-    document.getElementById('search-box').classList.remove('crypto-mode');
-    document.getElementById('analyze-btn').classList.remove('crypto-mode');
-    document.getElementById('analyze-btn').style.background = '';
-    document.getElementById('analyze-btn').style.color = '';
-    renderQuickPicks();
-    document.getElementById('ticker-input').value = ticker;
-    navigateTo('home');
+    showTickerPanel(ticker, 'stock');
   }
 
 
@@ -7471,6 +7679,331 @@ Return ONLY this JSON (no markdown):
       if (!calLoaded.earnings) loadCalendarPage();
     }
   }
+
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GLOBAL TICKER DETAIL PANEL — barcha tabda ishlaydi
+  // ═══════════════════════════════════════════════════════════════════════════
+  let gdpOpen = false;
+
+  async function showTickerPanel(ticker, marketType) {
+    if (gdpOpen) closeTickerPanel();
+    gdpOpen = true;
+    ticker = ticker.toUpperCase();
+    marketType = marketType || 'stock';
+
+    // Overlay yaratamiz
+    const overlay = document.createElement('div');
+    overlay.className = 'gdp-overlay';
+    overlay.id = 'gdp-overlay';
+
+    overlay.innerHTML = `
+      <div class="gdp-panel" id="gdp-panel">
+        <div class="gdp-handle"></div>
+        <div class="gdp-header">
+          <div class="gdp-ticker-info">
+            <span class="gdp-ticker">${ticker}</span>
+            <div class="gdp-price-wrap">
+              <span class="gdp-price" id="gdp-price">Yuklanmoqda...</span>
+              <span class="gdp-change" id="gdp-change"></span>
+            </div>
+          </div>
+          <button class="gdp-close-btn" onclick="closeTickerPanel()">
+            <i class="ri ri-close-line"></i>
+          </button>
+        </div>
+        <div class="gdp-body">
+          <div class="gdp-tabs">
+            <button class="gdp-tab active" data-gdp-tab="overview">📊 Umumiy</button>
+            <button class="gdp-tab" data-gdp-tab="ai">🤖 AI Tahlil</button>
+            <button class="gdp-tab" data-gdp-tab="news">📰 Yangiliklar</button>
+            ${marketType === 'stock' ? '<button class="gdp-tab" data-gdp-tab="halal">🛡 Halollik</button>' : ''}
+          </div>
+
+          <!-- Overview -->
+          <div class="gdp-tab-content active" id="gdp-tab-overview">
+            <div class="gdp-stat-grid" id="gdp-stats">
+              <div class="gdp-stat"><div class="gdp-stat-val">—</div><div class="gdp-stat-lbl">Narx</div></div>
+              <div class="gdp-stat"><div class="gdp-stat-val">—</div><div class="gdp-stat-lbl">Change%</div></div>
+              <div class="gdp-stat"><div class="gdp-stat-val">—</div><div class="gdp-stat-lbl">Yuqori</div></div>
+              <div class="gdp-stat"><div class="gdp-stat-val">—</div><div class="gdp-stat-lbl">Pastki</div></div>
+              <div class="gdp-stat"><div class="gdp-stat-val">—</div><div class="gdp-stat-lbl">Hajm</div></div>
+              <div class="gdp-stat"><div class="gdp-stat-val">—</div><div class="gdp-stat-lbl">Market Cap</div></div>
+            </div>
+            <!-- TradingView Mini Chart -->
+            <div id="gdp-chart" style="height:200px;background:var(--bg-card);border-radius:12px;margin-bottom:16px;overflow:hidden;position:relative">
+              <iframe
+                src="https://s.tradingview.com/embed-widget/mini-symbol-overview/?locale=en#%7B%22symbol%22%3A%22${ticker}%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A%22200%22%2C%22dateRange%22%3A%221M%22%2C%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Atrue%2C%22autosize%22%3Atrue%7D"
+                width="100%" height="200"
+                style="border:none;position:absolute;inset:0"
+                allowtransparency="true">
+              </iframe>
+            </div>
+          </div>
+
+          <!-- AI Tahlil -->
+          <div class="gdp-tab-content" id="gdp-tab-ai">
+            <div class="gdp-ai-box" id="gdp-ai-content">
+              <div class="gdp-ai-head"><i class="ri ri-sparkling-2-fill"></i> AI Tahlil yuklanmoqda...</div>
+              <div style="color:var(--text-muted);font-size:13px">Bir necha soniya kutib turing...</div>
+            </div>
+          </div>
+
+          <!-- Yangiliklar -->
+          <div class="gdp-tab-content" id="gdp-tab-news">
+            <div id="gdp-news-content">
+              <div style="color:var(--text-muted);padding:20px;text-align:center">Yangiliklar yuklanmoqda...</div>
+            </div>
+          </div>
+
+          <!-- Halollik -->
+          ${marketType === 'stock' ? `<div class="gdp-tab-content" id="gdp-tab-halal">
+            <div id="gdp-halal-content">
+              <div style="color:var(--text-muted);padding:20px;text-align:center">Halollik tahlil yuklanmoqda...</div>
+            </div>
+          </div>` : ''}
+
+          <!-- To'liq tahlil tugmasi -->
+          <button class="gdp-full-btn" onclick="gdpGoFull('${ticker}', '${marketType}')">
+            <i class="ri ri-bar-chart-fill"></i> To'liq tahlilga o'tish
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Tab switching
+    overlay.querySelectorAll('.gdp-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        overlay.querySelectorAll('.gdp-tab').forEach(t => t.classList.remove('active'));
+        overlay.querySelectorAll('.gdp-tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        const tabId = 'gdp-tab-' + tab.dataset.gdpTab;
+        const tabEl = document.getElementById(tabId);
+        if (tabEl) tabEl.classList.add('active');
+      });
+    });
+
+    // Overlay background → yopish
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) closeTickerPanel();
+    });
+    document.addEventListener('keydown', gdpEscHandler);
+
+    // Ma'lumotlarni yuklash
+    loadGdpData(ticker, marketType);
+  }
+
+  function gdpEscHandler(e) {
+    if (e.key === 'Escape') closeTickerPanel();
+  }
+
+  function closeTickerPanel() {
+    gdpOpen = false;
+    document.getElementById('gdp-overlay')?.remove();
+    document.removeEventListener('keydown', gdpEscHandler);
+  }
+
+  async function loadGdpData(ticker, marketType) {
+    try {
+      let price, change, changePercent, high, low, volume, marketCap, news = [], name = ticker;
+
+      if (marketType === 'crypto') {
+        // Binance'dan kripto ma'lumoti
+        const res = await fetch(`${PROXY_URL}/binance/api/v3/ticker/24hr?symbol=${ticker}USDT`);
+        if (res.ok) {
+          const d = await res.json();
+          price = parseFloat(d.lastPrice);
+          change = parseFloat(d.priceChange);
+          changePercent = parseFloat(d.priceChangePercent);
+          high = parseFloat(d.highPrice);
+          low = parseFloat(d.lowPrice);
+          volume = parseFloat(d.quoteVolume);
+          marketCap = null;
+        }
+      } else {
+        // Polygon'dan aksiya ma'lumoti
+        function daysAgoStr(n) {
+          const d = new Date(); d.setDate(d.getDate() - n);
+          return d.toISOString().split('T')[0];
+        }
+        const [candleRes, refRes, newsRes] = await Promise.all([
+          fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${ticker}/range/1/day/${daysAgoStr(30)}/${daysAgoStr(1)}?adjusted=true&sort=asc&limit=30`),
+          fetch(`${PROXY_URL}/polygon/v3/reference/tickers/${ticker}`),
+          fetch(`${PROXY_URL}/polygon/v2/reference/news?ticker=${ticker}&limit=6&order=desc`),
+        ]);
+
+        if (candleRes.ok) {
+          const cd = await candleRes.json();
+          if (cd.results && cd.results.length >= 2) {
+            const last = cd.results[cd.results.length - 1];
+            const prev = cd.results[cd.results.length - 2];
+            price = last.c;
+            change = price - prev.c;
+            changePercent = ((price - prev.c) / prev.c * 100);
+            high = last.h; low = last.l;
+            volume = last.v;
+          }
+        }
+        if (refRes.ok) {
+          const rd = await refRes.json();
+          name = rd.results?.name || ticker;
+          marketCap = rd.results?.market_cap;
+        }
+        if (newsRes.ok) {
+          const nd = await newsRes.json();
+          news = nd.results || [];
+        }
+      }
+
+      // Header yangilash
+      if (price) {
+        const priceEl = document.getElementById('gdp-price');
+        const changeEl = document.getElementById('gdp-change');
+        if (priceEl) priceEl.textContent = '$' + (price < 1 ? price.toFixed(4) : price.toFixed(2));
+        if (changeEl) {
+          const up = changePercent >= 0;
+          changeEl.textContent = (up ? '+' : '') + changePercent.toFixed(2) + '%';
+          changeEl.className = 'gdp-change ' + (up ? 'st-up' : 'st-down');
+        }
+
+        // Stats yangilash
+        const statsEl = document.getElementById('gdp-stats');
+        if (statsEl) {
+          const fmt = v => v ? (v < 1 ? v.toFixed(4) : v.toFixed(2)) : '—';
+          statsEl.innerHTML = [
+            ['$' + fmt(price), 'Narx'],
+            [(changePercent >= 0 ? '+' : '') + (changePercent||0).toFixed(2) + '%', 'Change%'],
+            ['$' + fmt(high), 'Yuqori'],
+            ['$' + fmt(low), 'Pastki'],
+            [formatBigNumber(volume||0).replace('$',''), 'Hajm'],
+            [marketCap ? '$' + formatBigNumber(marketCap) : '—', 'Market Cap'],
+          ].map(([v, l]) => `
+            <div class="gdp-stat">
+              <div class="gdp-stat-val ${v.includes('+') ? 'st-up' : ''}">${v}</div>
+              <div class="gdp-stat-lbl">${l}</div>
+            </div>`).join('');
+        }
+      }
+
+      // Yangiliklar
+      const newsEl = document.getElementById('gdp-news-content');
+      if (newsEl) {
+        if (news.length) {
+          newsEl.innerHTML = news.map(n => `
+            <div class="gdp-news-item">
+              <a href="${n.article_url}" target="_blank" style="text-decoration:none">
+                <div class="gdp-news-title">${escapeHtml(n.title || '')}</div>
+                <div class="gdp-news-meta">${n.publisher?.name || ''} · ${n.published_utc ? new Date(n.published_utc).toLocaleDateString('uz') : ''}</div>
+              </a>
+            </div>`).join('');
+        } else {
+          newsEl.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center">Yangiliklar topilmadi</div>';
+        }
+      }
+
+      // AI tahlil
+      loadGdpAI(ticker, marketType, price, changePercent);
+
+      // Halollik (faqat aksiya uchun)
+      if (marketType === 'stock') {
+        loadGdpHalal(ticker);
+      }
+
+    } catch(e) {
+      const priceEl = document.getElementById('gdp-price');
+      if (priceEl) priceEl.textContent = 'Xato: ' + e.message;
+    }
+  }
+
+  async function loadGdpAI(ticker, marketType, price, changePct) {
+    const el = document.getElementById('gdp-ai-content');
+    if (!el) return;
+    try {
+      const prompt = `${ticker} ${marketType === 'crypto' ? 'kripto' : 'aksiya'} bugun ${changePct >= 0 ? '+' : ''}${(changePct||0).toFixed(2)}% ${changePct >= 0 ? 'o\'sayapti' : 'tushyapti'}. Narx: $${price}. Search the web for recent news about ${ticker}.
+
+Return ONLY JSON:
+{"summary":"2-3 jumla o'zbek tilida qisqa tahlil","signal":"SOTIB_OL yoki KUZAT yoki EHTIYOT","signal_reason":"1 jumla sabab"}`;
+
+      const res = await fetch(`${PROXY_URL}/claude`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 300,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!res.ok) throw new Error('API ' + res.status);
+      const data = await res.json();
+      const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+      let json = text.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
+      const fb = json.indexOf('{'), lb = json.lastIndexOf('}');
+      if (fb !== -1) json = json.substring(fb, lb+1);
+      const r = JSON.parse(json);
+
+      const sigColor = r.signal === 'SOTIB_OL' ? 'var(--bull)' : r.signal === 'EHTIYOT' ? 'var(--bear)' : 'var(--warn)';
+      el.innerHTML = `
+        <div class="gdp-ai-head"><i class="ri ri-sparkling-2-fill"></i> AI Tahlili</div>
+        <div style="margin-bottom:12px">${escapeHtml(r.summary)}</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg-elevated);border-radius:8px;border-left:3px solid ${sigColor}">
+          <span style="font-family:var(--mono);font-weight:700;font-size:13px;color:${sigColor}">${r.signal}</span>
+          <span style="font-size:12px;color:var(--text-dim)">${escapeHtml(r.signal_reason)}</span>
+        </div>`;
+    } catch(e) {
+      if (el) el.innerHTML = `
+        <div class="gdp-ai-head"><i class="ri ri-sparkling-2-fill"></i> AI Tahlili</div>
+        <div style="color:var(--text-muted);font-size:13px">AI tahlili yuklanmadi (Claude API key kerak).</div>`;
+    }
+  }
+
+  function loadGdpHalal(ticker) {
+    const el = document.getElementById('gdp-halal-content');
+    if (!el) return;
+    // Statik ma'lumotdan topamiz
+    const staticItem = HALAL_STATIC.find(s => s.ticker === ticker);
+    if (staticItem) {
+      const vCls = staticItem.verdict === 'HALOL' ? 'halal' : staticItem.verdict === 'SHUBHALI' ? 'doubtful' : 'haram';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div class="halal-score-ring" style="color:${staticItem.score>=70?'var(--bull)':staticItem.score>=40?'var(--warn)':'var(--bear)'};border-color:currentColor;width:56px;height:56px;font-size:20px">
+            ${staticItem.score}
+          </div>
+          <div>
+            <span class="halal-badge ${vCls}">${staticItem.verdict}</span>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:6px">
+              Haram: ${staticItem.haram_revenue_pct}% | Qarz: ${staticItem.interest_debt_pct}%
+            </div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.6">${escapeHtml(staticItem.summary||'')}</div>`;
+    } else {
+      el.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center">Bu aksiya uchun halol malumoti yoq. Halol tabida tekshiring.</div>';
+    }
+  }
+
+  function gdpGoFull(ticker, marketType) {
+    closeTickerPanel();
+    currentMarket = marketType;
+    document.querySelectorAll('.market-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.market === marketType));
+    if (marketType === 'crypto') {
+      document.getElementById('search-box')?.classList.add('crypto-mode');
+      document.getElementById('analyze-btn')?.classList.add('crypto-mode');
+    } else {
+      document.getElementById('search-box')?.classList.remove('crypto-mode');
+      document.getElementById('analyze-btn')?.classList.remove('crypto-mode');
+    }
+    document.getElementById('analyze-btn').style.background = '';
+    document.getElementById('analyze-btn').style.color = '';
+    renderQuickPicks?.();
+    document.getElementById('ticker-input').value = ticker;
+    navigateTo('home');
+  }
+
 
   function escapeHtml(s) {
     if (s == null) return '';
