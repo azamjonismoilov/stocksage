@@ -7765,7 +7765,7 @@ Return ONLY this JSON (no markdown):
 
           <!-- To'liq tahlil tugmasi -->
           <button class="gdp-full-btn" onclick="gdpGoFull('${ticker}', '${marketType}')">
-            <i class="ri ri-bar-chart-fill"></i> To'liq tahlilga o'tish
+            <i class="ri ri-bar-chart-fill"></i> Tahlil sahifasida ochish
           </button>
         </div>
       </div>
@@ -7831,7 +7831,7 @@ Return ONLY this JSON (no markdown):
 
         // 90 kunlik candle — dam olish kunlarida ham ishlaydi
         const [candleRes, refRes, newsRes] = await Promise.all([
-          fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${ticker}/range/1/day/${daysAgoStr(90)}/${daysAgoStr(0)}?adjusted=true&sort=asc&limit=90`),
+          fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${ticker}/range/1/day/${daysAgoStr(90)}/${daysAgoStr(1)}?adjusted=true&sort=asc&limit=90`),
           fetch(`${PROXY_URL}/polygon/v3/reference/tickers/${ticker}`),
           fetch(`${PROXY_URL}/polygon/v2/reference/news?ticker=${ticker}&limit=6&order=desc`),
         ]);
@@ -7853,6 +7853,20 @@ Return ONLY this JSON (no markdown):
             high = last.h; low = last.l; volume = last.v;
           }
         }
+        // Polygon bo'sh kelsa — Finnhub fallback
+        if (!price) {
+          try {
+            const fbRes = await fetch(`${PROXY_URL}/api/quote?symbol=${ticker}`);
+            if (fbRes.ok) {
+              const q = await fbRes.json();
+              if (q.c) {
+                price = q.c; change = q.d || 0;
+                changePercent = q.dp || 0;
+                high = q.h; low = q.l; volume = 0;
+              }
+            }
+          } catch(e) { console.warn('Finnhub fallback failed:', e); }
+        }
         if (refRes.ok) {
           const rd = await refRes.json();
           name = rd.results?.name || ticker;
@@ -7864,31 +7878,42 @@ Return ONLY this JSON (no markdown):
         }
       }
 
-      // Header yangilash — price bo'lmasa ham ko'rsatamiz
-      if (true) {
+      // Header yangilash — barcha qiymatlar xavfsiz
+      {
         const priceEl = document.getElementById('gdp-price');
         const changeEl = document.getElementById('gdp-change');
-        if (priceEl) priceEl.textContent = '$' + (price < 1 ? price.toFixed(4) : price.toFixed(2));
+        const safePrice = price || 0;
+        const safePct = changePercent || 0;
+        const safeHigh = high || 0;
+        const safeLow = low || 0;
+        const safeVol = volume || 0;
+
+        if (priceEl) {
+          priceEl.textContent = safePrice
+            ? '$' + (safePrice < 1 ? safePrice.toFixed(4) : safePrice.toFixed(2))
+            : '—';
+        }
         if (changeEl) {
-          const up = changePercent >= 0;
-          changeEl.textContent = (up ? '+' : '') + changePercent.toFixed(2) + '%';
+          const up = safePct >= 0;
+          changeEl.textContent = safePrice ? (up ? '+' : '') + safePct.toFixed(2) + '%' : '';
           changeEl.className = 'gdp-change ' + (up ? 'st-up' : 'st-down');
         }
 
         // Stats yangilash
         const statsEl = document.getElementById('gdp-stats');
         if (statsEl) {
-          const fmt = v => v ? (v < 1 ? v.toFixed(4) : v.toFixed(2)) : '—';
+          const fmt = v => (v && v > 0) ? ('$' + (v < 1 ? v.toFixed(4) : v.toFixed(2))) : '—';
+          const pctStr = safePrice ? ((safePct >= 0 ? '+' : '') + safePct.toFixed(2) + '%') : '—';
           statsEl.innerHTML = [
-            ['$' + fmt(price), 'Narx'],
-            [(changePercent >= 0 ? '+' : '') + (changePercent||0).toFixed(2) + '%', 'Change%'],
-            ['$' + fmt(high), 'Yuqori'],
-            ['$' + fmt(low), 'Pastki'],
-            [formatBigNumber(volume||0).replace('$',''), 'Hajm'],
+            [fmt(safePrice), 'Narx'],
+            [pctStr, 'Change%'],
+            [fmt(safeHigh), 'Yuqori'],
+            [fmt(safeLow), 'Pastki'],
+            [safeVol > 0 ? formatBigNumber(safeVol).replace('$','') : '—', 'Hajm'],
             [marketCap ? '$' + formatBigNumber(marketCap) : '—', 'Market Cap'],
           ].map(([v, l]) => `
             <div class="gdp-stat">
-              <div class="gdp-stat-val ${v.includes('+') ? 'st-up' : ''}">${v}</div>
+              <div class="gdp-stat-val ${v&&v.includes('+') ? 'st-up' : ''}">${v}</div>
               <div class="gdp-stat-lbl">${l}</div>
             </div>`).join('');
         }
@@ -7993,21 +8018,28 @@ Return ONLY JSON:
   }
 
   function gdpGoFull(ticker, marketType) {
-    closeTickerPanel();
-    currentMarket = marketType;
+    // Foydalanuvchi Tahlil tabiga o'tishni xohlasa — endi faqat ticker inputga yoziladi
+    // Sahifa o'zgarmaydi — foydalanuvchi o'zi navigatsiya qiladi
+    currentMarket = marketType || 'stock';
     document.querySelectorAll('.market-btn').forEach(b =>
-      b.classList.toggle('active', b.dataset.market === marketType));
-    if (marketType === 'crypto') {
+      b.classList.toggle('active', b.dataset.market === currentMarket));
+    if (currentMarket === 'crypto') {
       document.getElementById('search-box')?.classList.add('crypto-mode');
       document.getElementById('analyze-btn')?.classList.add('crypto-mode');
     } else {
       document.getElementById('search-box')?.classList.remove('crypto-mode');
       document.getElementById('analyze-btn')?.classList.remove('crypto-mode');
     }
-    document.getElementById('analyze-btn').style.background = '';
-    document.getElementById('analyze-btn').style.color = '';
+    if (document.getElementById('analyze-btn')) {
+      document.getElementById('analyze-btn').style.background = '';
+      document.getElementById('analyze-btn').style.color = '';
+    }
     renderQuickPicks?.();
-    document.getElementById('ticker-input').value = ticker;
+    if (document.getElementById('ticker-input')) {
+      document.getElementById('ticker-input').value = ticker;
+    }
+    closeTickerPanel();
+    // Tahlil tabiga o'tamiz faqat agar foydalanuvchi xohlasa
     navigateTo('home');
   }
 
