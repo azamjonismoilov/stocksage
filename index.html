@@ -7828,8 +7828,10 @@ Return ONLY this JSON (no markdown):
           const d = new Date(); d.setDate(d.getDate() - n);
           return d.toISOString().split('T')[0];
         }
+
+        // 90 kunlik candle — dam olish kunlarida ham ishlaydi
         const [candleRes, refRes, newsRes] = await Promise.all([
-          fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${ticker}/range/1/day/${daysAgoStr(30)}/${daysAgoStr(1)}?adjusted=true&sort=asc&limit=30`),
+          fetch(`${PROXY_URL}/polygon/v2/aggs/ticker/${ticker}/range/1/day/${daysAgoStr(90)}/${daysAgoStr(0)}?adjusted=true&sort=asc&limit=90`),
           fetch(`${PROXY_URL}/polygon/v3/reference/tickers/${ticker}`),
           fetch(`${PROXY_URL}/polygon/v2/reference/news?ticker=${ticker}&limit=6&order=desc`),
         ]);
@@ -7844,6 +7846,11 @@ Return ONLY this JSON (no markdown):
             changePercent = ((price - prev.c) / prev.c * 100);
             high = last.h; low = last.l;
             volume = last.v;
+          } else if (cd.results && cd.results.length === 1) {
+            const last = cd.results[0];
+            price = last.c;
+            change = 0; changePercent = 0;
+            high = last.h; low = last.l; volume = last.v;
           }
         }
         if (refRes.ok) {
@@ -7857,8 +7864,8 @@ Return ONLY this JSON (no markdown):
         }
       }
 
-      // Header yangilash
-      if (price) {
+      // Header yangilash — price bo'lmasa ham ko'rsatamiz
+      if (true) {
         const priceEl = document.getElementById('gdp-price');
         const changeEl = document.getElementById('gdp-change');
         if (priceEl) priceEl.textContent = '$' + (price < 1 ? price.toFixed(4) : price.toFixed(2));
