@@ -7210,7 +7210,7 @@ Return ONLY this JSON (no markdown):
       const mType = pumpType === 'crypto' ? 'crypto' : 'stock';
       return `<div class="pump-list-item ${riskCls}" onclick="loadPumpToAnalyze('${p.symbol}')">
         <div style="display:flex;align-items:center;gap:8px">
-          \${tickerLogoImg('${p.symbol}', '${mType}', 'ticker-logo-sm')}
+          ${tickerLogoImg(p.symbol, mType, 'ticker-logo-sm')}
           <div>
             <div class="pump-list-sym">${p.symbol}</div>
             <div class="pump-list-price">$${priceFmt}</div>
@@ -7463,7 +7463,7 @@ Return ONLY this JSON (no markdown):
       return `<tr onclick="loadMegaTicker('${t.ticker}')">
         <td>
           <div style="display:flex;align-items:center;gap:8px">
-            \${tickerLogoImg('${t.ticker}', 'stock', 'ticker-logo-sm')}
+            ${tickerLogoImg(t.ticker, 'stock', 'ticker-logo-sm')}
             <span class="mega-ticker">${t.ticker}</span>
           </div>
         </td>
