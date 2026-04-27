@@ -2929,6 +2929,83 @@
   .pump-refresh-btn:hover { background: #e6ff5c; }
   .pump-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+
+  /* ═══════════════════════════════════════════════════════
+     PAGE MINI HEADER (boshqa sahifalar uchun)
+  ═══════════════════════════════════════════════════════ */
+  .page-mini-hero {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 0 28px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-mini-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .page-mini-text { flex: 1; min-width: 0; }
+
+  .page-mini-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-mini-tag::before {
+    content: '';
+    width: 14px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .page-mini-title {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(22px, 3vw, 30px);
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .page-mini-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .page-mini-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 480px) {
+    .page-mini-hero { padding: 18px 0 20px; gap: 12px; margin-bottom: 20px; }
+    .page-mini-icon { width: 44px; height: 44px; font-size: 20px; }
+    .page-mini-title { font-size: 20px; }
+    .page-mini-desc { font-size: 12px; }
+  }
+
 </style>
 </head>
 <body>
@@ -3019,6 +3096,9 @@
     </button>
   </nav>
 
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
   <section class="hero">
     <div class="hero-inner">
       <div class="hero-left">
@@ -3045,8 +3125,6 @@
     </div>
   </section>
 
-  <!-- HOME PAGE -->
-  <div class="page active" id="page-home">
   <!-- WATCHLIST SECTION -->
   <section class="watchlist-section" id="watchlist-section">
     <div class="watchlist-header">
@@ -3127,6 +3205,14 @@
 
   <!-- SCREENER PAGE -->
   <div class="page" id="page-screener">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon"><i class="ri-filter-3-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Stock Screener · Filter</div>
+        <div class="page-mini-title">Aksiyani <em>filterlab</em> toping</div>
+        <div class="page-mini-desc">Sektor, market cap, P/E va analyst tavsiyasiga ko'ra 60+ S&P 500 aksiyalarni saralang</div>
+      </div>
+    </div>
     <div class="screener-filters">
       <div class="filters-grid">
         <div class="filter-group">
@@ -3204,6 +3290,14 @@
 
   <!-- HEATMAP PAGE -->
   <div class="page" id="page-heatmap">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon" style="color:#ff6b35"><i class="ri-fire-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Sektor Heat Map</div>
+        <div class="page-mini-title">11 sektor — <em>real-time</em> bozor harorati</div>
+        <div class="page-mini-desc">Qaysi sektor o'sayapti, qaysi tushayapti — bir qarashda ko'ring</div>
+      </div>
+    </div>
     <div class="heatmap-wrap">
       <div class="card-header">
         <div class="card-icon"><i class="ri-fire-fill"></i></div>
@@ -3222,6 +3316,14 @@
 
   <!-- CRYPTO MARKET PAGE -->
   <div class="page" id="page-crypto-market">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon" style="color:#f7931a"><i class="ri-coin-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Kripto Bozor</div>
+        <div class="page-mini-title">Trending, gainers va <em>yangi listinglar</em></div>
+        <div class="page-mini-desc">Bozorda nima qaynayapti — Fear & Greed, top gainers/losers, yangi tokenlar</div>
+      </div>
+    </div>
     <div class="crypto-market-grid">
 
       <!-- Trending -->
@@ -3279,6 +3381,14 @@
 
   <!-- CALENDAR PAGE -->
   <div class="page" id="page-calendar">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon"><i class="ri-calendar-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Moliyaviy Kalendar</div>
+        <div class="page-mini-title">Earnings, dividend va <em>IPO sanalar</em></div>
+        <div class="page-mini-desc">Yaqin kelajakdagi muhim bozor sanalari — bir joyda</div>
+      </div>
+    </div>
     <div class="card" style="margin-bottom:20px">
       <div class="card-header">
         <div class="card-icon"><i class="ri-calendar-fill"></i></div>
@@ -3299,6 +3409,14 @@
 
   <!-- CONGRESS PAGE -->
   <div class="page" id="page-congress">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon"><i class="ri-government-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Congressional Trades</div>
+        <div class="page-mini-title">Senatorlar nima <em>sotib olayapti</em>?</div>
+        <div class="page-mini-desc">AQSh kongress a'zolarining aksiya savdolari — Quiver Quantitative orqali</div>
+      </div>
+    </div>
     <div class="card" style="margin-bottom:20px">
       <div class="card-header">
         <div class="card-icon"><i class="ri-government-fill"></i></div>
@@ -3325,6 +3443,14 @@
 
   <!-- LISTS PAGE -->
   <div class="page" id="page-lists">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon"><i class="ri-list-check-3"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Maxsus Ro'yxatlar</div>
+        <div class="page-mini-title">52W <em>highs/lows</em> va dividend aristocrats</div>
+        <div class="page-mini-desc">Eng yuqoriga yetgan, dividend o'sib borayotgan va unusual options aksiyalar</div>
+      </div>
+    </div>
     <div class="card">
       <div class="card-header">
         <div class="card-icon"><i class="ri-list-check-3"></i></div>
@@ -3345,6 +3471,14 @@
 
   <!-- FUTURES PAGE -->
   <div class="page" id="page-futures">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon" style="color:#00d4ff"><i class="ri-stock-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Fyuchers Bozori</div>
+        <div class="page-mini-title">Oltin, neft, valyutalar va <em>obligatsiyalar</em></div>
+        <div class="page-mini-desc">Commodities, forex, bonds va indekslar — bir joyda</div>
+      </div>
+    </div>
 
     <!-- Commodities -->
     <div class="card" style="margin-bottom:20px">
@@ -3390,6 +3524,14 @@
 
   <!-- HALOL SCREENING PAGE -->
   <div class="page" id="page-halal">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon" style="color:var(--bull)"><i class="ri-shield-check-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Shariat Screening · AAOIFI</div>
+        <div class="page-mini-title">Aksiyalarning <em>halolligini</em> tekshiring</div>
+        <div class="page-mini-desc">142+ S&P 500 aksiya — biznes faoliyati, qarz nisbati va haram daromad bo'yicha tahlil</div>
+      </div>
+    </div>
     <div class="card" style="margin-bottom:20px">
       <div class="card-header">
         <div class="card-icon"><i class="ri-shield-check-fill" style="color:var(--bull)"></i></div>
@@ -3450,6 +3592,14 @@
 
   <!-- PUMP SIGNAL PAGE -->
   <div class="page" id="page-pump">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon" style="color:#ff6b35"><i class="ri-rocket-2-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Pump Signal · AI Detector</div>
+        <div class="page-mini-title">Eng <em>faol</em> kriptolar va aksiyalar</div>
+        <div class="page-mini-desc">Bugun nima qimirlayapti — AI har bir harakatni tushuntiradi va xavf darajasini baholaydi</div>
+      </div>
+    </div>
     <div class="card" style="margin-bottom:20px">
       <div class="card-header">
         <div class="card-icon"><i class="ri-rocket-2-fill" style="color:var(--bull)"></i></div>
@@ -3495,6 +3645,14 @@
 
   <!-- INSIDER TRADING PAGE -->
   <div class="page" id="page-insider">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon"><i class="ri-spy-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Insider Trading</div>
+        <div class="page-mini-title">CEO va CFO <em>harakatlari</em></div>
+        <div class="page-mini-desc">Korporativ insiderlar o'z aksiyalarini sotib olayaptimi yoki sotayapti — bilib oling</div>
+      </div>
+    </div>
     <div class="card" style="margin-bottom:24px">
       <div class="card-header">
         <div class="card-icon"><i class="ri-spy-fill"></i></div>
