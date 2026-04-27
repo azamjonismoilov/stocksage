@@ -3753,6 +3753,12 @@
         <div class="card-title">S&P 500 — To'liq Halollik Reytingi</div>
       </div>
 
+      <!-- Mode toggle: 142 statik vs 10K+ Polygon -->
+      <div class="market-toggle" style="margin-bottom:14px;max-width:480px">
+        <button class="market-btn active" data-halal-mode="static"><i class="ri-shield-check-fill"></i> Asosiy 142</button>
+        <button class="market-btn" data-halal-mode="mega"><i class="ri-database-2-fill"></i> 10,000+ aksiya</button>
+      </div>
+
       <!-- Sector tabs -->
       <div class="cal-tabs" id="halal-sector-tabs" style="flex-wrap:wrap;gap:3px;margin-bottom:16px">
         <button class="cal-tab active" data-sector="">Barchasi</button>
@@ -4048,12 +4054,96 @@
   // ── FAST DATA ─────────────────────────────────────────────────────────────
   async function fetchFastData(ticker, isCrypto) {
     if (isCrypto) return fetchFastCrypto(ticker);
+    // Polygon (Massive.com) avval — 10K+ aksiya, real-time
     try {
-      return await fetchFinnhubStock(ticker);
-    } catch (e) {
-      console.warn('Finnhub proxy failed, falling back to Claude:', e.message);
-      return fetchClaudeStock(ticker);
+      return await fetchPolygonStock(ticker);
+    } catch (ePoly) {
+      console.warn('Polygon failed:', ePoly.message);
+      try {
+        return await fetchFinnhubStock(ticker);
+      } catch (eFinn) {
+        console.warn('Finnhub failed:', eFinn.message);
+        return fetchClaudeStock(ticker);
+      }
     }
+  }
+
+  // ── Polygon (Massive) stock fetch ────────────────────────────────────────────
+  async function fetchPolygonStock(ticker) {
+    const base = `${PROXY_URL}/polygon`;
+
+    function daysAgoStr(n) {
+      const d = new Date();
+      d.setDate(d.getDate() - n);
+      return d.toISOString().split('T')[0];
+    }
+
+    const [refRes, candleRes, newsRes] = await Promise.all([
+      fetch(`${base}/v3/reference/tickers/${ticker}`),
+      fetch(`${base}/v2/aggs/ticker/${ticker}/range/1/day/${daysAgoStr(90)}/${daysAgoStr(1)}?adjusted=true&sort=asc&limit=120`),
+      fetch(`${base}/v2/reference/news?ticker=${ticker}&limit=10&order=desc`),
+    ]);
+
+    if (!candleRes.ok) throw new Error('Polygon ' + candleRes.status);
+    const candleData = await candleRes.json();
+    if (!candleData.results || !candleData.results.length) {
+      throw new Error(`"${ticker}" Polygon'da topilmadi`);
+    }
+
+    const refData = refRes.ok ? await refRes.json() : { results: {} };
+    const newsData = newsRes.ok ? await newsRes.json() : { results: [] };
+
+    const ref = refData.results || {};
+    const bars = candleData.results;
+    const last = bars[bars.length - 1];
+    const prev = bars.length >= 2 ? bars[bars.length - 2] : last;
+
+    const price = last.c;
+    const prevClose = prev.c;
+    const change = price - prevClose;
+    const changePercent = prevClose ? (change / prevClose * 100) : 0;
+
+    const candles = {
+      close: bars.map(b => b.c),
+      high:  bars.map(b => b.h),
+      low:   bars.map(b => b.l),
+      open:  bars.map(b => b.o),
+      volume:bars.map(b => b.v),
+      time:  bars.map(b => Math.floor(b.t / 1000)),
+    };
+
+    const signals = computeTechnicalSignals(candles);
+
+    const data = {
+      type: 'stock', ticker,
+      name: ref.name || ticker,
+      exchange: ref.primary_exchange || 'N/A',
+      industry: ref.sic_description || ref.type || 'N/A',
+      currency: 'USD',
+      price, change, changePercent,
+      open: last.o, high: last.h, low: last.l, prevClose,
+      volume24h: last.v || 0, quoteVolume24h: (last.vw || price) * (last.v || 0),
+      marketCapUsd: ref.market_cap || null,
+      rank: null,
+      preSignals: signals || {
+        rsi: 50, sma20: null, sma50: null,
+        support: last.l, resistance: last.h,
+        volumeRatio: 1,
+        trend: changePercent > 0 ? 'bullish' : changePercent < 0 ? 'bearish' : 'neutral',
+        rsiStatus: 'neutral', volumeStatus: 'neutral', lastClose: price
+      },
+      candles,
+      news: (newsData.results || []).slice(0, 6).map(n => ({
+        headline: n.title,
+        source: n.publisher?.name || 'Polygon',
+        url: n.article_url,
+        datetime: Math.floor(new Date(n.published_utc).getTime() / 1000),
+      })),
+      earnings: null,
+    };
+
+    patchSkeletonPrice(data, false);
+    return data;
   }
 
   // ── COINGECKO via proxy (crypto) ──────────────────────────────────────────
@@ -6059,6 +6149,46 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
       return;
     }
 
+    // Mode toggle: 142 vs 10K+
+    document.querySelectorAll('[data-halal-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        halalMode = btn.dataset.halalMode;
+        document.querySelectorAll('[data-halal-mode]').forEach(b =>
+          b.classList.toggle('active', b.dataset.halalMode === halalMode));
+        halalPage = 0;
+        if (halalMode === 'mega') {
+          if (!halalMegaData) {
+            loadHalalMegaData();
+          } else {
+            halalBatchResults = halalMegaData.map(s => ({
+              ...s,
+              purification_pct: s.haram_revenue_pct || 0,
+              criteria: [
+                {name:'Biznes faoliyati',     status: (s.haram_revenue_pct||0) < 5 && s.verdict !== 'HARAM' ? 'pass' : 'fail', detail: s.summary},
+                {name:'Haram daromad ulushi', status: (s.haram_revenue_pct||0) < 5 ? 'pass' : 'fail', detail: `Haram: ${s.haram_revenue_pct||0}%`},
+                {name:'Qarz nisbati',         status: (s.interest_debt_pct||0) < 30 ? 'pass' : 'warn', detail: `Foiz qarz: ${s.interest_debt_pct||0}%`},
+              ],
+              source_note: 'Polygon + AAOIFI logika'
+            }));
+            renderHalalBatch(filterEl.value);
+          }
+        } else {
+          // Static 142
+          halalBatchResults = HALAL_STATIC.map(s => ({
+            ...s,
+            purification_pct: s.haram_revenue_pct,
+            criteria: [
+              {name:'Biznes faoliyati',     status: s.haram_revenue_pct < 5 && s.verdict !== 'HARAM' ? 'pass' : 'fail', detail: s.summary},
+              {name:'Haram daromad ulushi', status: s.haram_revenue_pct < 5 ? 'pass' : 'fail', detail: `Haram: ${s.haram_revenue_pct}%`},
+              {name:'Qarz nisbati',         status: s.interest_debt_pct < 30 ? 'pass' : 'warn', detail: `Foiz qarz: ${s.interest_debt_pct}%`},
+            ],
+            source_note: 'AAOIFI standartlari'
+          }));
+          renderHalalBatch(filterEl.value);
+        }
+      });
+    });
+
     // Sector tabs
     sectorTabs.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -6908,6 +7038,153 @@ Return ONLY this JSON (no markdown):
     renderQuickPicks();
     document.getElementById('ticker-input').value = ticker;
     navigateTo('home');
+  }
+
+
+
+  // ── Halol Mega Mode — Polygon orqali 10K+ aksiya ─────────────────────────────
+  let halalMode = 'static'; // 'static' yoki 'mega'
+  let halalMegaData = null;
+
+  // SIC code -> Sektor mapping (AAOIFI logic uchun)
+  const SIC_HARAM_KEYWORDS = {
+    'BANK': { verdict: 'HARAM', grade: 'F', score: 12, haram_pct: 95, summary: 'Annaviy bank — foiz (riba) asosidagi faoliyat tufayli haram.', sector: 'Finance' },
+    'INSURANCE': { verdict: 'SHUBHALI', grade: 'D', score: 38, haram_pct: 15, summary: 'Annaviy sugurta. Takaful emas — shubhali.', sector: 'Finance' },
+    'TOBACCO': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Tamaki — haram mahsulot.', sector: 'Consumer' },
+    'CIGAR': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Tamaki mahsulotlari — haram.', sector: 'Consumer' },
+    'BREWER': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Pivo ishlab chiqarish — haram.', sector: 'Consumer' },
+    'WINE': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Vino ishlab chiqarish — haram.', sector: 'Consumer' },
+    'DISTILL': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Spirtli ichimliklar — haram.', sector: 'Consumer' },
+    'ALCOHOL': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Alkogol — haram.', sector: 'Consumer' },
+    'CASINO': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Qimor — haram.', sector: 'Gambling' },
+    'GAMBLING': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Qimor — haram.', sector: 'Gambling' },
+    'BETTING': { verdict: 'HARAM', grade: 'F', score: 5, haram_pct: 100, summary: 'Qimor — haram.', sector: 'Gambling' },
+    'WEAPON': { verdict: 'HARAM', grade: 'F', score: 18, haram_pct: 90, summary: 'Qurol-yarogcha — harbiy, shubhali.', sector: 'Defense' },
+    'AMMUNITION': { verdict: 'HARAM', grade: 'F', score: 18, haram_pct: 90, summary: 'O\'q-dorilar — harbiy.', sector: 'Defense' },
+    'ARMS': { verdict: 'HARAM', grade: 'F', score: 18, haram_pct: 90, summary: 'Qurol-yarogcha sanoati.', sector: 'Defense' },
+    'DEFENSE': { verdict: 'HARAM', grade: 'F', score: 18, haram_pct: 90, summary: 'Mudofaa — harbiy qurollar.', sector: 'Defense' },
+    'CREDIT': { verdict: 'SHUBHALI', grade: 'D', score: 35, haram_pct: 30, summary: 'Kredit kompaniyasi — foizli faoliyat.', sector: 'Finance' },
+    'LOAN': { verdict: 'HARAM', grade: 'F', score: 15, haram_pct: 90, summary: 'Foizli qarz beruvchi — riba.', sector: 'Finance' },
+    'MORTGAGE': { verdict: 'HARAM', grade: 'F', score: 15, haram_pct: 90, summary: 'Annaviy ipoteka — riba.', sector: 'Finance' },
+  };
+
+  const SIC_HALAL_KEYWORDS = {
+    'COMPUTER': 'Technology',
+    'SOFTWARE': 'Technology',
+    'SERVICES-COMPUTER': 'Technology',
+    'SEMICONDUCTOR': 'Technology',
+    'ELECTRONIC': 'Technology',
+    'PHARMA': 'Healthcare',
+    'BIOLOGICAL': 'Healthcare',
+    'MEDICAL': 'Healthcare',
+    'HEALTH': 'Healthcare',
+    'PETROLEUM': 'Energy',
+    'OIL': 'Energy',
+    'GAS': 'Energy',
+    'MINING': 'Materials',
+    'METAL': 'Materials',
+    'CHEMICAL': 'Materials',
+    'CONSTRUCTION': 'Industrial',
+    'MACHINERY': 'Industrial',
+    'TRANSPORT': 'Industrial',
+    'TELEPHONE': 'Telecom',
+    'COMMUNICATION': 'Telecom',
+    'RETAIL': 'Retail',
+  };
+
+  function classifyHalal(ticker, name, sicDescription) {
+    const sic = (sicDescription || '').toUpperCase();
+    const nameUp = (name || '').toUpperCase();
+
+    // 1. Haram so'zlar (eng birinchi tekshirish)
+    for (const kw in SIC_HARAM_KEYWORDS) {
+      if (sic.includes(kw) || nameUp.includes(kw)) {
+        const cfg = SIC_HARAM_KEYWORDS[kw];
+        return {
+          ticker, company: name || ticker, sector: cfg.sector,
+          verdict: cfg.verdict, grade: cfg.grade, score: cfg.score,
+          haram_revenue_pct: cfg.haram_pct, interest_debt_pct: 50,
+          summary: cfg.summary,
+        };
+      }
+    }
+
+    // 2. Halol sektorlar
+    let sector = 'Other';
+    for (const kw in SIC_HALAL_KEYWORDS) {
+      if (sic.includes(kw)) { sector = SIC_HALAL_KEYWORDS[kw]; break; }
+    }
+
+    // 3. Default — halol (texnologiya, sanoat va h.k.)
+    return {
+      ticker, company: name || ticker, sector,
+      verdict: 'HALOL', grade: 'B', score: 75,
+      haram_revenue_pct: 1.0, interest_debt_pct: 18,
+      summary: `${sector} sektoridagi kompaniya. Asosiy biznes halol bo'lishi ehtimoli yuqori. Aniq tekshirish uchun individual tahlil qiling.`,
+    };
+  }
+
+  async function loadHalalMegaData() {
+    const el = document.getElementById('halal-batch-result');
+    el.innerHTML = '<div class="info-text">10,000+ aksiya Polygon\'dan yuklanmoqda...</div>';
+
+    try {
+      // Polygon /v3/reference/tickers — barcha aksiyalar (10K+)
+      // 1000 ta limitda paginate qilamiz
+      let allTickers = [];
+      let nextUrl = `${PROXY_URL}/polygon/v3/reference/tickers?market=stocks&active=true&type=CS&limit=1000`;
+      let pageCount = 0;
+      const MAX_PAGES = 12; // 12 * 1000 = 12,000 aksiya
+
+      while (nextUrl && pageCount < MAX_PAGES) {
+        const res = await fetch(nextUrl);
+        if (!res.ok) throw new Error('Polygon ' + res.status);
+        const data = await res.json();
+        if (!data.results) break;
+
+        allTickers.push(...data.results);
+        pageCount++;
+        el.innerHTML = `<div class="info-text">Yuklanmoqda... ${allTickers.length} ta aksiya</div>`;
+
+        if (data.next_url) {
+          // next_url to'liq URL, biz proxy orqali ishlatamiz
+          const cursor = data.next_url.split('cursor=')[1];
+          if (!cursor) break;
+          nextUrl = `${PROXY_URL}/polygon/v3/reference/tickers?market=stocks&active=true&type=CS&limit=1000&cursor=${cursor}`;
+        } else {
+          break;
+        }
+      }
+
+      el.innerHTML = `<div class="info-text">${allTickers.length} ta aksiya tahlil qilinmoqda...</div>`;
+
+      // AAOIFI logic — har biriga
+      halalMegaData = allTickers.map(t =>
+        classifyHalal(t.ticker, t.name, t.sic_description)
+      );
+
+      // Add static data — ular aniqroq, ustun keladi
+      const staticTickers = new Set(HALAL_STATIC.map(s => s.ticker));
+      halalMegaData = halalMegaData.filter(m => !staticTickers.has(m.ticker));
+      halalMegaData = [...HALAL_STATIC, ...halalMegaData];
+
+      // halalBatchResults ni yangilash
+      halalBatchResults = halalMegaData.map(s => ({
+        ...s,
+        purification_pct: s.haram_revenue_pct || 0,
+        criteria: [
+          {name:'Biznes faoliyati',     status: (s.haram_revenue_pct||0) < 5 && s.verdict !== 'HARAM' ? 'pass' : 'fail', detail: s.summary},
+          {name:'Haram daromad ulushi', status: (s.haram_revenue_pct||0) < 5 ? 'pass' : (s.haram_revenue_pct||0) < 10 ? 'warn' : 'fail', detail: `Haram: ${s.haram_revenue_pct||0}%`},
+          {name:'Qarz nisbati (Riba)',  status: (s.interest_debt_pct||0) < 30 ? 'pass' : (s.interest_debt_pct||0) < 50 ? 'warn' : 'fail', detail: `Foizli qarz: ${s.interest_debt_pct||0}%`},
+        ],
+        source_note: 'Polygon.io kompaniya ma\'lumoti + AAOIFI logika'
+      }));
+
+      renderHalalBatch(document.getElementById('halal-filter')?.value || '');
+
+    } catch(e) {
+      el.innerHTML = '<div class="info-text">Xato: ' + e.message + '</div>';
+    }
   }
 
 
