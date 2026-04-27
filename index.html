@@ -3191,6 +3191,55 @@
     .mega-name { display: none; }
   }
 
+
+  /* ═══════════════════════════════════════════════════════
+     SUB-TABS (Bozor Pulsi, Sanalar)
+  ═══════════════════════════════════════════════════════ */
+  .sub-tabs-wrap {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 6px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .sub-tabs-wrap::-webkit-scrollbar { display: none; }
+
+  .sub-tab {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .sub-tab:hover { color: var(--text); background: var(--bg-card); }
+  .sub-tab.active { color: #000; background: var(--accent); }
+  .sub-tab i { font-size: 14px; }
+
+  .sub-pane { display: none; }
+  .sub-pane.active { display: block; animation: fadeIn 0.2s ease; }
+
+  @media (max-width: 480px) {
+    .sub-tab { padding: 8px 12px; font-size: 10px; }
+  }
+
 </style>
 </head>
 <body>
@@ -3244,7 +3293,7 @@
     </div>
   </div>
 
-  <!-- MAIN NAVIGATION -->
+  <!-- MAIN NAVIGATION (qayta tartiblangan: 7 ta asosiy bo'lim) -->
   <nav class="main-nav">
     <button class="nav-btn active" data-page="home">
       <i class="ri-home-4-fill"></i><span>Tahlil</span>
@@ -3252,32 +3301,23 @@
     <button class="nav-btn" data-page="screener">
       <i class="ri-filter-3-fill"></i><span>Screener</span>
     </button>
-    <button class="nav-btn" data-page="heatmap">
-      <i class="ri-fire-fill"></i><span>Heat Map</span>
-    </button>
-    <button class="nav-btn" data-page="insider">
-      <i class="ri-spy-fill"></i><span>Insider</span>
+    <button class="nav-btn" data-page="pulse">
+      <i class="ri-pulse-fill"></i><span>Bozor Pulsi</span>
     </button>
     <button class="nav-btn" data-page="crypto-market">
-      <i class="ri-coin-fill"></i><span>Kripto Bozor</span>
-    </button>
-    <button class="nav-btn" data-page="calendar">
-      <i class="ri-calendar-fill"></i><span>Kalendar</span>
-    </button>
-    <button class="nav-btn" data-page="congress">
-      <i class="ri-government-fill"></i><span>Congress</span>
-    </button>
-    <button class="nav-btn" data-page="lists">
-      <i class="ri-list-check-3"></i><span>Ro'yxatlar</span>
+      <i class="ri-coin-fill"></i><span>Kripto</span>
     </button>
     <button class="nav-btn" data-page="futures">
       <i class="ri-stock-fill"></i><span>Fyuchers</span>
     </button>
+    <button class="nav-btn" data-page="pump">
+      <i class="ri-rocket-2-fill"></i><span>Pump Signal</span>
+    </button>
     <button class="nav-btn" data-page="halal">
       <i class="ri-shield-check-fill"></i><span>Halol</span>
     </button>
-    <button class="nav-btn" data-page="pump">
-      <i class="ri-rocket-2-fill"></i><span>Pump Signal</span>
+    <button class="nav-btn" data-page="dates">
+      <i class="ri-calendar-event-fill"></i><span>Sanalar</span>
     </button>
   </nav>
 
@@ -3482,6 +3522,45 @@
     </div>
 
     <div class="mega-pagination" id="mega-pagination"></div>
+  </div>
+
+  <!-- BOZOR PULSI PAGE -->
+  <div class="page" id="page-pulse">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon" style="color:#ff6b35"><i class="ri-pulse-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Bozor Pulsi · Real-time</div>
+        <div class="page-mini-title">Bugun bozorda <em>nima sodir bo'lyapti</em></div>
+        <div class="page-mini-desc">Sektor harorati, insider savdolar, 52W highs/lows va dividend aristocrats — bir joyda</div>
+      </div>
+    </div>
+
+    <div class="sub-tabs-wrap">
+      <button class="sub-tab active" data-pulse-tab="heatmap"><i class="ri-fire-fill"></i> Heat Map</button>
+      <button class="sub-tab" data-pulse-tab="lists"><i class="ri-list-check-3"></i> Ro'yxatlar</button>
+      <button class="sub-tab" data-pulse-tab="insider"><i class="ri-spy-fill"></i> Insider</button>
+    </div>
+
+    <div id="pulse-content"></div>
+  </div>
+
+  <!-- SANALAR PAGE -->
+  <div class="page" id="page-dates">
+    <div class="page-mini-hero">
+      <div class="page-mini-icon"><i class="ri-calendar-event-fill"></i></div>
+      <div class="page-mini-text">
+        <div class="page-mini-tag">Sanalar & Insiderlar · Calendar</div>
+        <div class="page-mini-title">Yaqin kelajakdagi <em>muhim sanalar</em></div>
+        <div class="page-mini-desc">Earnings, dividend, IPO va kongress savdolari — sanalar bo'yicha</div>
+      </div>
+    </div>
+
+    <div class="sub-tabs-wrap">
+      <button class="sub-tab active" data-dates-tab="calendar"><i class="ri-calendar-fill"></i> Kalendar</button>
+      <button class="sub-tab" data-dates-tab="congress"><i class="ri-government-fill"></i> Congress</button>
+    </div>
+
+    <div id="dates-content"></div>
   </div>
 
   <!-- HEATMAP PAGE -->
@@ -7188,6 +7267,91 @@ Return ONLY this JSON (no markdown):
   }
 
 
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BOZOR PULSI & SANALAR — sub-tabs orqali eski page'larni ko'rsatish
+  // ═══════════════════════════════════════════════════════════════════════════
+  let pulseInited = false, datesInited = false;
+  // Eski page elementlarining asl joyini eslab qolamiz, keyin qaytarish uchun
+  const originalPageParents = {};
+
+  function showSubPage(parentId, pageId) {
+    const parent = document.getElementById(parentId);
+    const page = document.getElementById('page-' + pageId);
+    if (!parent || !page) return;
+
+    // Avvalgi sub-content'ni asl joyiga qaytaramiz
+    Array.from(parent.children).forEach(child => {
+      if (child.classList && child.classList.contains('page')) {
+        const origParent = originalPageParents[child.id];
+        if (origParent) origParent.appendChild(child);
+      }
+    });
+
+    // Asl joyini eslab qolamiz (agar hali eslab qolinmagan bo'lsa)
+    if (!originalPageParents[page.id]) {
+      originalPageParents[page.id] = page.parentNode;
+    }
+
+    // Page'ni Pulse/Dates ichiga ko'chiramiz
+    parent.appendChild(page);
+    page.classList.add('active');
+    page.style.display = 'block';
+
+    // Page ichidagi mini-hero ni yashiramiz (chunki Pulse/Dates da bor)
+    const heroEl = page.querySelector('.page-mini-hero');
+    if (heroEl) heroEl.style.display = 'none';
+  }
+
+  function initPulsePage() {
+    // Sub-tab tugmalari
+    document.querySelectorAll('[data-pulse-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-pulse-tab]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.pulseTab;
+        showSubPage('pulse-content', tab);
+        // Trigger init for the tab
+        if (tab === 'heatmap' && !heatmapLoaded) loadHeatmap();
+        if (tab === 'lists') {
+          initListTabs();
+          if (!listLoaded.highs) loadListPanel('highs');
+        }
+        if (tab === 'insider' && !insiderLoaded) {
+          insiderLoaded = true;
+          const el = document.getElementById('insider-results');
+          if (el) el.innerHTML = '<div class="info-text" style="padding:40px">Ticker kiriting va qidiring.</div>';
+        }
+      });
+    });
+
+    if (!pulseInited) {
+      pulseInited = true;
+      // Default: heatmap
+      showSubPage('pulse-content', 'heatmap');
+      if (!heatmapLoaded) loadHeatmap();
+    }
+  }
+
+  function initDatesPage() {
+    document.querySelectorAll('[data-dates-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-dates-tab]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.datesTab;
+        showSubPage('dates-content', tab);
+        if (tab === 'calendar' && !calLoaded.earnings) loadCalendarPage();
+        if (tab === 'congress' && !congressLoaded) loadCongressPage();
+      });
+    });
+
+    if (!datesInited) {
+      datesInited = true;
+      showSubPage('dates-content', 'calendar');
+      if (!calLoaded.earnings) loadCalendarPage();
+    }
+  }
+
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s)
@@ -7443,6 +7607,8 @@ Return ONLY this JSON (no markdown):
     if (page === 'calendar' && !calLoaded.earnings) loadCalendarPage();
     if (page === 'congress' && !congressLoaded) loadCongressPage();
     if (page === 'futures' && !futuresLoaded) loadFuturesPage();
+    if (page === 'pulse') initPulsePage();
+    if (page === 'dates') initDatesPage();
     if (page === 'halal') initHalalPage();
     if (page === 'pump') initPumpPage();
 
