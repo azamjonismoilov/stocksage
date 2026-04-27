@@ -6699,7 +6699,12 @@ Rules: HALOL if haram_revenue<5% AND debt ok. SHUBHALI if borderline. HARAM if a
     if (filter === 'halal')    items = items.filter(r => r.verdict === 'HALOL');
     if (filter === 'doubtful') items = items.filter(r => r.verdict === 'SHUBHALI');
     if (filter === 'haram')    items = items.filter(r => r.verdict === 'HARAM');
-    if (halalCurrentSector)    items = items.filter(r => (r.sector||'').includes(halalCurrentSector));
+    if (halalCurrentSector) {
+      items = items.filter(r => {
+        if (!r.sector || r.sector === 'Other') return false;
+        return r.sector.toLowerCase().includes(halalCurrentSector.toLowerCase());
+      });
+    }
     if (search) items = items.filter(r =>
       r.ticker.includes(search) || (r.company||'').toUpperCase().includes(search));
 
@@ -8112,12 +8117,45 @@ Return ONLY JSON:
 
 
   // ── Ticker Logo Helper ────────────────────────────────────────────────────────
+  // Mashhur ticker → domain mapping (Clearbit uchun)
+  const TICKER_DOMAIN = {
+    'AAPL':'apple.com','MSFT':'microsoft.com','GOOGL':'google.com','GOOG':'google.com',
+    'AMZN':'amazon.com','META':'meta.com','TSLA':'tesla.com','NVDA':'nvidia.com',
+    'AVGO':'broadcom.com','ORCL':'oracle.com','AMD':'amd.com','CRM':'salesforce.com',
+    'CSCO':'cisco.com','INTC':'intel.com','QCOM':'qualcomm.com','IBM':'ibm.com',
+    'ADBE':'adobe.com','INTU':'intuit.com','NOW':'servicenow.com','AMAT':'appliedmaterials.com',
+    'JPM':'jpmorgan.com','BAC':'bankofamerica.com','WFC':'wellsfargo.com','GS':'goldmansachs.com',
+    'MS':'morganstanley.com','V':'visa.com','MA':'mastercard.com','AXP':'americanexpress.com',
+    'JNJ':'jnj.com','UNH':'unitedhealthgroup.com','PFE':'pfizer.com','ABBV':'abbvie.com',
+    'MRK':'merck.com','LLY':'lilly.com','TMO':'thermofisher.com','ABT':'abbott.com',
+    'XOM':'exxonmobil.com','CVX':'chevron.com','COP':'conocophillips.com',
+    'WMT':'walmart.com','AMZN':'amazon.com','HD':'homedepot.com','COST':'costco.com',
+    'MCD':'mcdonalds.com','NKE':'nike.com','SBUX':'starbucks.com','TGT':'target.com',
+    'KO':'coca-cola.com','PEP':'pepsico.com','PG':'pg.com','PM':'pmi.com',
+    'CAT':'caterpillar.com','GE':'ge.com','HON':'honeywell.com','UPS':'ups.com',
+    'T':'att.com','VZ':'verizon.com','TMUS':'t-mobile.com',
+    'NFLX':'netflix.com','DIS':'disney.com','CMCSA':'comcast.com',
+    'BTC':'bitcoin.org','ETH':'ethereum.org','BNB':'bnbchain.org',
+    'SOL':'solana.com','XRP':'ripple.com','DOGE':'dogecoin.com','ADA':'cardano.org',
+  };
+
   function getTickerLogoUrl(ticker, type) {
     if (type === 'crypto') {
-      // CryptoCompare CDN — eng ishonchli kripto logo manba
+      // CoinGecko logo CDN — kripto
+      const cryptoIds = {
+        'BTC':'bitcoin','ETH':'ethereum','BNB':'binancecoin','SOL':'solana',
+        'XRP':'ripple','DOGE':'dogecoin','ADA':'cardano','AVAX':'avalanche-2',
+        'DOT':'polkadot','MATIC':'matic-network','LINK':'chainlink','UNI':'uniswap',
+      };
+      const id = cryptoIds[ticker.toUpperCase()];
+      if (id) return `https://assets.coingecko.com/coins/images/1/small/bitcoin.png`
+        .replace('/1/small/bitcoin', `/${id === 'bitcoin' ? '1' : id === 'ethereum' ? '279' : '825'}/small/${id}`);
       return `https://www.cryptocompare.com/media/37746338/${ticker.toLowerCase()}.png`;
     }
-    // TradingView logo CDN — barcha aksiyalar uchun
+    // Clearbit — agar domain mapping mavjud bo'lsa
+    const domain = TICKER_DOMAIN[ticker.toUpperCase()];
+    if (domain) return `https://logo.clearbit.com/${domain}`;
+    // TradingView SVG — universal fallback
     return `https://s3-symbol-logo.tradingview.com/${ticker.toLowerCase()}--big.svg`;
   }
 
