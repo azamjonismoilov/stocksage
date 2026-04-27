@@ -7714,10 +7714,10 @@ Return ONLY this JSON (no markdown):
         </div>
         <div class="gdp-body">
           <div class="gdp-tabs">
-            <button class="gdp-tab active" data-gdp-tab="overview">📊 Umumiy</button>
-            <button class="gdp-tab" data-gdp-tab="ai">🤖 AI Tahlil</button>
-            <button class="gdp-tab" data-gdp-tab="news">📰 Yangiliklar</button>
-            ${marketType === 'stock' ? '<button class="gdp-tab" data-gdp-tab="halal">🛡 Halollik</button>' : ''}
+            <button class="gdp-tab active" data-gdp-tab="overview"><i class="ri ri-bar-chart-2-fill"></i> Umumiy</button>
+            <button class="gdp-tab" data-gdp-tab="ai"><i class="ri ri-sparkling-2-fill"></i> AI Tahlil</button>
+            <button class="gdp-tab" data-gdp-tab="news"><i class="ri ri-newspaper-fill"></i> Yangiliklar</button>
+            ${marketType === 'stock' ? '<button class="gdp-tab" data-gdp-tab="halal"><i class="ri ri-shield-check-fill"></i> Halollik</button>' : ''}
           </div>
 
           <!-- Overview -->
@@ -7765,7 +7765,7 @@ Return ONLY this JSON (no markdown):
 
           <!-- To'liq tahlil tugmasi -->
           <button class="gdp-full-btn" onclick="gdpGoFull('${ticker}', '${marketType}')">
-            <i class="ri ri-bar-chart-fill"></i> Tahlil sahifasida ochish
+            <i class="ri ri-bar-chart-fill"></i> Chuqur tahlil (Tahlil tabida)
           </button>
         </div>
       </div>
@@ -8038,9 +8038,8 @@ Return ONLY JSON:
     if (document.getElementById('ticker-input')) {
       document.getElementById('ticker-input').value = ticker;
     }
+    // Panel yopiladi — foydalanuvchi o'sha sahifada qoladi
     closeTickerPanel();
-    // Tahlil tabiga o'tamiz faqat agar foydalanuvchi xohlasa
-    navigateTo('home');
   }
 
 
