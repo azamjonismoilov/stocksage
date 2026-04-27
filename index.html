@@ -3240,6 +3240,108 @@
     .sub-tab { padding: 8px 12px; font-size: 10px; }
   }
 
+
+  /* ═══ PUMP LIST VIEW ═══════════════════════════════════════════════════════ */
+  .pump-list-item {
+    display: grid;
+    grid-template-columns: 90px 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .pump-list-item:hover { background: rgba(255,255,255,0.03); }
+  .pump-list-item:last-child { border-bottom: none; }
+
+  .pump-list-item.high-risk { border-left: 3px solid var(--bear); }
+  .pump-list-item.med-risk  { border-left: 3px solid var(--warn); }
+  .pump-list-item.low-risk  { border-left: 3px solid var(--bull); }
+
+  .pump-list-sym {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .pump-list-price {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .pump-list-explain {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .pump-list-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .pump-list-change {
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+
+  .pump-list-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .pump-list-stat {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg-card);
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .pump-list-wrap {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .pump-list-header {
+    display: grid;
+    grid-template-columns: 90px 1fr auto auto;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 600px) {
+    .pump-list-item { grid-template-columns: 70px 1fr auto; }
+    .pump-list-header { grid-template-columns: 70px 1fr auto; }
+    .pump-list-explain { display: none; }
+  }
+
 </style>
 </head>
 <body>
@@ -6790,49 +6892,67 @@ Return ONLY this JSON (no markdown):
     const cntEl = document.getElementById('pump-count');
 
     let items = [...pumpData];
-    if (filter === 'top10')   items = items.slice(0, 10);
-    if (filter === 'high')    items = items.filter(p => p.risk === 'high');
-    if (filter === 'medium')  items = items.filter(p => p.risk === 'medium');
-    if (filter === 'low')     items = items.filter(p => p.risk === 'low');
+    if (filter === 'top10')  items = items.slice(0, 10);
+    if (filter === 'high')   items = items.filter(p => p.risk === 'high');
+    if (filter === 'medium') items = items.filter(p => p.risk === 'medium');
+    if (filter === 'low')    items = items.filter(p => p.risk === 'low');
 
-    if (cntEl) cntEl.textContent = items.length + ' ta kripto';
+    const label = pumpType === 'stock' ? 'aksiya' : 'kripto';
+    if (cntEl) cntEl.textContent = items.length + ' ta ' + label;
 
     if (!items.length) {
-      el.innerHTML = '<div class="pump-loading">Filtrga mos kripto topilmadi.</div>';
+      el.innerHTML = '<div class="pump-loading">Filtrga mos ' + label + ' topilmadi.</div>';
       return;
     }
 
-    el.innerHTML = items.map(p => {
-      const riskCls = p.risk === 'high' ? 'high-risk' : p.risk === 'medium' ? 'med-risk' : 'low-risk';
-      const riskLbl = p.risk === 'high' ? 'Yuqori xavf' : p.risk === 'medium' ? 'Orta xavf' : 'Kam xavf';
-      const riskTag = p.risk === 'high' ? 'high' : p.risk === 'medium' ? 'medium' : 'low';
+    const isStock = pumpType === 'stock';
+
+    const rows = items.map(p => {
+      const riskCls  = p.risk === 'high' ? 'high-risk' : p.risk === 'medium' ? 'med-risk' : 'low-risk';
+      const riskTag  = p.risk === 'high' ? 'high' : p.risk === 'medium' ? 'medium' : 'low';
       const riskIcon = p.risk === 'high' ? 'ri-alarm-warning-fill' : p.risk === 'medium' ? 'ri-error-warning-fill' : 'ri-shield-check-fill';
-
+      const riskLbl  = p.risk === "high" ? "⚠ Yuqori" : p.risk === "medium" ? "▲ Orta" : "✓ Kam";
       const priceFmt = p.price < 0.01 ? p.price.toFixed(6) : p.price < 1 ? p.price.toFixed(4) : p.price.toFixed(2);
-      const tradesFmt = p.trades > 1000 ? (p.trades/1000).toFixed(0) + 'K' : p.trades;
-      const isStock = pumpType === 'stock';
 
-      return '<div class="pump-card ' + riskCls + '" onclick="loadPumpToAnalyze(\''+p.symbol+'\')">'
-        + '<div class="pump-card-top">'
-        + '<div><div class="pump-symbol">' + p.symbol + '</div>'
-        + '<div style="font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:2px">$' + priceFmt + '</div></div>'
-        + '<div style="text-align:right">'
-        + '<div class="pump-change st-up">+' + p.change24h.toFixed(2) + '%</div>'
-        + '<span class="pump-risk-tag ' + riskTag + '" style="margin-top:4px"><i class="ri ' + riskIcon + '"></i> ' + riskLbl + '</span>'
-        + '</div></div>'
-        + '<div class="pump-stats-row">'
-        + (isStock
-           ? '<div class="pump-stat"><div class="pump-stat-val">$' + (p.high?p.high.toFixed(2):'—') + '</div><div class="pump-stat-label">Kun yuqori</div></div>'
-             + '<div class="pump-stat"><div class="pump-stat-val">$' + (p.low?p.low.toFixed(2):'—') + '</div><div class="pump-stat-label">Kun pastki</div></div>'
-             + '<div class="pump-stat"><div class="pump-stat-val">' + (p.volatility||0).toFixed(2) + '%</div><div class="pump-stat-label">Volatillik</div></div>'
-           : '<div class="pump-stat"><div class="pump-stat-val">$' + formatBigNumber(p.volume) + '</div><div class="pump-stat-label">24s Hajm</div></div>'
-             + '<div class="pump-stat"><div class="pump-stat-val">' + tradesFmt + '</div><div class="pump-stat-label">Tranzaksiya</div></div>'
-             + '<div class="pump-stat"><div class="pump-stat-val">' + ((p.high - p.low) / p.low * 100).toFixed(1) + '%</div><div class="pump-stat-label">Volatillik</div></div>')
-        + '</div>'
-        + (p.explanation ? '<div class="pump-explain"><div class="pump-explain-head"><i class="ri ri-sparkling-2-fill"></i> AI Tahlili</div>' + escapeHtml(p.explanation) + '</div>' : '')
-        + (p.history ? '<div class="pump-history"><strong>Tarixiy ohshashlik:</strong> ' + escapeHtml(p.history) + '</div>' : '')
-        + '</div>';
+      const stat1 = isStock
+        ? `Vol: ${((p.high-p.low)/p.low*100).toFixed(1)}%`
+        : `Hajm: $${formatBigNumber(p.volume)}`;
+      const stat2 = isStock
+        ? `H: $${p.high?p.high.toFixed(2):'—'}`
+        : `Trades: ${p.trades>1000?(p.trades/1000).toFixed(0)+'K':p.trades}`;
+
+      return `<div class="pump-list-item ${riskCls}" onclick="loadPumpToAnalyze('${p.symbol}')">
+        <div>
+          <div class="pump-list-sym">${p.symbol}</div>
+          <div class="pump-list-price">$${priceFmt}</div>
+        </div>
+        <div class="pump-list-explain">
+          ${p.explanation ? escapeHtml(p.explanation) : '<span style="color:var(--text-muted)">AI tahlili yuklanmoqda...</span>'}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0">
+          <span class="pump-risk-tag ${riskTag}" style="font-size:9px;padding:2px 7px">
+            <i class="ri ${riskIcon}"></i> ${riskLbl}
+          </span>
+          <div class="pump-list-stat">${stat1}</div>
+          <div class="pump-list-stat">${stat2}</div>
+        </div>
+        <div class="pump-list-right">
+          <div class="pump-list-change st-up">+${p.change24h.toFixed(2)}%</div>
+          <i class="ri ri-arrow-right-s-line" style="color:var(--text-muted);font-size:16px"></i>
+        </div>
+      </div>`;
     }).join('');
+
+    el.innerHTML = `
+      <div class="pump-list-wrap">
+        <div class="pump-list-header">
+          <span>Ticker</span>
+          <span>AI Tushuntirish</span>
+          <span>Xavf / Statistika</span>
+          <span style="text-align:right">Change%</span>
+        </div>
+        ${rows}
+      </div>`;
   }
 
   function loadPumpToAnalyze(symbol) {
